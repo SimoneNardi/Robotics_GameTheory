@@ -2,6 +2,8 @@
 #include "Area.h"
 #include "DiscretizedArea.h"
 
+#include <memory>
+
 #include "BaseGeometry/Point2D.h"
 
 using namespace std;
@@ -30,9 +32,9 @@ void AgentPosition::updateCounter(std::shared_ptr<DiscretizedArea> area)
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool AgentPosition::communicable(std::shared_ptr<Agent> _other) const
+bool AgentPosition::communicable(std::shared_ptr<Agent> _otherAgent) const
 {
-	return m_point.distance( _other->getPosition()->getPoint2D() ) < 2 * m_camera.getFarRadius() + IDSMath::TOLERANCE;
+	return m_point.distance( _otherAgent->getPosition().getPoint2D() ) < 2 * m_camera.getFarRadius() + IDSMath::TOLERANCE;
 }
 
 //////////////////////////////////////////////////////////////////////////
