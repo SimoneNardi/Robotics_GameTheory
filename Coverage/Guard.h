@@ -25,14 +25,6 @@ namespace Robotics
 			~Guard();
 
 			inline virtual bool isGuard() const {return true;}
-
-#pragma region ISLAlgorithm
-			/// The set of agents can communicate with this agent
-			virtual std::set<std::shared_ptr<Agent> > getCommunicableAgents(std::set<std::shared_ptr<Agent> > const& _guards) const;
-			/// The set of square can be controlled by this agent
-			virtual std::set<std::shared_ptr<Square> > getVisibleSquares( std::shared_ptr<DiscretizedArea> _space ) const;
-
-#pragma endregion
 		};
 	}
 }
