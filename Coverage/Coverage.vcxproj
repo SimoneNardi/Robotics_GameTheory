@@ -52,12 +52,12 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\;..\;..\SDK\;..\SDK\IDSBaseMath\;..\SDK\BaseGeometry\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;..\..\SDK\;..\..\SDK\IDSBaseMath\;..\..\SDK\BaseGeometry\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>COVERAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\SDK\IDSBaseMath\Bin\$(Configuration);..\SDK\BaseGeometry\Bin\$(Configuration);..\SDK\Common\Bin\$(Configuration);..\SDK\Log4cxx\Bin\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\SDK\IDSBaseMath\Bin\$(Configuration);..\..\SDK\BaseGeometry\Bin\$(Configuration);..\..\SDK\Common\Bin\$(Configuration);..\..\SDK\Log4cxx\Bin\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>BaseGeometry.lib;Common.lib;IDSlog4cxx.lib;IDSBaseMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -67,14 +67,14 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.\;..\;..\SDK\;..\SDK\IDSBaseMath\;..\SDK\BaseGeometry\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;..\..\SDK\;..\..\SDK\IDSBaseMath\;..\..\SDK\BaseGeometry\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>COVERAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\SDK\IDSBaseMath\Bin\$(Configuration);..\SDK\BaseGeometry\Bin\$(Configuration);..\SDK\Common\Bin\$(Configuration);..\SDK\Log4cxx\Bin\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\SDK\IDSBaseMath\Bin\$(Configuration);..\..\SDK\BaseGeometry\Bin\$(Configuration);..\..\SDK\Common\Bin\$(Configuration);..\..\SDK\Log4cxx\Bin\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>BaseGeometry.lib;Common.lib;IDSlog4cxx.lib;IDSBaseMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

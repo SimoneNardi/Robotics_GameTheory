@@ -1,0 +1,252 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Italian (Italy) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ITA)
+LANGUAGE LANG_ITALIAN, SUBLANG_ITALIAN
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_CORRIDOR            ICON                    "corridor.ico"
+IDI_SMALL               ICON                    "small.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDC_CORRIDOR MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        POPUP "&Mode"
+        BEGIN
+            MENUITEM "Draw Area",					ID_MODE_DRAWPATH
+            MENUITEM "Load Area",					ID_MODE_LOADPATH
+            MENUITEM "Curve",						ID_MODE_DRAWCURVE
+            MENUITEM "Test All Paths",				ID_MODE_TESTALLPAT
+        END
+        MENUITEM "Number of Guards",				ID_FILE_NUMBER_OF_GUARDS
+        MENUITEM "Number of steps",					ID_FILE_NUMBER_OF_STEPS
+        MENUITEM "&Draw Squares",					ID_FILE_DRAWSQUARES, CHECKED
+        MENUITEM "&Partition Corridor",				ID_FILE_PARTITIONCORRI, CHECKED
+        MENUITEM "&Highlight Triangle",				ID_FILE_HIGHLIGHT
+        MENUITEM "Draw Real Partition",				ID_FILE_DRAWREALPARTITION
+        MENUITEM "&Undo",							ID_FILE_UNDO
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",							IDM_EXIT
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&Guide",							ID_HELP_GUIDE
+        MENUITEM SEPARATOR
+        MENUITEM "&About ...",						IDM_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDC_CORRIDOR ACCELERATORS
+BEGIN
+    "D",            ID_FILE_DRAWSQUARES,  VIRTKEY, CONTROL, NOINVERT
+    "Z",            ID_FILE_UNDO,           VIRTKEY, CONTROL, NOINVERT
+    "3",            ID_MODE_DRAWCURVE,      ASCII,  ALT, NOINVERT
+    "0",            ID_MODE_DRAWPATH,       ASCII,  ALT, NOINVERT
+    "1",            ID_MODE_LOADPATH,       ASCII,  ALT, NOINVERT
+    "9",            ID_MODE_TESTALLPAT,     ASCII,  ALT, NOINVERT
+    "/",            IDM_ABOUT,              ASCII,  ALT, NOINVERT
+    "?",            IDM_ABOUT,              ASCII,  ALT, NOINVERT
+    "P",            ID_FILE_PARTITIONCORRI, VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG 22, 17, 230, 75
+STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 8, "System"
+BEGIN
+    ICON            IDI_CORRIDOR,IDC_MYICON,14,9,16,16
+    LTEXT           "TestApp Version 1.0",IDC_STATIC,49,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2013",IDC_STATIC,49,20,119,8
+    DEFPUSHBUTTON   "OK",IDOK,195,6,30,11,WS_GROUP
+END
+
+IDD_GUIDE DIALOGEX 0, 0, 316, 108
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Guide"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,231,74,50,14
+    LTEXT           "- Select Mode:",IDC_STATIC,7,14,50,9
+    LTEXT           "Draw AirPort Area: draw counterclockwise path, right click to end drawing",IDC_STATIC,18,26,212,8
+    LTEXT           "Load Path: load saved path",IDC_STATIC,18,36,89,8
+    LTEXT           "Curve: set parameters of the curve",IDC_STATIC,18,46,115,8
+    LTEXT           "Test All Paths: load paths saved in Test folder",IDC_STATIC,18,56,148,8
+    LTEXT           "- Test Points: left click in the corridor.",IDC_STATIC,7,71,120,8
+    LTEXT           "- Reset: right click.",IDC_STATIC,7,86,61,8
+END
+
+IDD_CURVE DIALOGEX 0, 0, 327, 142
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Curve"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,177,114,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,243,114,50,14
+    EDITTEXT        IDC_EDIT1,91,36,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Center coordinates:",IDC_STATIC,7,36,65,8
+    EDITTEXT        IDC_EDIT2,150,36,40,14,ES_AUTOHSCROLL
+    LTEXT           "Short radius:",IDC_STATIC,7,56,42,8
+    EDITTEXT        IDC_EDIT3,91,56,40,14,ES_AUTOHSCROLL
+    LTEXT           "Long radius:",IDC_STATIC,150,56,40,8
+    EDITTEXT        IDC_EDIT4,210,56,40,14,ES_AUTOHSCROLL
+    LTEXT           "Start angle:",IDC_STATIC,7,76,39,8
+    EDITTEXT        IDC_EDIT5,91,76,40,14,ES_AUTOHSCROLL
+    LTEXT           "End angle:",IDC_STATIC,150,76,35,8
+    EDITTEXT        IDC_EDIT6,210,76,40,14,ES_AUTOHSCROLL
+    LTEXT           "Sampling:",IDC_STATIC,7,96,32,8
+    EDITTEXT        IDC_EDIT7,91,96,40,14,ES_AUTOHSCROLL
+    LTEXT           "All the points of the corridor must have coordinates 0 <= x,y <= 10000, angles must be positive.",IDC_STATIC,7,14,312,8
+END
+
+IDD_GUARDS DIALOGEX 0, 0, 174, 66
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,32,45,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,95,45,50,14
+    LTEXT           "Number of Guards:",IDC_STATIC,7,18,98,8
+    EDITTEXT        IDC_EDITT,113,14,40,14,ES_AUTOHSCROLL | ES_NUMBER
+END
+
+IDD_STEPS DIALOGEX 0, 0, 174, 66
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,32,45,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,95,45,50,14
+    LTEXT           "Number of Steps:",IDC_STATIC,7,18,98,8
+    EDITTEXT        IDC_EDITT,113,14,40,14,ES_AUTOHSCROLL | ES_NUMBER
+END
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_GUIDE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 309
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 101
+    END
+
+    IDD_CURVE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 320
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 135
+    END
+
+    IDD_GUARDS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 167
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 59
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_APP_TITLE           "Airport Test App"
+    IDC_CORRIDOR            "CORRIDOR"
+END
+
+#endif    // Italian (Italy) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
