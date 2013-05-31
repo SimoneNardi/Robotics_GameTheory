@@ -89,7 +89,8 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	bool FindSquare(Point2D const& V, SquarePtr &R)
 	{
-		R = m_algorithm->findSquare(V);
+		if(m_algorithm)
+			R = m_algorithm->findSquare(V);
 		if(R)
 			return true;
 		else

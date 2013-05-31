@@ -39,6 +39,20 @@ namespace Robotics
 			int col;
 		};
 
+		inline bool operator< (AreaCoordinate const& a, AreaCoordinate const& b)
+		{
+			if(a.row < b.row)
+				return true;
+			else if(a.row > b.row)
+				return false;
+			else if(a.col < b.col)
+				return true;
+			else if(a.col > b.col)
+				return false;
+			else
+				return false;
+		}
+
 		class COVERAGE_API Square
 		{
 			/// True if an agent can stay in this square
@@ -72,9 +86,11 @@ namespace Robotics
 			inline double getValue() const {return m_value;}
 			inline void setValue(double _value) {m_value = _value;}
 
-			Square() : m_valid(true), m_counter(0), m_value(0.) {}
+			Square() : m_valid(true), m_counter(0), m_value(100.) {}
 
 			IDS::BaseGeometry::Point2D vertex(int i) const;
+
+			//bool equals(std::shared_ptr<Square> _other) const;
 		};
 
 		typedef std::shared_ptr<Square> SquarePtr;
@@ -126,11 +142,15 @@ namespace Robotics
 			/// 
 			void setRandomSquareValue();
 
-			std::vector<AreaCoordinate> getStandardApproachableValidSquares() const;
-			void addSpecialApproachableValidSquares(std::vector<AreaCoordinate> & _loci) const;
+			std::vector<AreaCoordinate> getStandardApproachableValidSquares(AreaCoordinate const& _current) const;
+			void addSpecialApproachableValidSquares(AreaCoordinate const& _current, std::vector<AreaCoordinate> & _loci) const;
 
 			std::set<std::shared_ptr<Square> > getVisibleSquares(AgentPosition const& _pos) const;
 
+			double getXStep() const {return m_xStep;}
+			double getYStep() const {return m_yStep;}
+			int getNumRow() const {return m_numRow;}
+			int getNumCol() const {return m_numCol;}
 		};
 	}
 }

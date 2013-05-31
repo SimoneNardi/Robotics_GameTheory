@@ -19,6 +19,13 @@
 #include <memory>
 #include <set>
 
+namespace IDS 
+{
+	namespace BaseGeometry
+	{
+		class Shape2D;
+	}
+}
 namespace Robotics 
 {
 	namespace GameTheory 
@@ -49,11 +56,16 @@ namespace Robotics
 			std::vector<AreaCoordinate> getCoverage(AreaCoordinate _center, std::shared_ptr<DiscretizedArea> _area);
 
 			double getFarRadius() const {return m_farRadius;}
+
+			IDS::BaseGeometry::Shape2D getVisibleArea(IDS::BaseGeometry::Point2D const& point) const;
+
+			double computeCosts() const {return 0.;}
 		};
 
 		//////////////////////////////////////////////////////////////////////////
 		class COVERAGE_API AgentPosition
 		{
+		protected:
 			/// The position of the agent.
 			IDS::BaseGeometry::Point2D m_point;
 
@@ -67,13 +79,24 @@ namespace Robotics
 
 			AgentPosition(IDS::BaseGeometry::Point2D const& point, CameraPosition _camera) : m_point(point), m_camera(_camera) {}
 
-			/// Update the counter of the lattice visible from that position.
+			/// Update the counter of the lattice visible from that position
 			void updateCounter(std::shared_ptr<DiscretizedArea> area);
 
+			/// Get Point2D
 			IDS::BaseGeometry::Point2D getPoint2D() const {return m_point;}
 
-			/// True if other is in communication with this position.
+			/// True if other is in communication with this position
 			bool communicable(std::shared_ptr<Agent> _other) const;
+
+			/// Compute all the square visible by that position and that camera
+			bool visible(std::shared_ptr<Square> _area) const;
+
+			/// Compute Camera Costs
+			double computeCosts() const;
+
+			friend class COVERAGE_API Agent;
+			friend class COVERAGE_API Guard;
+			friend class COVERAGE_API Thief;
 		};
 
 		//////////////////////////////////////////////////////////////////////////
@@ -144,7 +167,9 @@ namespace Robotics
 
 			void moveToNextPosition();
 
-			std::vector<AgentPosition> getFeasibleActions( std::shared_ptr<DiscretizedArea> _space ) const;
+			void setNextPosition(std::vector< MemoryAgentPosition > const& memory);
+
+			virtual std::vector<AgentPosition> getFeasibleActions( std::shared_ptr<DiscretizedArea> _space ) const;
 
 		public:
 #pragma region ISLAlgorithm
@@ -156,7 +181,12 @@ namespace Robotics
 			bool equals(std::shared_ptr<Agent>) const;
 
 			void receiveMessage( std::set<std::shared_ptr<Square> > const& _visible);
+
+			/// Compute cost of sensor.
+			double computeCosts() const;
 #pragma endregion
+
+			void setCurrentPayoff(double _benefit);
 
 		protected:
 			Status getStatus() const;

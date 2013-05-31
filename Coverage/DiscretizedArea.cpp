@@ -213,26 +213,26 @@ DiscretizedArea::DiscretizedArea(IDS::BaseGeometry::Shape2D const& _external, st
 }
 
 //////////////////////////////////////////////////////////////////////////
- AreaCoordinate DiscretizedArea::getCoordinate(Point2D const& point) const
- {
-	 Point2D l_bottomLeft = m_lattice[0]->getBoundingBox().minCoord();
-	 Point2D l_bottomRight = m_lattice[0]->getBoundingBox().corner(1);
-	 Point2D l_topLeft = m_lattice[0]->getBoundingBox().corner(2);
+AreaCoordinate DiscretizedArea::getCoordinate(Point2D const& point) const
+{
+	static Point2D l_bottomLeft = m_lattice[0]->getBoundingBox().minCoord();
+	static Point2D l_bottomRight = m_lattice[0]->getBoundingBox().corner(1);
+	static Point2D l_topLeft = m_lattice[0]->getBoundingBox().corner(2);
 
-	 Line2D l_xLine = l_bottomLeft.lineTo(l_bottomRight);
-	 Line2D l_yLine = l_bottomLeft.lineTo(l_topLeft);
+	static Line2D l_xLine = l_bottomLeft.lineTo(l_bottomRight);
+	static Line2D l_yLine = l_bottomLeft.lineTo(l_topLeft);
 
-	 Point2D l_prjVertical = l_yLine.projectPoint(point);
-	 Point2D l_prjOrizontal = l_xLine.projectPoint(point);
+	Point2D l_prjVertical = l_yLine.projectPoint(point);
+	Point2D l_prjOrizontal = l_xLine.projectPoint(point);
 
-	 double l_ydist = l_yLine.parameterAt(l_prjVertical);
-	 double l_xdist = l_xLine.parameterAt(l_prjOrizontal);
+	double l_ydist = l_yLine.parameterAt(l_prjVertical);
+	double l_xdist = l_xLine.parameterAt(l_prjOrizontal);
 
-	 AreaCoordinate l_coord;
-	 l_coord.col = int( floor(l_xdist / m_xStep) );
-	 l_coord.row = int( floor(l_ydist / m_yStep) );
-	 return l_coord;
- }
+	AreaCoordinate l_coord;
+	l_coord.col = int( floor(l_xdist / m_xStep) );
+	l_coord.row = int( floor(l_ydist / m_yStep) );
+	return l_coord;
+}
 
 //////////////////////////////////////////////////////////////////////////
 SquarePtr DiscretizedArea::getSquare(Point2D const& V) const
@@ -269,22 +269,97 @@ void DiscretizedArea::setRandomSquareValue()
 }
 
 //////////////////////////////////////////////////////////////////////////
-std::vector<AreaCoordinate> DiscretizedArea::getStandardApproachableValidSquares() const
+std::vector<AreaCoordinate> DiscretizedArea::getStandardApproachableValidSquares(AreaCoordinate const& _current) const
 {
-
-	return std::vector<AreaCoordinate>();
+	std::vector<AreaCoordinate> result;
+	if(_current.col != 0)
+	{
+		AreaCoordinate pos;
+		pos.col = _current.col-1;
+		pos.row = _current.row;
+		result.push_back(pos);
+	}
+	if(_current.col != DISCRETIZATION_COL)
+	{
+		AreaCoordinate pos;
+		pos.col = _current.col+1;
+		pos.row = _current.row;
+		result.push_back(pos);
+	}
+	if(_current.row != 0)
+	{
+		AreaCoordinate pos;
+		pos.col = _current.col;
+		pos.row = _current.row-1;
+		result.push_back(pos);
+	}
+	if(_current.row != DISCRETIZATION_ROW)
+	{
+		AreaCoordinate pos;
+		pos.col = _current.col;
+		pos.row = _current.row+1;
+		result.push_back(pos);
+	}
+	return result;
 }
 
 //////////////////////////////////////////////////////////////////////////
-void DiscretizedArea::addSpecialApproachableValidSquares(std::vector<AreaCoordinate> & _loci) const
+void DiscretizedArea::addSpecialApproachableValidSquares(AreaCoordinate const& _current, std::vector<AreaCoordinate> & _loci) const
 {
-	return;
+	if( _current.col != 0 )
+	{
+		if(_current.row != 0)
+		{
+			AreaCoordinate pos;
+			pos.col = _current.col-1;
+			pos.row = _current.row-1;
+			_loci.push_back(pos);
+		}
+
+		if(_current.row != DISCRETIZATION_ROW)
+		{
+			AreaCoordinate pos;
+			pos.col = _current.col-1;
+			pos.row = _current.row+1;
+			_loci.push_back(pos);
+		}
+	}
+
+	if(_current.col != DISCRETIZATION_COL)
+	{
+		if(_current.row != 0)
+		{
+			AreaCoordinate pos;
+			pos.col = _current.col+1;
+			pos.row = _current.row-1;
+			_loci.push_back(pos);
+		}
+
+		if(_current.row != DISCRETIZATION_ROW)
+		{
+			AreaCoordinate pos;
+			pos.col = _current.col+1;
+			pos.row = _current.row+1;
+			_loci.push_back(pos);
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
-std::set<std::shared_ptr<Square> > DiscretizedArea::getVisibleSquares(AgentPosition const& _pos) const
+std::set< std::shared_ptr<Square> > DiscretizedArea::getVisibleSquares(AgentPosition const& _pos) const
 {
-	return std::set<std::shared_ptr<Square> >();
+	AreaCoordinate l_currentPos = this->getCoordinate(_pos.getPoint2D());
+
+	std::set< std::shared_ptr<Square> > result;
+	for( int row = 0; row < m_numRow; ++row )
+	{
+		for( int col = 0; col < m_numCol; ++col )
+		{
+			if( _pos.visible(m_lattice[row * m_numCol + col]) )
+				result.insert(m_lattice[row * m_numCol + col]);
+		}
+	}
+	return result;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -292,6 +367,11 @@ std::set<std::shared_ptr<Square> > DiscretizedArea::getVisibleSquares(AgentPosit
 ///////////////////////		SQUARE		//////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
+
+//bool Square::equals(std::shared_ptr<Square> _other) const
+//{
+//	return this->getBoundingBox().center().equals(_other->getBoundingBox().center());
+//}
 
 //////////////////////////////////////////////////////////////////////////
 IDS::BaseGeometry::Point2D Square::vertex(int i) const

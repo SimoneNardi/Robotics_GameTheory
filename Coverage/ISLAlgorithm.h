@@ -44,11 +44,15 @@ namespace Robotics
 
 			void sendInformationToNeighbors(std::shared_ptr<Agent> _agent);
 
-			void selectRandomFeasibleAction(std::shared_ptr<Agent> _agent);
+			virtual void selectRandomFeasibleAction(std::shared_ptr<Agent> _agent);
 
 			void selectBestMemoryAction(std::shared_ptr<Agent> _agent);
 
 			void forwardOneStep(std::shared_ptr<Agent> _agent);
+			void forwardOneStep();
+
+			void updateCounterOfVisibleSquare( );
+			void updateCounterOfVisibleSquare( std::shared_ptr<Agent> _agent );
 
 		public:
 			ISLAlgorithm(std::shared_ptr<DiscretizedArea> _space, int _numMemory = 2);
@@ -57,6 +61,9 @@ namespace Robotics
 
 			virtual void initialize();
 
+			virtual void resetCounter();
+			
+			virtual void updateTime(); 
 		};
 	}
 }

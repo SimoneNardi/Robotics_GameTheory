@@ -25,6 +25,8 @@ namespace Robotics
 			~Guard();
 
 			inline virtual bool isGuard() const {return true;}
+
+			std::vector<AgentPosition> getFeasibleActions( std::shared_ptr<DiscretizedArea> _space ) const;
 		};
 	}
 }

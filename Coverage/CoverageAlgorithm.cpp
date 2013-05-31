@@ -51,21 +51,32 @@ void Robotics::GameTheory::CoverageAlgorithm::update(int nStep)
 {
 #if 0
 	m_space->setRandomSquareValue();
+	this->wakeUpAgentIfSecurityIsLow();
 #else
 	for(int i = 0; i < nStep; ++i)
 	{
+		if(m_learning)
+		{
+			m_learning->updateTime();
+			m_learning->forwardOneStep();
+		}
+
 		for(std::set< AgentPtr >::iterator it = m_agent.begin(); it != m_agent.end(); ++it)
 		{
 			AgentPtr l_agent = *it;
 
 			if(l_agent->isActive())
 			{
-				if(m_learning)
-					m_learning->forwardOneStep(l_agent);
-
-				if(l_agent->isGuard())
-					if( l_agent->isOutOfInterest(m_space) )
-						l_agent->sleep();
+				if(!l_agent->isGuard())
+				{
+					if(m_learning)
+					{
+						m_learning->selectRandomFeasibleAction(l_agent);
+						l_agent->moveToNextPosition();
+					}
+				}
+				else if( l_agent->isOutOfInterest(m_space) )
+					l_agent->sleep();
 			}
 		}
 
@@ -91,7 +102,7 @@ void Robotics::GameTheory::CoverageAlgorithm::wakeUpAgentIfSecurityIsLow()
 //////////////////////////////////////////////////////////////////////////
 void CoverageAlgorithm::Initialize()
 {
-	this->randomInitializeAllAgent();
+	//this->randomInitializeAllAgent();
 
 	m_learning->initialize();
 }

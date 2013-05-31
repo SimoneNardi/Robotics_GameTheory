@@ -45,15 +45,14 @@ namespace Robotics
 			/// The learning algorithm used by agents to change their status.
 			std::shared_ptr<LearningAlgorithm> m_learning;
 
-		protected:
+		public:
+
 			/************************************************************************/
 			/* \brief Compute initial position and payoff
 			*
 			*/
 			/************************************************************************/
 			void Initialize();
-
-		public:
 
 			/************************************************************************/
 			/* \brief	Coverage Algorithm Constructor
