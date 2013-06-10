@@ -136,7 +136,10 @@ echo Boost
 xcopy /Y "..\..\SDK\Boost\Bin\*.dll" $(OutDir)
 echo Coverage
 xcopy /Y "..\Coverage\Bin\$(Configuration)\*.dll" $(OutDir)
-xcopy /Y "..\Coverage\Bin\$(Configuration)\*.pdb" $(OutDir)</Command>
+xcopy /Y "..\Coverage\Bin\$(Configuration)\*.pdb" $(OutDir)
+echo IDSGraphics
+xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" $(OutDir)</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -214,7 +217,10 @@ echo Boost
 xcopy /Y "..\..\SDK\Boost\Bin\*.dll" $(OutDir)
 echo Coverage
 xcopy /Y "..\Coverage\Bin\$(Configuration)\*.dll" $(OutDir)
-xcopy /Y "..\Coverage\Bin\$(Configuration)\*.pdb" $(OutDir)</Command>
+xcopy /Y "..\Coverage\Bin\$(Configuration)\*.pdb" $(OutDir)
+echo IDSGraphics
+xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" $(OutDir)</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

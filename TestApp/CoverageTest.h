@@ -15,6 +15,9 @@
 #include "Coverage/DiscretizedArea.h"
 #include "Coverage/Agent.h"
 
+#include <iostream>
+#include <fstream>
+
 using namespace IDS;
 using namespace IDS::BaseGeometry;
 using namespace Robotics::GameTheory;
@@ -213,6 +216,15 @@ public:
 		return m_algorithm->areaContains(_thiefStartingPt);
 	}
 
+	void getGuardsPosition(std::vector< AgentPosition > & _pos);
+	void getGuardsSquare(std::vector< std::shared_ptr<Square> > & _pos);
+	void getGuardsCoverage(std::vector<LineString2D>& _areas);
+
+	int numberOfSquaresCoveredByGuards();
+	int getTime();
+	void printGraph(std::string const& name);
+	std::string getExplorationRate();
+	void printPotential(bool potential);
 };
 
 CoverageTest *g_coverageTest= NULL;
@@ -220,7 +232,7 @@ CoverageTest *g_coverageTest= NULL;
 // For the window application
 int g_window_Ox, g_window_Oy, g_window_rad1, g_window_rad2, g_window_ang1, g_window_ang2, g_window_camp;
 
-int g_numberOfAgents = 3;
+int g_numberOfAgents = 8;
 int g_numberOfSteps = 1;
 bool g_drawSquare = true;
 bool g_drawRealArea = false;
@@ -235,5 +247,6 @@ enum SpaceElemType
 	SQUARE 
 } g_TTRR;
 
+std::ofstream g_explorationFile;
 
 #endif

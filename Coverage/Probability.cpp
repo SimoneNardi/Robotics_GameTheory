@@ -6,7 +6,7 @@
 //////////////////////////////////////////////////////////////////////////
 int Robotics::GameTheory::getRandomValue(int maxValue)
 {
-	srand( (unsigned int) time(NULL) );
+	//srand( (unsigned int) time(NULL) );
 
 	return rand() % maxValue;
 }
@@ -14,7 +14,7 @@ int Robotics::GameTheory::getRandomValue(int maxValue)
 //////////////////////////////////////////////////////////////////////////
 int Robotics::GameTheory::getRandomValue()
 {
-	srand( (unsigned int) time(NULL) );
+	//srand( (unsigned int) time(NULL) );
 
 	double val = (double)rand() / RAND_MAX;
 
@@ -33,7 +33,7 @@ int Robotics::GameTheory::getRandomValue()
 //////////////////////////////////////////////////////////////////////////
 bool Robotics::GameTheory::agentHasToExperiments(double _explorationRate)
 {
-	// srand( (unsigned int) time(NULL) );
+	//srand( (unsigned int) time(NULL) );
 
 	double val = (double)rand() / RAND_MAX;
 

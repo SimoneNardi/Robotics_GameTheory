@@ -7,6 +7,7 @@
 #include "BaseGeometry/PointEllipsoidic2D.h"
 #include "BaseGeometry/Point2D.h"
 #include "CoverageTest.h"
+#include "Agent.h"
 
 #include "Coverage/Agent.h"
 #include "Coverage/Guard.h"
@@ -56,15 +57,64 @@ CoverageTest::CoverageTest(const vector<Point2D>& bound, bool counterclockwise)
 	for(int i = 0; i < g_numberOfAgents; ++i)
 	{
 		++l_id;
-		AgentPosition l_pos( l_space->randomPosition(), CameraPosition(2000.) );
+		AgentPosition l_pos( l_space->randomPosition(), CameraPosition( l_space->getDistance()/5. ) );
 		std::shared_ptr<Agent> l_agent = std::make_shared<Guard>(1, l_id, l_pos);
 		l_agents.insert(l_agent);
+		Sleep(1000);
 	}
 
 	m_algorithm = std::make_shared<CoverageAlgorithm>(l_agents, l_space);
 	//m_algorithm->Initialize();
 }
 
+//////////////////////////////////////////////////////////////////////////
+void CoverageTest::getGuardsPosition(std::vector<AgentPosition> & _pos)
+{
+	return m_algorithm->getGuardsPosition(_pos);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageTest::getGuardsSquare(std::vector<SquarePtr> & _pos)
+{
+	return m_algorithm->getGuardsSquare(_pos);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageTest::getGuardsCoverage(std::vector<LineString2D>& _areas)
+{
+	return m_algorithm->getGuardsCoverage(_areas);
+}
+
+//////////////////////////////////////////////////////////////////////////
+int CoverageTest::numberOfSquaresCoveredByGuards()
+{
+	return m_algorithm->numberOfSquaresCoveredByGuards();
+
+}
+
+//////////////////////////////////////////////////////////////////////////
+int CoverageTest::getTime()
+{
+	return m_algorithm->getTime();
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageTest::printGraph(std::string const& name)
+{
+	return m_algorithm->printGraph(name);
+}
+
+//////////////////////////////////////////////////////////////////////////
+std::string CoverageTest::getExplorationRate()
+{
+	return m_algorithm->getExplorationRate();
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageTest::printPotential(bool potential)
+{
+	m_algorithm->printPotential(potential);
+}
 
 //////////////////////////////////////////////////////////////////////////
 void MarkPoint(LONG x, LONG y, HDC hdc, int R, int G, int B, int thickness)
@@ -160,6 +210,85 @@ void DrawSquare(
 	DeleteObject(myBrush);
 }
 
+//////////////////////////////////////////////////////////////////////////
+void DrawGuard(
+	SquarePtr rect, HDC hdc, int width, int height,
+	int R, int G, int B, int thickness)
+{
+	HPEN myPen=CreatePen(PS_SOLID, thickness, RGB(0,0,0));
+	HBRUSH myBrush=CreateSolidBrush(RGB(R,G,B));
+	HGDIOBJ oldPen=SelectObject(hdc,myPen);
+	HGDIOBJ oldBrush=SelectObject(hdc,myBrush);
+
+	POINT points[4];
+	for(int i=0; i!=4; i++)
+	{
+		points[i].x=rect->agentVertex(i).coord().v[0]/kk*(double)width;
+		points[i].y=rect->agentVertex(i).coord().v[1]/kk*(double)height;
+	}
+
+	Polygon(hdc,points,4);
+
+	SelectObject(hdc,oldPen);
+	SelectObject(hdc,oldBrush);
+	DeleteObject(myPen);
+	DeleteObject(myBrush);
+}
+
+void DrawGuards(
+	HDC hdc, int width, int height,
+	int R, int G, int B, int thickness )
+{
+	std::vector<LineString2D> l_coverageArea;
+	g_coverageTest->getGuardsCoverage(l_coverageArea);
+	for(size_t i = 0; i < l_coverageArea.size(); ++i)
+		DrawPath(&l_coverageArea[i], hdc, width, height, 0,255,255, 1);
+
+	std::vector<SquarePtr> l_pos;
+	g_coverageTest->getGuardsSquare(l_pos);
+	for(size_t i = 0; i < l_pos.size(); ++i)
+	{
+		DrawGuard(l_pos[i], hdc, width, height, (R + i*50) % 255, (G + i*50) % 255, (B + i*50) % 255, thickness);
+	}
+}
+
+std::wstring s2ws(const std::string& s)
+{
+	int len;
+	int slength = (int)s.length() + 1;
+	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0); 
+	wchar_t* buf = new wchar_t[len];
+	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+	std::wstring r(buf);
+	delete[] buf;
+	return r;
+}
+
+void DrawString(HDC hdc, int width, int height,
+	int R, int G, int B, std::string const& text)
+{
+	LPRECT rec = new tagRECT();
+	rec->left = width/2.;
+	rec->right = width/2. + text.size()*2;
+
+	rec->bottom = -height/2.;
+	rec->top = -height/2. + text.size()*2;
+
+	std::wstring stemp = s2ws(text);
+	LPCWSTR result = stemp.c_str();
+
+	DrawText(
+		hdc,
+		result,
+		text.size(),
+		rec,
+		DT_CENTER
+		);
+
+	g_explorationFile << text << std::endl;
+	g_explorationFile.flush();
+
+}
 class ColorMap;
 
 /////////////////////////////////////////////////////////////////////////
@@ -306,7 +435,7 @@ void DrawAllPolygons(HDC hdc, int width, int height, int thickness)
 	for(size_t i = 0; i < l_squares.size(); ++i)
 	{
 		MyColour Col = l_colorMap.getColor( l_squares[i]->getValue());
-		if(l_squares[i]->isValid())
+		if(l_squares[i]->isValid() && l_squares[i]->isChanged())
 			DrawSquare(l_squares[i], hdc, width, height, Col.R, Col.G, Col.B, thickness);
 	}
 }
@@ -509,12 +638,19 @@ bool SetBoundary2D(int mode = 0)
 	return true;
 }
 
+
+
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY _tWinMain(HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
 	LPTSTR    lpCmdLine,
 	int       nCmdShow)
 {
+	g_explorationFile.open("exploration.txt");
+	g_explorationFile << "Exploration Rate:\n";
+
+	srand( (unsigned int) time(NULL) );
+
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
@@ -544,6 +680,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 			DispatchMessage(&msg);
 		}
 	}
+	
+	g_explorationFile.close();
 
 	return (int) msg.wParam;
 }
@@ -747,11 +885,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case ID_FILE_NUMBER_OF_STEPS:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_STEPS), hWnd, SetNumberOfSteps);
-			if(g_coverageTest)
-			{
-				delete g_coverageTest;
-				g_coverageTest = NULL;
-			}
+			//if(g_coverageTest)
+			//{
+			//	delete g_coverageTest;
+			//	g_coverageTest = NULL;
+			//}
 			break;
 			/*case ID_FILE_STARTSEGMENTINSIDE:
 			g_derIsInside = !derIsInside;
@@ -798,6 +936,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			EndMenu();}
 			if( g_drawing_mode < 0 && g_drawing_mybool )
 				g_drawing_loadCounter--;
+
+			if(g_coverageTest)
+				g_coverageTest->printPotential(g_partitionCorridor);
+
 			break;
 		case ID_FILE_DRAWREALPARTITION:
 			g_drawRealArea = !g_drawRealArea;
@@ -845,6 +987,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DrawPath(g_path1,hdc,width,height,0,0,0,5);
 			if( g_path2 )
 				DrawPath(g_path2,hdc,width,height,0,0,255,5);
+
+			DrawGuards( hdc, width, height, 0,0,0,1 );
+
+			if(g_coverageTest)
+			{
+				DrawString(hdc, width, height, 0,0,0, g_coverageTest->getExplorationRate() );
+			}
+			else
+				DrawString(hdc, width, height, 0,0,0, "Ciao");
 		}
 
 
@@ -966,7 +1117,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 									vector<Point2D> v;
 									vector<Point2D> st;
 									int i;
-
 
 									//Separato start da corridoio!
 									for(i = 0; i != g_dim - g_numberOfAgents - 1; i++)
@@ -1106,10 +1256,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_MOUSEWHEEL:
 		//	Go Forward next step:
-		if(g_coverageTest)
+
+		if((int)wParam > 0)
+			//scroll forward
 		{
-			g_coverageTest->goForward(g_numberOfSteps);
+			if(g_coverageTest)
+			{
+				g_coverageTest->goForward(g_numberOfSteps);
+			}
 		}
+		else if((int)wParam < 0)
+			//scroll backward
+		{
+			g_coverageTest->printGraph("../Prova.txt");
+			//g_coverageTest->moveThief();
+		}
+		
 		InvalidateRect(hWnd, NULL, TRUE);
 		UpdateWindow(hWnd);
 
@@ -1216,9 +1378,9 @@ INT_PTR CALLBACK SetNumberOfGuards(HWND hDlg, UINT message, WPARAM wParam, LPARA
 		if ( LOWORD(wParam) == IDOK )
 		{
 			setvalue(hDlg, IDC_EDITT, g_numberOfAgents);
-			if( g_numberOfAgents == 0 )
+			if( g_numberOfAgents <= 2 )
 			{
-				g_numberOfAgents = 1;
+				g_numberOfAgents = 3;
 			}
 
 			EndDialog(hDlg, LOWORD(wParam));
@@ -1247,8 +1409,8 @@ INT_PTR CALLBACK SetNumberOfSteps(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 	case WM_COMMAND:
 		if ( LOWORD(wParam) == IDOK )
 		{
-			setvalue(hDlg, IDC_EDITT, g_numberOfAgents);
-			if( g_numberOfSteps == 0 )
+			setvalue(hDlg, IDC_EDITT, g_numberOfSteps);
+			if( g_numberOfSteps <= 0 )
 			{
 				g_numberOfSteps = 1;
 			}

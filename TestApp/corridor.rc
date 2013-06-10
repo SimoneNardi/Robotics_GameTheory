@@ -50,7 +50,7 @@ BEGIN
         MENUITEM "Number of Guards",				ID_FILE_NUMBER_OF_GUARDS
         MENUITEM "Number of steps",					ID_FILE_NUMBER_OF_STEPS
         MENUITEM "&Draw Squares",					ID_FILE_DRAWSQUARES, CHECKED
-        MENUITEM "&Partition Corridor",				ID_FILE_PARTITIONCORRI, CHECKED
+        MENUITEM "&Print Potential",				ID_FILE_PARTITIONCORRI, CHECKED
         MENUITEM "&Highlight Triangle",				ID_FILE_HIGHLIGHT
         MENUITEM "Draw Real Partition",				ID_FILE_DRAWREALPARTITION
         MENUITEM "&Undo",							ID_FILE_UNDO

@@ -53,7 +53,7 @@ namespace Robotics
 			CameraPosition(double _farRadius = 0., double _nearRadius = 0., double _orientation = 0., double _angle = IDSMath::TwoPi) 
 				: m_farRadius(_farRadius), m_nearRadius(_nearRadius), m_orientation(_orientation), m_angle(_angle) {}
 
-			std::vector<AreaCoordinate> getCoverage(AreaCoordinate _center, std::shared_ptr<DiscretizedArea> _area);
+			std::vector<AreaCoordinate> getCoverage(AreaCoordinate _center, std::shared_ptr<DiscretizedArea> _area) const;
 
 			double getFarRadius() const {return m_farRadius;}
 
@@ -94,6 +94,10 @@ namespace Robotics
 			/// Compute Camera Costs
 			double computeCosts() const;
 
+			std::vector<AreaCoordinate> getCoverage(std::shared_ptr<DiscretizedArea> _space ) const;
+
+			IDS::BaseGeometry::Shape2D getVisibleArea() const;
+
 			friend class COVERAGE_API Agent;
 			friend class COVERAGE_API Guard;
 			friend class COVERAGE_API Thief;
@@ -109,7 +113,7 @@ namespace Robotics
 		};
 
 		//////////////////////////////////////////////////////////////////////////
-		class COVERAGE_API Agent
+		class COVERAGE_API Agent : public std::enable_shared_from_this<Agent>
 		{
 		protected:
 			/// Agent Identifier
@@ -133,16 +137,19 @@ namespace Robotics
 			} m_status;
 
 			std::vector<MemoryAgentPosition> m_memory;
+			int m_memorySpace;
 
 		public:
 
-			Agent(int _id, AgentPosition _position ) : m_id(_id), m_position(_position), m_currentPayoff(0.), m_nextPosition() {}
+			Agent(int _id, AgentPosition _position, int _memorySpace = 5 )
+				: m_id(_id), m_position(_position), m_currentPayoff(0.), m_nextPosition(), m_memorySpace(_memorySpace) {}
 
 			~Agent() {}
 
 			/// Set the position of the agent.
 			void setPosition(AgentPosition const& pos);
 			void setNextPosition(AgentPosition const& pos);
+			void setNextPosition();
 
 			/// Get the position of the agent.
 			inline AgentPosition getPosition() const {return m_position;}
@@ -165,11 +172,17 @@ namespace Robotics
 			
 			virtual bool isGuard() const {return false;}
 
+			std::shared_ptr<Thief> toThief();
+
+			std::shared_ptr<Guard> toGuard();
+
 			void moveToNextPosition();
 
 			void setNextPosition(std::vector< MemoryAgentPosition > const& memory);
 
 			virtual std::vector<AgentPosition> getFeasibleActions( std::shared_ptr<DiscretizedArea> _space ) const;
+
+			IDS::BaseGeometry::Shape2D getVisibleArea() const;
 
 		public:
 #pragma region ISLAlgorithm

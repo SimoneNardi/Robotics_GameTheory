@@ -244,6 +244,8 @@ SquarePtr DiscretizedArea::getSquare(Point2D const& V) const
 Point2D DiscretizedArea::getPosition(AreaCoordinate const& _coord) const
 {
 	SquarePtr l_square = this->getSquare(_coord);
+	if(!l_square)
+		return Point2D();
 	return l_square->getBoundingBox().center();
 }
 
@@ -277,28 +279,32 @@ std::vector<AreaCoordinate> DiscretizedArea::getStandardApproachableValidSquares
 		AreaCoordinate pos;
 		pos.col = _current.col-1;
 		pos.row = _current.row;
-		result.push_back(pos);
+		if(this->getSquare(pos)->isValid())
+			result.push_back(pos);
 	}
 	if(_current.col != DISCRETIZATION_COL)
 	{
 		AreaCoordinate pos;
 		pos.col = _current.col+1;
 		pos.row = _current.row;
-		result.push_back(pos);
+		if(this->getSquare(pos)->isValid())
+			result.push_back(pos);
 	}
 	if(_current.row != 0)
 	{
 		AreaCoordinate pos;
 		pos.col = _current.col;
 		pos.row = _current.row-1;
-		result.push_back(pos);
+		if(this->getSquare(pos)->isValid())
+			result.push_back(pos);
 	}
 	if(_current.row != DISCRETIZATION_ROW)
 	{
 		AreaCoordinate pos;
 		pos.col = _current.col;
 		pos.row = _current.row+1;
-		result.push_back(pos);
+		if(this->getSquare(pos)->isValid())
+			result.push_back(pos);
 	}
 	return result;
 }
@@ -313,7 +319,8 @@ void DiscretizedArea::addSpecialApproachableValidSquares(AreaCoordinate const& _
 			AreaCoordinate pos;
 			pos.col = _current.col-1;
 			pos.row = _current.row-1;
-			_loci.push_back(pos);
+			if(this->getSquare(pos)->isValid())
+				_loci.push_back(pos);
 		}
 
 		if(_current.row != DISCRETIZATION_ROW)
@@ -321,7 +328,8 @@ void DiscretizedArea::addSpecialApproachableValidSquares(AreaCoordinate const& _
 			AreaCoordinate pos;
 			pos.col = _current.col-1;
 			pos.row = _current.row+1;
-			_loci.push_back(pos);
+			if(this->getSquare(pos)->isValid())
+				_loci.push_back(pos);
 		}
 	}
 
@@ -332,7 +340,8 @@ void DiscretizedArea::addSpecialApproachableValidSquares(AreaCoordinate const& _
 			AreaCoordinate pos;
 			pos.col = _current.col+1;
 			pos.row = _current.row-1;
-			_loci.push_back(pos);
+			if(this->getSquare(pos)->isValid())
+				_loci.push_back(pos);
 		}
 
 		if(_current.row != DISCRETIZATION_ROW)
@@ -340,7 +349,8 @@ void DiscretizedArea::addSpecialApproachableValidSquares(AreaCoordinate const& _
 			AreaCoordinate pos;
 			pos.col = _current.col+1;
 			pos.row = _current.row+1;
-			_loci.push_back(pos);
+			if(this->getSquare(pos)->isValid())
+				_loci.push_back(pos);
 		}
 	}
 }
@@ -360,6 +370,55 @@ std::set< std::shared_ptr<Square> > DiscretizedArea::getVisibleSquares(AgentPosi
 		}
 	}
 	return result;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void DiscretizedArea::resetValue()
+{
+	for(size_t i = 0; i < m_lattice.size(); ++i)
+		m_lattice[i]->resetValue();
+}
+
+//////////////////////////////////////////////////////////////////////////
+void DiscretizedArea::setThiefPosition(AgentPosition const& _pos)
+{
+	SquarePtr l_square = this->getSquare( _pos.getPoint2D() );
+	if(l_square)
+		l_square->setValue(100.);
+	else
+		assert(1 == 0);
+
+	AreaCoordinate l_coord = this->getCoordinate( _pos.getPoint2D() );
+
+	for(int i = -4; i < 5; ++i)
+	{
+		int row = l_coord.row + i;
+		if(row < 0 || row >= m_numRow)
+			continue;
+		for(int j = -4; j < 5; ++j)
+		{
+			int col = l_coord.col + j;
+			if(col < 0 || col >= m_numCol)
+				continue;
+
+			if(i == 0 && j == 0)
+				continue; 
+
+			double l_value = 100./ double( abs(i)+abs(j) );
+			m_lattice[row * m_numCol + col]->setValue(l_value);
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+int DiscretizedArea::numberOfSquaresCoveredByGuards() const
+{
+	int l_total = 0;
+	for(size_t i = 0; i < m_lattice.size(); ++i)
+		if( m_lattice[i]->getTheNumberOfAgent() > 0)
+			++l_total;
+
+	return l_total;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -385,7 +444,47 @@ IDS::BaseGeometry::Point2D Square::vertex(int i) const
 }
 
 //////////////////////////////////////////////////////////////////////////
+IDS::BaseGeometry::Point2D Square::agentVertex(int i) const
+{
+	int index = i;
+	if(i == 2)
+		index = 3;
+	else if(i == 3)
+		index = 2;
+	Point2D l_center = m_box.center();
+	Line2D l_line = m_box.corner( index ).lineTo(l_center);
+	double l_dist = m_box.corner( index ).distance(l_center);
+	return l_line.pointFromOrigin(l_dist/2.);
+}
+
+//////////////////////////////////////////////////////////////////////////
 void Square::setBoundingBox(IDS::BaseGeometry::Box2D const& _box)
 {
 	m_box = _box;
 }
+
+//////////////////////////////////////////////////////////////////////////
+bool Square::isChanged() const
+{
+	return fabs(m_value - m_old_value) > IDSMath::TOLERANCE;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void Square::resetValue()
+{
+	m_value = 1.;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void Square::setValid(bool valid) 
+{
+	m_valid = valid;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void Square::setValue(double _value) 
+{
+	m_old_value = m_value;
+	m_value = _value;
+}
+

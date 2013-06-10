@@ -1,0 +1,35 @@
+isver 2.7.2.7
+new cgt
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Tempo/Potential Function
+# ERROR: Unable to process macro: 'Tempo/Potential Function'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Potential Function'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label Potential
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+# Attach 
+# Generated texture: 1 in VTexture2
+# Generated texture: 2 in VTexture2
+# Generated texture: 3 in VTexture2
+# Generated texture: 4 in VTexture2
+# RC= 65536 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu of parent
+# Detach of RC= 65536

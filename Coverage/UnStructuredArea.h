@@ -27,6 +27,8 @@ namespace Robotics
 
 			/// True if a corner or the center is inside the area, False otherwise
 			virtual bool isInside( IDS::BaseGeometry::Box2D const& _box) const {return true;}
+
+			double getDistance() const;
 		};
 	}
 }

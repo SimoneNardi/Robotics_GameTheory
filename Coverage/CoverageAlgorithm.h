@@ -103,13 +103,26 @@ namespace Robotics
 
 			bool areaContains(const IDS::BaseGeometry::Point2D & _thiefStartingPt) const;
 
+			void getGuardsPosition(std::vector<AgentPosition> & _pos);
+			void getGuardsSquare(std::vector<std::shared_ptr<Square>> & _pos);
+			void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas);
+			int numberOfSquaresCoveredByGuards() const;
+			int getTime() const;
+			void printGraph(std::string const& name);
+			std::string getExplorationRate();
+
 #pragma endregion
 
 			std::shared_ptr<Square> findSquare(IDS::BaseGeometry::Point2D const& point) const;
-
+			void printPotential(bool potential) {m_potential = potential;}
 		protected:
 			/// Wake Up agent if the security is too low.
 			void wakeUpAgentIfSecurityIsLow();
+
+			std::vector<int> m_times;
+			std::vector<int> m_squares;
+			std::vector<double> m_potValues;
+			bool m_potential;
 		};
 	}
 }

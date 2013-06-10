@@ -49,6 +49,9 @@ namespace Robotics
 			virtual bool isInside( IDS::BaseGeometry::Box2D const& _box) const;
 
 			IDS::BaseGeometry::Box2D getBoundingBox() const;
+
+			/// 
+			double getDistance() const;
 		};
 	}
 }

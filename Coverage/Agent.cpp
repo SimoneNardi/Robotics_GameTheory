@@ -1,6 +1,8 @@
 #include "Agent.h"
 #include "Area.h"
 #include "DiscretizedArea.h"
+#include "Guard.h"
+#include "Thief.h"
 
 #include <memory>
 
@@ -56,11 +58,24 @@ double AgentPosition::computeCosts() const
 }
 
 //////////////////////////////////////////////////////////////////////////
+std::vector<AreaCoordinate> AgentPosition::getCoverage(std::shared_ptr<DiscretizedArea> _space ) const
+{
+	AreaCoordinate l_center = _space->getCoordinate(m_point);
+	return m_camera.getCoverage(l_center, _space);
+}
+
+//////////////////////////////////////////////////////////////////////////
+IDS::BaseGeometry::Shape2D AgentPosition::getVisibleArea() const
+{
+	return m_camera.getVisibleArea(m_point);
+}
+
+//////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
-std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, std::shared_ptr<DiscretizedArea> _area)
+std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, std::shared_ptr<DiscretizedArea> _area) const
 {
 	Point2D l_pt = _area->getPosition(_center);
 	Shape2D l_sensorArea = this->getVisibleArea(l_pt);
@@ -72,12 +87,12 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 
 	std::vector<AreaCoordinate> result;
 	AreaCoordinate l_elem;
-	for(int i = - l_rowDelta; i < l_rowDelta; ++i)
+	for(int i = - l_rowDelta; i <= l_rowDelta; ++i)
 	{
 		int row = _center.row + i;
 		if( row < 0 || row > _area->getNumRow() )
 			continue;
-		for(int j = - l_colDelta; j < l_colDelta; ++j)
+		for(int j = - l_colDelta; j <= l_colDelta; ++j)
 		{
 			int col = _center.col + j;
 			if( col < 0 || col > _area->getNumRow() )
@@ -132,6 +147,12 @@ void Agent::setNextPosition(AgentPosition const& pos)
 }
 
 //////////////////////////////////////////////////////////////////////////
+void Agent::setNextPosition()
+{
+	m_nextPosition = m_position;
+}
+
+//////////////////////////////////////////////////////////////////////////
 bool Agent::isActive()
 {
 	bool wakeUp = getStatus() == Agent::WAKEUP;
@@ -182,6 +203,9 @@ void Agent::moveToNextPosition()
 {
 	m_memory.insert(m_memory.begin(), MemoryAgentPosition(m_position, m_currentPayoff));
 
+	if(m_memory.size() > m_memorySpace)
+		m_memory.erase(m_memory.begin()+m_memorySpace);
+
 	m_currentPayoff = -IDSMath::Infinity;
 	m_position = m_nextPosition;
 	
@@ -225,7 +249,14 @@ std::set<std::shared_ptr<Agent> > Agent::getCommunicableAgents(std::set<std::sha
 //////////////////////////////////////////////////////////////////////////
 std::set<std::shared_ptr<Square> > Agent::getVisibleSquares( std::shared_ptr<DiscretizedArea> _space ) const
 {
-	return _space->getVisibleSquares(m_position);
+	std::set<std::shared_ptr<Square> > result;
+	std::vector<AreaCoordinate> l_coord = m_position.getCoverage(_space);
+	for(size_t i = 0; i < l_coord.size(); ++i)
+	{
+		result.insert(_space->getSquare(l_coord[i]));
+	}
+	return result;
+	//return _space->getVisibleSquares(m_position);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -269,4 +300,22 @@ void Agent::setNextPosition(std::vector< MemoryAgentPosition > const& memory)
 		}
 	}	
 	return;
+}
+
+//////////////////////////////////////////////////////////////////////////
+std::shared_ptr<Thief> Agent::toThief()
+{
+	return std::dynamic_pointer_cast<Thief>(this->shared_from_this());
+}
+
+//////////////////////////////////////////////////////////////////////////
+std::shared_ptr<Guard> Agent::toGuard()
+{
+	return dynamic_pointer_cast<Guard>(this->shared_from_this());
+}
+
+//////////////////////////////////////////////////////////////////////////
+IDS::BaseGeometry::Shape2D Agent::getVisibleArea() const
+{
+	return m_position.getVisibleArea();
 }

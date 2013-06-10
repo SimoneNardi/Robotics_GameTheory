@@ -20,6 +20,9 @@ namespace Robotics
 	namespace GameTheory 
 	{
 		class Agent;
+		class Thief;
+		class AgentPosition;
+		class Square;
 
 		class COVERAGE_API LearningAlgorithm
 		{
@@ -43,6 +46,16 @@ namespace Robotics
 			virtual void updateTime() {++m_time;}
 
 			virtual void selectRandomFeasibleAction(std::shared_ptr<Agent> _agent) = 0;
+
+			virtual void monitoringThieves(std::set<std::shared_ptr<Agent>> const& ) = 0;
+
+			virtual void getGuardsPosition(std::vector<AgentPosition> & _pos) = 0;
+			virtual void getGuardsSquare(std::vector<std::shared_ptr<Square>> & _pos) = 0;
+			virtual void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas) = 0;
+
+			int getTime() const {return m_time;}
+			virtual double getPotentialValue() = 0;
+			virtual std::string getExplorationRate() =0;
 		};
 
 		typedef std::shared_ptr<LearningAlgorithm> LearningAlgorithmPtr;

@@ -66,6 +66,7 @@ namespace Robotics
 
 			IDS::BaseGeometry::Box2D m_box;
 
+			double m_old_value;
 		public:
 			/// Set the box of the Square
 			void setBoundingBox(IDS::BaseGeometry::Box2D const& _box);
@@ -79,16 +80,21 @@ namespace Robotics
 			inline void increaseCounter() {++m_counter;};
 
 			inline bool isValid() const {return m_valid;}
-			inline void setValid(bool valid) {m_valid = valid;}
+			inline void setValid(bool valid);
 
 			inline int getTheNumberOfAgent() const {return m_counter;}
 
 			inline double getValue() const {return m_value;}
-			inline void setValue(double _value) {m_value = _value;}
+			inline void setValue(double _value);
 
-			Square() : m_valid(true), m_counter(0), m_value(100.) {}
+			Square() : m_valid(true), m_counter(0), m_value(0.), m_old_value(0.) {}
 
 			IDS::BaseGeometry::Point2D vertex(int i) const;
+			IDS::BaseGeometry::Point2D agentVertex(int i) const;
+
+			bool isChanged() const;
+			/// Set the value to zero.
+			void resetValue();
 
 			//bool equals(std::shared_ptr<Square> _other) const;
 		};
@@ -121,6 +127,7 @@ namespace Robotics
 
 			/// Set all the lattice indexes to zero.
 			void resetCounter();
+			void resetValue();
 
 			/// Get the origin of the lattice.
 			IDS::BaseGeometry::Point2D getOrigin() const;
@@ -136,6 +143,7 @@ namespace Robotics
 			std::vector<SquarePtr> getSquares() const;
 			
 			AgentPosition getRandomPosition() const;
+			void setThiefPosition(AgentPosition const& _pos);
 
 			bool isOut(AgentPosition const& pos) const;
 
@@ -151,6 +159,10 @@ namespace Robotics
 			double getYStep() const {return m_yStep;}
 			int getNumRow() const {return m_numRow;}
 			int getNumCol() const {return m_numCol;}
+
+			int numberOfSquaresCoveredByGuards() const;
+
+			friend class COVERAGE_API ISLAlgorithm;
 		};
 	}
 }

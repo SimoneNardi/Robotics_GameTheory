@@ -20,6 +20,7 @@ namespace Robotics
 	{
 		class Agent;
 		class DiscretizedArea;
+		class Thief;
 
 		/**
 		*	\brief	Inhomogeneous Synchronous Learning Algorithm
@@ -54,8 +55,17 @@ namespace Robotics
 			void updateCounterOfVisibleSquare( );
 			void updateCounterOfVisibleSquare( std::shared_ptr<Agent> _agent );
 
+			virtual void monitoringThieves(std::set< std::shared_ptr<Agent> > const& _agents);
+
+			virtual void getGuardsPosition(std::vector<AgentPosition> & _pos);
+			void getGuardsSquare(std::vector<std::shared_ptr<Square>> & _pos);
+			void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas);
+			double getPotentialValue();
+			std::string getExplorationRate();
+			double computeExplorationRate();
+
 		public:
-			ISLAlgorithm(std::shared_ptr<DiscretizedArea> _space, int _numMemory = 2);
+			ISLAlgorithm(std::shared_ptr<DiscretizedArea> _space, int _memorySpace = 2);
 
 			virtual void computeNextPosition();
 

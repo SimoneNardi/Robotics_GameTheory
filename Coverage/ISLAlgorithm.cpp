@@ -2,14 +2,21 @@
 #include "DiscretizedArea.h"
 #include "Agent.h"
 #include "Probability.h"
+#include "CoverageUtility.h"
+
+#include <sstream>
+#include <string>
+
+#include "windows.h"
 
 using namespace std;
 using namespace Robotics;
 using namespace Robotics::GameTheory;
+using namespace IDS::BaseGeometry;
 
 //////////////////////////////////////////////////////////////////////////
-ISLAlgorithm::ISLAlgorithm(std::shared_ptr<DiscretizedArea> _space, int _memory) 
-	: LearningAlgorithm(), m_numMemory(_memory), m_space(_space)
+ISLAlgorithm::ISLAlgorithm(std::shared_ptr<DiscretizedArea> _space, int _memorySpace) 
+	: LearningAlgorithm(), m_numMemory(_memorySpace), m_space(_space)
 {}
 
 //////////////////////////////////////////////////////////////////////////
@@ -33,23 +40,45 @@ void ISLAlgorithm::initialize()
 }
 
 //////////////////////////////////////////////////////////////////////////
+std::string ISLAlgorithm::getExplorationRate()
+{
+	double l_exploration = this->computeExplorationRate();
+	std::ostringstream strs;
+	strs << l_exploration;
+	return strs.str();
+}
+
+//////////////////////////////////////////////////////////////////////////
+double ISLAlgorithm::computeExplorationRate()
+{
+	//return 0.5;
+	double rate = ( double(m_guards.size()) * (double(Robotics::GameTheory::DISCRETIZATION_COL) + double(Robotics::GameTheory::DISCRETIZATION_ROW) + 1) );
+	return pow(double(m_time) , -1./rate);
+}
+
+//////////////////////////////////////////////////////////////////////////
 void ISLAlgorithm::update(std::shared_ptr<Agent> _agent)
 {
+	static int count = 0;
 	//	ogni agente guardia sceglie il proprio tasso di esplorazione:
-	double l_explorationRate = 0.;
-	l_explorationRate = pow(double(m_time) , - 1./double(m_guards.size()));
-
-	//	ogni agente guardia calcola la miglior azione passata: (2 step di memoria)
+	double l_explorationRate = this->computeExplorationRate();
 
 	//	ogni agente guardia estrae se sperimentare nuove azioni o no
 	bool l_agentHasToExperiments = agentHasToExperiments(l_explorationRate);
 	if(l_agentHasToExperiments)
+	{
 		this->selectRandomFeasibleAction(_agent);
+		++count;
+	}
 	else
+	{
 		this->selectBestMemoryAction(_agent);
+	}
 
 	//	ogni agente guardia muove verso la nuova posizione
 	_agent->moveToNextPosition();
+
+	//Sleep(10);
 
 	return;
 }
@@ -145,7 +174,6 @@ void ISLAlgorithm::forwardOneStep()
 	}
 }
 
-
 //////////////////////////////////////////////////////////////////////////
 void ISLAlgorithm::forwardOneStep(std::shared_ptr<Agent> _agent)
 {
@@ -172,10 +200,13 @@ void ISLAlgorithm::computeNextPosition()
 void ISLAlgorithm::selectRandomFeasibleAction(std::shared_ptr<Agent> _agent)
 {
 	std::vector<AgentPosition> l_feasible = _agent->getFeasibleActions(m_space);
-
+	if(l_feasible.empty())
+		_agent->setNextPosition();
+	else
+	{
 	int l_value = getRandomValue( int( l_feasible.size() ) );
-
 	_agent->setNextPosition(l_feasible[l_value]);
+	}
 	return;
 }
 
@@ -190,6 +221,7 @@ void ISLAlgorithm::selectBestMemoryAction(std::shared_ptr<Agent> _agent)
 void ISLAlgorithm::resetCounter()
 {
 	m_space->resetCounter();
+	m_space->resetValue();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -200,4 +232,82 @@ void ISLAlgorithm::updateTime()
 	//	ogni agente guardia identifica le nuove azioni feasible per popolare l'area:
 	//updateCounterOfVisibleSquare();
 	++m_time;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void ISLAlgorithm::monitoringThieves(std::set< AgentPtr > const& _agents)
+{
+	for(std::set< AgentPtr >::const_iterator it = _agents.begin(); it != _agents.end(); ++it)
+	{
+		AgentPtr l_agent = *it;
+		if( l_agent->isThief() )
+		{
+			AgentPosition l_thiefPos = l_agent->getPosition();
+			m_space->setThiefPosition(l_thiefPos);
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+void ISLAlgorithm::getGuardsPosition(std::vector<AgentPosition> & _pos)
+{
+	_pos.clear();
+	_pos.reserve(m_guards.size());
+	for(set<AgentPtr>::iterator it = m_guards.begin(); it != m_guards.end(); ++it)
+	{
+		AgentPtr l_agent = *it;
+		if(l_agent->isGuard())
+		{
+			_pos.push_back( l_agent->getPosition() );
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+void ISLAlgorithm::getGuardsSquare(std::vector<SquarePtr> & _pos)
+{
+	_pos.clear();
+	_pos.reserve(m_guards.size());
+	for(set<AgentPtr>::iterator it = m_guards.begin(); it != m_guards.end(); ++it)
+	{
+		AgentPtr l_agent = *it;
+		if(l_agent->isGuard())
+		{
+			_pos.push_back( m_space->getSquare( l_agent->getPosition().getPoint2D() ) );
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+void ISLAlgorithm::getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas)
+{
+	for(set<AgentPtr>::iterator it = m_guards.begin(); it != m_guards.end(); ++it)
+	{
+		std::vector<IDS::BaseGeometry::Point2D> l_agentArea;
+		AgentPtr l_agent = *it;
+		Shape2D l_area = l_agent->getVisibleArea();
+		std::vector<Curve2D> l_bound = l_area.getBoundary();
+		for(size_t i = 0 ; i < l_bound.size(); ++i)
+		{
+			std::vector<IDS::BaseGeometry::Point2D> l_partial = l_bound[i].approxByPoints(1);
+			l_agentArea.insert(l_agentArea.end(), l_partial.begin(), l_partial.end());
+		}
+		_areas.push_back(l_agentArea);
+	}
+}
+
+double ISLAlgorithm::getPotentialValue()
+{
+	double l_total = 0.;
+	for(size_t i = 0;  i < m_space->m_lattice.size(); ++i)
+	{
+		double l_partialTotal = 0.;
+		double l_Wq = m_space->m_lattice[i]->getValue();
+		for(int j = 1; j <= m_space->m_lattice[i]->getTheNumberOfAgent(); ++j)
+		{
+			l_partialTotal += l_Wq / j;
+		}
+		l_total += l_partialTotal;
+	}
+	return l_total;
 }
