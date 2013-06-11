@@ -55,6 +55,7 @@ void Robotics::GameTheory::CoverageAlgorithm::update(int nStep)
 	m_space->setRandomSquareValue();
 	this->wakeUpAgentIfSecurityIsLow();
 #else
+	static int count = 0;
 	for(int i = 0; i < nStep; ++i)
 	{
 		if(m_learning)
@@ -64,15 +65,16 @@ void Robotics::GameTheory::CoverageAlgorithm::update(int nStep)
 			m_learning->forwardOneStep();
 		}
 
+		++count;
 		for(std::set< AgentPtr >::iterator it = m_agent.begin(); it != m_agent.end(); ++it)
 		{
 			AgentPtr l_agent = *it;
-
 			if(l_agent->isActive())
 			{
 				if(!l_agent->isGuard())
 				{
-					if(l_agent->isThief())
+					//if(l_agent->isThief())
+					if(count%10)
 						continue;
 
 					if(m_learning)

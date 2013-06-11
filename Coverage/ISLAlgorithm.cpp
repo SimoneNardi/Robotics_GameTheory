@@ -52,8 +52,8 @@ std::string ISLAlgorithm::getExplorationRate()
 double ISLAlgorithm::computeExplorationRate()
 {
 	//return 0.5;
-	double rate = ( double(m_guards.size()) * (double(Robotics::GameTheory::DISCRETIZATION_COL) + double(Robotics::GameTheory::DISCRETIZATION_ROW) + 1) );
-	return pow(double(m_time) , -1./rate);
+	double rate = ( /*double(m_guards.size())* */ (double(Robotics::GameTheory::DISCRETIZATION_COL) + double(Robotics::GameTheory::DISCRETIZATION_ROW) + 1) );
+	return pow(double(m_time) , -double(m_guards.size())/rate);
 }
 
 //////////////////////////////////////////////////////////////////////////

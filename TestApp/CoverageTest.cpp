@@ -57,7 +57,7 @@ CoverageTest::CoverageTest(const vector<Point2D>& bound, bool counterclockwise)
 	for(int i = 0; i < g_numberOfAgents; ++i)
 	{
 		++l_id;
-		AgentPosition l_pos( l_space->randomPosition(), CameraPosition( l_space->getDistance()/5. ) );
+		AgentPosition l_pos( l_space->randomPosition(), CameraPosition( l_space->getDistance()/7. ) );
 		std::shared_ptr<Agent> l_agent = std::make_shared<Guard>(1, l_id, l_pos);
 		l_agents.insert(l_agent);
 		Sleep(1000);
@@ -435,7 +435,7 @@ void DrawAllPolygons(HDC hdc, int width, int height, int thickness)
 	for(size_t i = 0; i < l_squares.size(); ++i)
 	{
 		MyColour Col = l_colorMap.getColor( l_squares[i]->getValue());
-		if(l_squares[i]->isValid() && l_squares[i]->isChanged())
+		if( l_squares[i]->isValid() && (g_drawSquare || l_squares[i]->isChanged()) )
 			DrawSquare(l_squares[i], hdc, width, height, Col.R, Col.G, Col.B, thickness);
 	}
 }
@@ -975,15 +975,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if(g_drawing_a)
 			MarkPoint((int)(g_thiefStartingPt.coord().v[0]*width),(int)(g_thiefStartingPt.coord().v[1]*height),hdc,128,0,128,10);
 
-		if(!g_drawing_mybool){
-			if( g_drawSquare )
-			{
-				if( g_drawRealArea )
-					//DrawZones(hdc,width,height,1);
-					int hh;
-				else
-					DrawAllPolygons(hdc,width,height,1);
-			}
+		if(!g_drawing_mybool)
+		{
+			if( g_drawRealArea )
+				int hh;//DrawZones(hdc,width,height,1);
+			else
+				DrawAllPolygons(hdc,width,height,1);
+
 			DrawPath(g_path1,hdc,width,height,0,0,0,5);
 			if( g_path2 )
 				DrawPath(g_path2,hdc,width,height,0,0,255,5);
@@ -1183,8 +1181,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						g_coverageTest->setThief(g_thiefStartingPt);
 						//g_coverageTest->addThief(l_thief);
 				}
-
-				g_coverageTest->FindSquare(l_thief, RR);
+				if(g_coverageTest)
+					g_coverageTest->FindSquare(l_thief, RR);
 				int n = 0;
 				std::vector<Point2D> l_track;
 				l_track.resize(n);
