@@ -83,6 +83,7 @@
     <ClInclude Include="Agent.h" />
     <ClInclude Include="Area.h" />
     <ClInclude Include="BatalinAlgorithm.h" />
+    <ClInclude Include="BatalinArea.h" />
     <ClInclude Include="CoverageAlgorithm.h" />
     <ClInclude Include="CoverageExport.h" />
     <ClInclude Include="CoverageUtility.h" />

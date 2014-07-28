@@ -99,6 +99,9 @@
     <ClInclude Include="BatalinAlgorithm.h">
       <Filter>Header Files\Learning</Filter>
     </ClInclude>
+    <ClInclude Include="BatalinArea.h">
+      <Filter>Header Files\Area</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoverageAlgorithm.cpp">
