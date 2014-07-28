@@ -19,7 +19,7 @@ namespace Robotics
 {
 	namespace GameTheory 
 	{
-		class Agent;
+		class Guard;
 		class Thief;
 		class AgentPosition;
 		class Square;
@@ -28,34 +28,40 @@ namespace Robotics
 		{
 		protected:
 			int m_time;
-			std::set< std::shared_ptr<Agent> > m_guards;
+			std::set< std::shared_ptr<Guard> > m_guards;
 
 		public:
 			LearningAlgorithm() : m_time(0), m_guards() {}
-			LearningAlgorithm(std::set< std::shared_ptr<Agent> > const& _guards) : m_time(0), m_guards(_guards) {}
+			LearningAlgorithm(std::set< std::shared_ptr<Guard> > const& _guards) : m_time(0), m_guards(_guards) {}
 
 			virtual void initialize() = 0;
 
 			virtual void computeNextPosition() = 0;
 
-			virtual void forwardOneStep(std::shared_ptr<Agent> _agent) = 0;
-			virtual void forwardOneStep() = 0;
+			virtual bool forwardOneStep(std::shared_ptr<Guard> _agent) = 0;
+			virtual bool forwardOneStep() = 0;
 
-			inline void setGuards(std::set< std::shared_ptr<Agent> > _guards) {m_guards = _guards;}
+			inline void setGuards(std::set< std::shared_ptr<Guard> > _guards) {m_guards = _guards;}
 
 			virtual void updateTime() {++m_time;}
+			void resetTime() {m_time = 0;}
+			virtual void resetCounter() {};
+			virtual void resetValue() {};
 
-			virtual void selectRandomFeasibleAction(std::shared_ptr<Agent> _agent) = 0;
+			//virtual void selectRandomFeasibleAction(std::shared_ptr<Guard> _agent) = 0;
 
-			virtual void monitoringThieves(std::set<std::shared_ptr<Agent>> const& ) = 0;
+			virtual void monitoringThieves(std::set<std::shared_ptr<Thief>> const& ) = 0;
 
 			virtual void getGuardsPosition(std::vector<AgentPosition> & _pos) = 0;
-			virtual void getGuardsSquare(std::vector<std::shared_ptr<Square>> & _pos) = 0;
+			virtual void getGuardsSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> & _pos) = 0;
 			virtual void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas) = 0;
 
 			int getTime() const {return m_time;}
 			virtual double getPotentialValue() = 0;
-			virtual std::string getExplorationRate() =0;
+			virtual double getBenefitValue() = 0;
+			virtual std::string getExplorationRateStr() =0;
+			virtual double getExplorationRate() =0;
+			virtual int getGlobalTrajectoryCoverage()=0;
 		};
 
 		typedef std::shared_ptr<LearningAlgorithm> LearningAlgorithmPtr;

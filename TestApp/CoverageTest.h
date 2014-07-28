@@ -201,13 +201,15 @@ public:
 
 	int goForward(int numberOfStep)
 	{
-		m_algorithm->update(numberOfStep);
+		m_algorithm->update(numberOfStep,10);
 		return 1;
 	}
 
-	int setThief(const BaseGeometry::Point2D & _thiefStartingPt)
+	std::shared_ptr<CoverageAlgorithm> getAlgorithm() {return m_algorithm;}
+
+	inline int setThief(const BaseGeometry::Point2D & _thiefStartingPt, std::shared_ptr<Thief> _agent)
 	{
-		m_algorithm->setPositionOfThief(_thiefStartingPt);
+		m_algorithm->setPositionOfThief(_thiefStartingPt, _agent);
 		return 1;
 	}
 
@@ -217,14 +219,18 @@ public:
 	}
 
 	void getGuardsPosition(std::vector< AgentPosition > & _pos);
-	void getGuardsSquare(std::vector< std::shared_ptr<Square> > & _pos);
+	void getGuardsSquare(std::vector< std::pair<std::shared_ptr<Square>,int> > & _pos);
 	void getGuardsCoverage(std::vector<LineString2D>& _areas);
 
 	int numberOfSquaresCoveredByGuards();
-	int getTime();
-	void printGraph(std::string const& name);
-	std::string getExplorationRate();
-	void printPotential(bool potential);
+	//int getTime();
+	void printPotential(std::string const& name, bool printOnFile = true);
+	void printBenefit(std::string const& name, bool printOnFile = true);
+	void printPerformanceIndex(std::string const& name, bool printOnFile = true);
+	std::string getExplorationRateStr();
+	double getExplorationRate();
+
+	void exportOnFile(std::string const& filename);
 };
 
 CoverageTest *g_coverageTest= NULL;
@@ -232,12 +238,13 @@ CoverageTest *g_coverageTest= NULL;
 // For the window application
 int g_window_Ox, g_window_Oy, g_window_rad1, g_window_rad2, g_window_ang1, g_window_ang2, g_window_camp;
 
-int g_numberOfAgents = 5;
+int g_numberOfAgents = 2;
 int g_numberOfSteps = 1;
+int g_agentsPeriod = 1;
 bool g_drawSquare = true;
 bool g_drawRealArea = false;
 bool g_drawone = false;
-bool g_partitionCorridor = true;
+bool g_PrintPotential = true;
 
 SquarePtr RR;
 enum SpaceElemType

@@ -31,6 +31,9 @@
     <Filter Include="Header Files\Graph">
       <UniqueIdentifier>{47df1dfe-f13c-4eb1-a89e-51ad700e388e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Learning">
+      <UniqueIdentifier>{26b8f3bd-7d39-443e-a937-cf444accc4d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoverageExport.h">
@@ -69,9 +72,6 @@
     <ClInclude Include="LearningAlgorithm.h">
       <Filter>Header Files\Learning</Filter>
     </ClInclude>
-    <ClInclude Include="ISLAlgorithm.h">
-      <Filter>Header Files\Learning</Filter>
-    </ClInclude>
     <ClInclude Include="Probability.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -83,6 +83,18 @@
     </ClInclude>
     <ClInclude Include="CoverageUtility.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PIPIPAlgorithm.h">
+      <Filter>Header Files\Learning</Filter>
+    </ClInclude>
+    <ClInclude Include="World.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Statistics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DISLAlgorithm.h">
+      <Filter>Header Files\Learning</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -98,9 +110,6 @@
     <ClCompile Include="Area.cpp">
       <Filter>Source Files\Area</Filter>
     </ClCompile>
-    <ClCompile Include="ISLAlgorithm.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DiscretizedArea.cpp">
       <Filter>Source Files\Area</Filter>
     </ClCompile>
@@ -112,6 +121,21 @@
     </ClCompile>
     <ClCompile Include="Guard.cpp">
       <Filter>Source Files\Agent</Filter>
+    </ClCompile>
+    <ClCompile Include="PIPIPAlgorithm.cpp">
+      <Filter>Source Files\Learning</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AgentTrajectory.cpp">
+      <Filter>Source Files\Agent</Filter>
+    </ClCompile>
+    <ClCompile Include="Statistics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DISLAlgorithm.cpp">
+      <Filter>Source Files\Learning</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

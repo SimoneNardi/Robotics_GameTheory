@@ -9,6 +9,7 @@
 
 //	DTMManager
 #include "CoverageExport.h"
+#include "Statistics.h"
 
 #include <memory>
 #include <set>
@@ -28,24 +29,40 @@ namespace Robotics
 	{
 		class DiscretizedArea;
 		class Agent;
+		class Thief;
 		class LearningAlgorithm;
 		class Area;
 		class AgentPosition;
 		class Square;
+		class World;
 
 		class COVERAGE_API CoverageAlgorithm
 		{
 		protected:
-			/// The set of all the agents in the area.
-			std::set< std::shared_ptr<Agent> > m_agent;
-
-			/// The space where agents can move.
-			std::shared_ptr<DiscretizedArea> m_space;
+			std::shared_ptr<World> m_world;
 
 			/// The learning algorithm used by agents to change their status.
 			std::shared_ptr<LearningAlgorithm> m_learning;
 
+			//int m_time;
+
+			/// For Stats:
+			Statistics m_stats;
+			/// For Stats:
+			int m_count;
+
 		public:
+
+			static std::shared_ptr<CoverageAlgorithm> createFromFile(
+				std::string const & _filename, 
+				int _type, 
+				int _period);
+
+			static std::shared_ptr<CoverageAlgorithm> createFromAreaFile(
+				std::string const & _areaFile, 
+				std::string const & _agentFile, 
+				int _type, 
+				int _period);
 
 			/************************************************************************/
 			/* \brief Compute initial position and payoff
@@ -53,6 +70,9 @@ namespace Robotics
 			*/
 			/************************************************************************/
 			void Initialize();
+
+			/// Reset Data of algorithm
+			void Reset();
 
 			/************************************************************************/
 			/* \brief	Coverage Algorithm Constructor
@@ -62,7 +82,14 @@ namespace Robotics
 			/************************************************************************/
 			CoverageAlgorithm(
 				const std::set< std::shared_ptr<Agent> >& _agent, 
-				std::shared_ptr<Area> _space);
+				std::shared_ptr<Area> _space, 
+				int _type);
+
+			//////////////////////////////////////////////////////////////////////////
+			CoverageAlgorithm(
+				const std::set< std::shared_ptr<Agent> >& _agent, 
+				std::shared_ptr<DiscretizedArea> _space, 
+				int _type);
 
 			/************************************************************************/
 			/* \brief	Set the rule that agents follow to move to next location
@@ -80,7 +107,7 @@ namespace Robotics
 			*	@throw 
 			*/
 			/************************************************************************/
-			void update(int nStep);
+			bool update(int nStep, int _monitorUpdateTime = 5, int _thiefJump = 1);
 
 			/************************************************************************/
 			/*	\brief Initialize position of agent uniformly at random in the area.
@@ -89,40 +116,52 @@ namespace Robotics
 			/************************************************************************/
 			void randomInitializeAllAgent();
 
-			void randomInitializeGuards();
+			//void randomInitializeGuards();
 
-			void randomInitializeNeutrals();
+			//void randomInitializeNeutrals();
 
-			void randomInitializeThief();
-			void setPositionOfThief(AgentPosition const& pos);
+			//void randomInitializeThief();
+
+			void setPositionOfThief(AgentPosition const& pos, std::shared_ptr<Thief> _agent/* = nullptr*/);
+			void getThievesPosition(std::vector<AgentPosition> & _pos);
 
 #pragma region Test
 		
 		public:
+			void printArea(const std::string & filename);
+
 			std::vector< std::shared_ptr<Square> > getSquares() const;
 
 			bool areaContains(const IDS::BaseGeometry::Point2D & _thiefStartingPt) const;
 
 			void getGuardsPosition(std::vector<AgentPosition> & _pos);
-			void getGuardsSquare(std::vector<std::shared_ptr<Square>> & _pos);
+			void getGuardsSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> & _pos);
 			void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas);
 			int numberOfSquaresCoveredByGuards() const;
-			int getTime() const;
-			void printGraph(std::string const& name);
-			std::string getExplorationRate();
+			//int getTime() const;
+			void printPotential(std::string const& name, bool printOnFile = true);
+			void printBenefit(std::string const& name, bool printOnFile = true);
+			void printPerformanceIndex(std::string const& name, bool printOnFile = true);
+			std::string getExplorationRateStr();
+			double getExplorationRate();
+
+			int getNumberOfAgent();
+
+			double getMaximumPotentialValue();
+			virtual double getMaximumBenefitValue();
+			double getBoxPlotValue();
+
+			void updateMonitor();
+			int getGlobalTrajectoryCoverage();
 
 #pragma endregion
 
 			std::shared_ptr<Square> findSquare(IDS::BaseGeometry::Point2D const& point) const;
-			void printPotential(bool potential) {m_potential = potential;}
 		protected:
 			/// Wake Up agent if the security is too low.
 			void wakeUpAgentIfSecurityIsLow();
 
-			std::vector<int> m_times;
-			std::vector<int> m_squares;
-			std::vector<double> m_potValues;
-			bool m_potential;
+			
 		};
 	}
 }

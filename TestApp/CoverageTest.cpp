@@ -8,6 +8,7 @@
 #include "BaseGeometry/Point2D.h"
 #include "CoverageTest.h"
 #include "Agent.h"
+#include "Thief.h"
 
 #include "Coverage/Agent.h"
 #include "Coverage/Guard.h"
@@ -40,6 +41,7 @@ INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	Curve(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	SetNumberOfGuards(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	SetNumberOfSteps(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK	SetAgentsPeriod(HWND, UINT, WPARAM, LPARAM);
 
 //////////////////////////////////////////////////////////////////////////
 CoverageTest::CoverageTest(int nPoints, const Point2D *bound, bool counterclockwise)
@@ -58,12 +60,12 @@ CoverageTest::CoverageTest(const vector<Point2D>& bound, bool counterclockwise)
 	{
 		++l_id;
 		AgentPosition l_pos( l_space->randomPosition(), CameraPosition( l_space->getDistance()/7. ) );
-		std::shared_ptr<Agent> l_agent = std::make_shared<Guard>(1, l_id, l_pos);
+		std::shared_ptr<Agent> l_agent = std::make_shared<Guard>(1, l_id, l_pos, g_agentsPeriod);
 		l_agents.insert(l_agent);
 		Sleep(1000);
 	}
 
-	m_algorithm = std::make_shared<CoverageAlgorithm>(l_agents, l_space);
+	m_algorithm = std::make_shared<CoverageAlgorithm>(l_agents, l_space, 0);
 	//m_algorithm->Initialize();
 }
 
@@ -74,7 +76,7 @@ void CoverageTest::getGuardsPosition(std::vector<AgentPosition> & _pos)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CoverageTest::getGuardsSquare(std::vector<SquarePtr> & _pos)
+void CoverageTest::getGuardsSquare(std::vector< std::pair<SquarePtr,int> > & _pos)
 {
 	return m_algorithm->getGuardsSquare(_pos);
 }
@@ -92,28 +94,40 @@ int CoverageTest::numberOfSquaresCoveredByGuards()
 
 }
 
+////////////////////////////////////////////////////////////////////////////
+//int CoverageTest::getTime()
+//{
+//	return m_algorithm->getTime();
+//}
+
 //////////////////////////////////////////////////////////////////////////
-int CoverageTest::getTime()
+void CoverageTest::printPotential(std::string const& name, bool _printOnFile)
 {
-	return m_algorithm->getTime();
+	return m_algorithm->printPotential(name, _printOnFile);
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CoverageTest::printGraph(std::string const& name)
+void CoverageTest::printBenefit(std::string const& name, bool _printOnFile)
 {
-	return m_algorithm->printGraph(name);
+	return m_algorithm->printBenefit(name, _printOnFile);
 }
 
 //////////////////////////////////////////////////////////////////////////
-std::string CoverageTest::getExplorationRate()
+void CoverageTest::printPerformanceIndex(std::string const& name, bool _print)
+{
+	return m_algorithm->printPerformanceIndex(name, _print);
+}
+
+//////////////////////////////////////////////////////////////////////////
+std::string CoverageTest::getExplorationRateStr()
+{
+	return m_algorithm->getExplorationRateStr();
+}
+
+//////////////////////////////////////////////////////////////////////////
+double CoverageTest::getExplorationRate()
 {
 	return m_algorithm->getExplorationRate();
-}
-
-//////////////////////////////////////////////////////////////////////////
-void CoverageTest::printPotential(bool potential)
-{
-	m_algorithm->printPotential(potential);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -244,11 +258,11 @@ void DrawGuards(
 	for(size_t i = 0; i < l_coverageArea.size(); ++i)
 		DrawPath(&l_coverageArea[i], hdc, width, height, 0,255,255, 1);
 
-	std::vector<SquarePtr> l_pos;
+	std::vector< std::pair<SquarePtr,int> > l_pos;
 	g_coverageTest->getGuardsSquare(l_pos);
 	for(size_t i = 0; i < l_pos.size(); ++i)
 	{
-		DrawGuard(l_pos[i], hdc, width, height, (R + i*50) % 255, (G + i*50) % 255, (B + i*50) % 255, thickness);
+		DrawGuard(l_pos[i].first, hdc, width, height, (R + i*50 + l_pos[i].second) % 255, (G + i*50) % 255, (B + i*50) % 255, thickness);
 	}
 }
 
@@ -902,6 +916,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, TRUE);
 			UpdateWindow(hWnd);
 			break;*/
+		case ID_FILE_AGENTS_PERIOD:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_PERIOD), hWnd, SetAgentsPeriod);
+			//if(g_coverageTest)
+			//{
+			//	delete g_coverageTest;
+			//	g_coverageTest = NULL;
+			//}
+			break;
 		case ID_FILE_DRAWSQUARES:
 			g_drawSquare = !g_drawSquare;
 			{
@@ -926,19 +948,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			InvalidateRect(hWnd, NULL, TRUE);
 			UpdateWindow(hWnd);
 			break;
-		case ID_FILE_PARTITIONCORRI:
-			g_partitionCorridor = !g_partitionCorridor;
+		case ID_FILE_POTENTIAL:
+			g_PrintPotential = !g_PrintPotential;
 			{HMENU hmenu = GetMenu(hWnd);
-			if(g_partitionCorridor)
-				CheckMenuItem(hmenu,ID_FILE_PARTITIONCORRI,MF_CHECKED);
+			if(g_PrintPotential)
+				CheckMenuItem(hmenu,ID_FILE_POTENTIAL,MF_CHECKED);
 			else
-				CheckMenuItem(hmenu,ID_FILE_PARTITIONCORRI,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_POTENTIAL,MF_UNCHECKED);
 			EndMenu();}
 			if( g_drawing_mode < 0 && g_drawing_mybool )
 				g_drawing_loadCounter--;
-
-			if(g_coverageTest)
-				g_coverageTest->printPotential(g_partitionCorridor);
 
 			break;
 		case ID_FILE_DRAWREALPARTITION:
@@ -990,7 +1009,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			if(g_coverageTest)
 			{
-				DrawString(hdc, width, height, 0,0,0, g_coverageTest->getExplorationRate() );
+				DrawString(hdc, width, height, 0,0,0, g_coverageTest->getExplorationRateStr() );
 			}
 			else
 				DrawString(hdc, width, height, 0,0,0, "Ciao");
@@ -1065,7 +1084,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						{
 							g_LeftBoundary->push_back(g_boundary2D[i]);
 						}
-						if( g_partitionCorridor )
+						if( g_PrintPotential )
 						{
 							try
 							{
@@ -1175,11 +1194,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}
 
 				Point2D l_thief = g_thiefStartingPt;
+				
 				if(g_coverageTest)
 				{
 					if( g_coverageTest->areaContains(g_thiefStartingPt) )
-						g_coverageTest->setThief(g_thiefStartingPt);
+					{
+						ThiefPtr l_agent = std::make_shared<Thief>(g_coverageTest->getAlgorithm()->getNumberOfAgent(), g_thiefStartingPt);
+						g_coverageTest->setThief(g_thiefStartingPt, l_agent);
+						
+						//AgentPtr l_agent2 = std::make_shared<Thief>(g_coverageTest->getAlgorithm()->getNumberOfAgent(), g_thiefStartingPt);
+						//g_coverageTest->setThief(g_thiefStartingPt, l_agent2);
 						//g_coverageTest->addThief(l_thief);
+
+						g_coverageTest->exportOnFile("scenario.dat");
+
+					}
 				}
 				if(g_coverageTest)
 					g_coverageTest->FindSquare(l_thief, RR);
@@ -1266,7 +1295,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		else if((int)wParam < 0)
 			//scroll backward
 		{
-			g_coverageTest->printGraph("../Prova.txt");
+			if(g_PrintPotential)
+				g_coverageTest->printPotential("../Prova.txt", false);
+			else
+				g_coverageTest->printBenefit("../Prova.txt", false);
+
+			g_coverageTest->printPerformanceIndex("../performance_index.txt", false);
+
 			//g_coverageTest->moveThief();
 		}
 		
@@ -1425,3 +1460,76 @@ INT_PTR CALLBACK SetNumberOfSteps(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 	}
 	return (INT_PTR)FALSE;
 }
+
+//////////////////////////////////////////////////////////////////////////
+// Message handler for start box.
+INT_PTR CALLBACK SetAgentsPeriod(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
+
+	case WM_COMMAND:
+		if ( LOWORD(wParam) == IDOK )
+		{
+			setvalue(hDlg, IDC_EDITT, g_agentsPeriod);
+			if( g_agentsPeriod <= 0 )
+			{
+				g_agentsPeriod = 1;
+			}
+
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		else if ( LOWORD(wParam) == IDCANCEL )
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
+}
+
+void CoverageTest::exportOnFile(std::string const& filename)
+{
+	int count;
+	ofstream myfile;
+	myfile.open (filename);
+	
+	myfile.precision(16.);
+
+	myfile << g_dim << std::endl;
+
+	for ( int count = 0; count != g_dim; count++ )
+	{
+		myfile << g_boundary2D[count].coord()[0] << std::endl;
+		myfile << g_boundary2D[count].coord()[1] << std::endl;
+	}
+
+	std::vector<AgentPosition> l_positions; 
+	m_algorithm->getGuardsPosition(l_positions);
+	myfile << l_positions.size() << std::endl;
+	for ( size_t count = 0; count < l_positions.size() ; count++ )
+	{
+		Point2D l_pos = l_positions[count].getPoint2D();
+		myfile << l_pos[0] << std::endl;
+		myfile << l_pos[1] << std::endl;
+	}
+
+	m_algorithm->getThievesPosition(l_positions);
+	myfile << l_positions.size() << std::endl;
+	for ( size_t count = 0; count < l_positions.size() ; count++ )
+	{
+		Point2D l_pos = l_positions[count].getPoint2D();
+		myfile << l_pos[0] << std::endl;
+		myfile << l_pos[1] << std::endl;
+	}
+
+	myfile << 0;
+	myfile.close();
+
+}
+

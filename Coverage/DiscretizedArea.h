@@ -13,6 +13,9 @@
 
 #include "BaseGeometry/Box2D.h"
 
+#include <lemon/list_graph.h>
+#include <lemon/bfs.h>
+
 #include <set>
 
 namespace IDS
@@ -55,6 +58,9 @@ namespace Robotics
 
 		class COVERAGE_API Square
 		{
+		protected:
+			lemon::ListGraph::Node m_node; 
+
 			/// True if an agent can stay in this square
 			bool m_valid;
 
@@ -68,6 +74,7 @@ namespace Robotics
 
 			double m_old_value;
 		public:
+
 			/// Set the box of the Square
 			void setBoundingBox(IDS::BaseGeometry::Box2D const& _box);
 			/// Get the Bounding Box of the square
@@ -87,7 +94,9 @@ namespace Robotics
 			inline double getValue() const {return m_value;}
 			inline void setValue(double _value);
 
-			Square() : m_valid(true), m_counter(0), m_value(0.), m_old_value(0.) {}
+			//Square() : m_valid(true), m_counter(0), m_value(0.), m_old_value(0.) {}
+			Square(std::shared_ptr<lemon::ListGraph> _graph);
+			lemon::ListGraph::Node getNode() const {return m_node;}
 
 			IDS::BaseGeometry::Point2D vertex(int i) const;
 			IDS::BaseGeometry::Point2D agentVertex(int i) const;
@@ -97,12 +106,17 @@ namespace Robotics
 			void resetValue();
 
 			//bool equals(std::shared_ptr<Square> _other) const;
+
+			friend class COVERAGE_API DiscretizedArea; 
 		};
 
 		typedef std::shared_ptr<Square> SquarePtr;
 
 		class COVERAGE_API DiscretizedArea : public std::enable_shared_from_this<DiscretizedArea>
 		{
+			std::shared_ptr<lemon::Bfs<lemon::ListGraph>> m_graph;
+			std::shared_ptr<lemon::ListGraph> m_listGraph;
+
 			/// Lattice from bottom left to upper right, per rows.
 			std::vector< SquarePtr > m_lattice;
 			int m_numRow;
@@ -113,11 +127,14 @@ namespace Robotics
 			/// y step to speed up searching
 			double m_yStep;
 
+			int m_numberOfValidSquare;
+
 		public:
 			DiscretizedArea(IDS::BaseGeometry::Shape2D const& _external, std::set< IDS::BaseGeometry::Shape2D > const& _obstacles);
 
 			DiscretizedArea(std::shared_ptr<StructuredArea> _area);
 			DiscretizedArea(std::shared_ptr<UnStructuredArea> _area);
+			DiscretizedArea(std::string const& _filename);
 			 
 			/// Compute Graph of the discretized area.
 			Graph getGraph() const;
@@ -140,10 +157,19 @@ namespace Robotics
 			SquarePtr getSquare(IDS::BaseGeometry::Point2D const& V) const;
 			IDS::BaseGeometry::Point2D getPosition(AreaCoordinate const& _coord) const;
 
+			int getDistance(
+				SquarePtr source, 
+				SquarePtr target);
+
+			int getDistance(
+				AreaCoordinate _source, 
+				AreaCoordinate _target);
+
 			std::vector<SquarePtr> getSquares() const;
 			
-			AgentPosition getRandomPosition() const;
+			bool getRandomPosition(IDS::BaseGeometry::Point2D & _point) const;
 			void setThiefPosition(AgentPosition const& _pos);
+			double getThiefMaxValue(AgentPosition const& _pos);
 
 			bool isOut(AgentPosition const& pos) const;
 
@@ -153,7 +179,7 @@ namespace Robotics
 			std::vector<AreaCoordinate> getStandardApproachableValidSquares(AreaCoordinate const& _current) const;
 			void addSpecialApproachableValidSquares(AreaCoordinate const& _current, std::vector<AreaCoordinate> & _loci) const;
 
-			std::set<std::shared_ptr<Square> > getVisibleSquares(AgentPosition const& _pos) const;
+			std::set<std::shared_ptr<Square> > getVisibleSquares(AgentPosition const& _pos);
 
 			double getXStep() const {return m_xStep;}
 			double getYStep() const {return m_yStep;}
@@ -162,7 +188,16 @@ namespace Robotics
 
 			int numberOfSquaresCoveredByGuards() const;
 
-			friend class COVERAGE_API ISLAlgorithm;
+			bool isSecurityLow() const { return true;}
+			
+			int getNumberOfValidSquare();
+			void computeNumberOfValidSquare();
+
+		protected:
+			void addEdges();
+
+			friend class COVERAGE_API DISLAlgorithm;
+			friend class COVERAGE_API PIPIPAlgorithm;
 		};
 	}
 }

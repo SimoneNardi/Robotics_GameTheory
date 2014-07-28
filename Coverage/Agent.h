@@ -12,6 +12,7 @@
 
 // GeometricKernel
 #include "BaseGeometry/Point2D.h"
+#include "BaseGeometry/Shape2D.h"
 
 //	IDSBaseMath
 #include "IDSMath.h"
@@ -19,13 +20,6 @@
 #include <memory>
 #include <set>
 
-namespace IDS 
-{
-	namespace BaseGeometry
-	{
-		class Shape2D;
-	}
-}
 namespace Robotics 
 {
 	namespace GameTheory 
@@ -60,6 +54,8 @@ namespace Robotics
 			IDS::BaseGeometry::Shape2D getVisibleArea(IDS::BaseGeometry::Point2D const& point) const;
 
 			double computeCosts() const {return 0.;}
+
+			bool operator==(CameraPosition const& other) const;
 		};
 
 		//////////////////////////////////////////////////////////////////////////
@@ -88,7 +84,7 @@ namespace Robotics
 			/// True if other is in communication with this position
 			bool communicable(std::shared_ptr<Agent> _other) const;
 
-			/// Compute all the square visible by that position and that camera
+			/// is the center of the square visible in that position and that camera?
 			bool visible(std::shared_ptr<Square> _area) const;
 
 			/// Compute Camera Costs
@@ -98,18 +94,11 @@ namespace Robotics
 
 			IDS::BaseGeometry::Shape2D getVisibleArea() const;
 
+			bool operator==(AgentPosition const& other) const;
+
 			friend class COVERAGE_API Agent;
 			friend class COVERAGE_API Guard;
 			friend class COVERAGE_API Thief;
-		};
-
-		//////////////////////////////////////////////////////////////////////////
-		struct MemoryAgentPosition
-		{
-			AgentPosition m_action;
-			double m_payoff;
-
-			MemoryAgentPosition(AgentPosition _action, double _payoff) : m_action(_action), m_payoff(_payoff) {}
 		};
 
 		//////////////////////////////////////////////////////////////////////////
@@ -119,42 +108,39 @@ namespace Robotics
 			/// Agent Identifier
 			int m_id;
 
-			/// Agent Position in space
-			AgentPosition m_position;
-			
-			/// Current payoff received in the current position
-			double m_currentPayoff;
+			AgentPosition m_currentPosition;
 
-			/// Agent Position in space
 			AgentPosition m_nextPosition;
 
 			mutable enum Status 
 			{
 				ACTIVE,
 				DISABLE,
-				SLEEP,
+				STANDBY,
 				WAKEUP
 			} m_status;
 
-			std::vector<MemoryAgentPosition> m_memory;
-			int m_memorySpace;
-
 		public:
 
-			Agent(int _id, AgentPosition _position, int _memorySpace = 5 )
-				: m_id(_id), m_position(_position), m_currentPayoff(0.), m_nextPosition(), m_memorySpace(_memorySpace) {}
+			Agent(int _id, AgentPosition _position)
+				: m_id(_id)
+				, m_currentPosition(_position)
+				, m_nextPosition()
+				, m_status(ACTIVE)
+			{}
 
 			~Agent() {}
 
-			/// Set the position of the agent.
-			void setPosition(AgentPosition const& pos);
-			void setNextPosition(AgentPosition const& pos);
-			void setNextPosition();
-
 			/// Get the position of the agent.
-			inline AgentPosition getPosition() const {return m_position;}
+			inline AgentPosition getCurrentPosition() const {return m_currentPosition;}
 
-			std::vector<MemoryAgentPosition> getMemory() {return m_memory;}
+			
+
+			/// Set Current Position
+			void setCurrentPosition(AgentPosition const& _pos);
+
+			/// Set Current Position
+			void setNextPosition(AgentPosition const& _pos);
 
 			/// True if the Agent is active, false otherwise.
 			bool isActive();
@@ -165,7 +151,7 @@ namespace Robotics
 			/// Set the agent on standBy status. 
 			void sleep();
 
-			/// Set the agent on standBy status. 
+			/// Set the agent on wakeUp status. 
 			void wakeUp();
 
 			virtual bool isThief() const {return false;}
@@ -176,30 +162,17 @@ namespace Robotics
 
 			std::shared_ptr<Guard> toGuard();
 
-			void moveToNextPosition();
-
-			void setNextPosition(std::vector< MemoryAgentPosition > const& memory);
+			virtual void moveToNextPosition();
 
 			virtual std::vector<AgentPosition> getFeasibleActions( std::shared_ptr<DiscretizedArea> _space ) const;
 
-			IDS::BaseGeometry::Shape2D getVisibleArea() const;
+			bool getRandomFeasibleAction(std::vector<AgentPosition> const& _feasible, AgentPosition & _pos) const;
 
-		public:
-#pragma region ISLAlgorithm
-			/// The set of agents can communicate with this agent
-			virtual std::set<std::shared_ptr<Agent> > getCommunicableAgents(std::set<std::shared_ptr<Agent> > const& _guards) const;
-			/// The set of square can be controlled by this agent
-			virtual std::set<std::shared_ptr<Square> > getVisibleSquares( std::shared_ptr<DiscretizedArea> _space ) const;
+			AgentPosition selectRandomFeasibleAction(std::shared_ptr<DiscretizedArea> _space);
 
 			bool equals(std::shared_ptr<Agent>) const;
 
-			void receiveMessage( std::set<std::shared_ptr<Square> > const& _visible);
-
-			/// Compute cost of sensor.
-			double computeCosts() const;
-#pragma endregion
-
-			void setCurrentPayoff(double _benefit);
+			inline IDS::BaseGeometry::Shape2D getVisibleArea() const {return m_currentPosition.getVisibleArea();}
 
 		protected:
 			Status getStatus() const;

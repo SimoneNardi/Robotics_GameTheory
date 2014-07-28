@@ -16,6 +16,7 @@
 #define IDD_CURVE                       131
 #define IDD_GUARDS                      132
 #define IDD_STEPS						133
+#define IDD_PERIOD						134
 #define IDC_EDIT1                       1004
 #define IDC_EDIT2                       1005
 #define IDC_EDIT3                       1006
@@ -33,13 +34,14 @@
 #define ID_FILE_DRAWSQUARES             32781
 #define ID_FILE_COUNTERCLOCKWISE        32782
 #define ID_FILE_UNDO                    32783
-#define ID_FILE_PARTITIONCORRI          32788
+#define ID_FILE_POTENTIAL				32788
 #define ID_FILE_HIGHLIGHT				32791
 #define ID_FILE_NUMBER_OF_GUARDS		32792
 #define ID_FILE_NUMBER_OF_STEPS			32793
 #define ID_MODE_TESTMULTISTARTPATHS     32794
 #define ID_FILE_DRAWREALPARTITION       32795
 #define ID_FILE_STARTSEGMENTINSIDE      32796
+#define ID_FILE_AGENTS_PERIOD			32797
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

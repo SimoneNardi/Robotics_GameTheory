@@ -24,6 +24,7 @@ namespace Robotics
 
 		class COVERAGE_API Monitor
 		{
+
 		};
 	}
 }

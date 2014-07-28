@@ -8,6 +8,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestApp", "TestApp\Corridor
 		{1651E017-88AC-4E1D-A2E6-6AB795CBBA59} = {1651E017-88AC-4E1D-A2E6-6AB795CBBA59}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BatchSimulation", "BatchSimulation\BatchSimulation.vcxproj", "{5893CA50-3A47-4995-BF43-31142D934F9B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1651E017-88AC-4E1D-A2E6-6AB795CBBA59} = {1651E017-88AC-4E1D-A2E6-6AB795CBBA59}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -30,6 +35,12 @@ Global
 		{05989A56-EBB3-43C2-A5E9-C105AE33F00B}.Release|Win32.Build.0 = Release|Win32
 		{05989A56-EBB3-43C2-A5E9-C105AE33F00B}.Release|x64.ActiveCfg = Release|x64
 		{05989A56-EBB3-43C2-A5E9-C105AE33F00B}.Release|x64.Build.0 = Release|x64
+		{5893CA50-3A47-4995-BF43-31142D934F9B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5893CA50-3A47-4995-BF43-31142D934F9B}.Debug|Win32.Build.0 = Debug|Win32
+		{5893CA50-3A47-4995-BF43-31142D934F9B}.Debug|x64.ActiveCfg = Debug|Win32
+		{5893CA50-3A47-4995-BF43-31142D934F9B}.Release|Win32.ActiveCfg = Release|Win32
+		{5893CA50-3A47-4995-BF43-31142D934F9B}.Release|Win32.Build.0 = Release|Win32
+		{5893CA50-3A47-4995-BF43-31142D934F9B}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

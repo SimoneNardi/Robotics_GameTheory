@@ -1,49 +1,21 @@
 isver 2.7.2.7
-new cgt
-addCurve
-setStdColors
-setAxesToCurves
-xAxis save
+new cg
 # Attach 
-yAxis save
-isver 2.7.2.7
-Tempo/Potential Function
-# ERROR: Unable to process macro: 'Tempo/Potential Function'
-isver 2.7.2.7
-xaxis label 'Time'
-isver 2.7.2.7
-yaxis label 'Potential Function'
-isver 2.7.2.7
-curve 0 color 0 0 1
-isver 2.7.2.7
-curve 0 filled false
-isver 2.7.2.7
-curve 0 fillcolor 0 0 1
-isver 2.7.2.7
-curve 0 label Potential
-isver 2.7.2.7
-vdiv .9
-isver 2.7.2.7
-show
 # Generated texture: 1 in VTexture2
 # Generated texture: 2 in VTexture2
 # Generated texture: 3 in VTexture2
 # Generated texture: 4 in VTexture2
 # RC= 65536 created and activated.
 # Warning: Logo 'LogoIDS.bmp' not found in the local directory.
-# Setting menu of parent
-# Detach of RC= 65536
-isver 2.7.2.7
-new cgt
+# Setting menu
 addCurve
-# Attach 
 setStdColors
 setAxesToCurves
 xAxis save
 yAxis save
 isver 2.7.2.7
-Tempo/Potential Function
-# ERROR: Unable to process macro: 'Tempo/Potential Function'
+Potential
+# ERROR: Unable to process macro: 'Potential'
 isver 2.7.2.7
 xaxis label 'Time'
 isver 2.7.2.7
@@ -55,43 +27,420 @@ curve 0 filled false
 isver 2.7.2.7
 curve 0 fillcolor 0 0 1
 isver 2.7.2.7
-curve 0 label Potential
+curve 0 label 'Potential'
 isver 2.7.2.7
 vdiv .9
 isver 2.7.2.7
 show
-# RC= 131072 created and activated.
-# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
-# Setting menu of parent
 isver 2.7.2.7
-new cgt
-addCurve
+new cg
 # Attach 
-setStdColors
-setAxesToCurves
-xAxis save
-yAxis save
-isver 2.7.2.7
-Tempo/Potential Function
-# ERROR: Unable to process macro: 'Tempo/Potential Function'
-isver 2.7.2.7
-xaxis label 'Time'
-isver 2.7.2.7
-yaxis label 'Potential Function'
-isver 2.7.2.7
-curve 0 color 0 0 1
-isver 2.7.2.7
-curve 0 filled false
-isver 2.7.2.7
-curve 0 fillcolor 0 0 1
-isver 2.7.2.7
-curve 0 label Potential
-isver 2.7.2.7
-vdiv .9
-isver 2.7.2.7
-show
 # RC= 65537 created and activated.
 # Warning: Logo 'LogoIDS.bmp' not found in the local directory.
-# Setting menu of parent
+# Setting menu
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Performance Index
+# ERROR: Unable to process macro: 'Performance Index'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Index'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label 'Index Curve'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+isver 2.7.2.7
+new cg
+# Attach 
+# RC= 65538 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Potential
+# ERROR: Unable to process macro: 'Potential'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Potential Function'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label 'Potential'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+isver 2.7.2.7
+new cg
+# Attach 
+# RC= 65539 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Performance Index
+# ERROR: Unable to process macro: 'Performance Index'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Index'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label 'Index Curve'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+isver 2.7.2.7
+new cg
+# Attach 
+# RC= 65540 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Potential
+# ERROR: Unable to process macro: 'Potential'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Potential Function'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label 'Potential'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+isver 2.7.2.7
+new cg
+# Attach 
+# RC= 65541 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Performance Index
+# ERROR: Unable to process macro: 'Performance Index'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Index'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label 'Index Curve'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+# Detach of RC= 65540
+# Detach of RC= 65541
+# Detach of RC= 65536
+# Deactivate of RC failed.
+# Detach of RC= 65539
+# Deactivate of RC failed.
 # Detach of RC= 65537
+# Deactivate of RC failed.
+# Detach of RC= 65538
+# Deactivate of RC failed.
+isver 2.7.2.7
+new cg
+# Attach 
+# RC= 131074 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Potential
+# ERROR: Unable to process macro: 'Potential'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Potential Function'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label 'Potential'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+isver 2.7.2.7
+new cg
+# Attach 
+# RC= 131073 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Performance Index
+# ERROR: Unable to process macro: 'Performance Index'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Index'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label 'Index Curve'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+isver 2.7.2.7
+new cg
+# Attach 
+# RC= 131075 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Potential
+# ERROR: Unable to process macro: 'Potential'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Potential Function'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label 'Potential'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+isver 2.7.2.7
+new cg
+# Attach 
+# RC= 131072 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Performance Index
+# ERROR: Unable to process macro: 'Performance Index'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Index'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label 'Index Curve'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
 # Detach of RC= 131072
+# Detach of RC= 131075
+# Deactivate of RC failed.
+# Detach of RC= 131073
+# Deactivate of RC failed.
+# Detach of RC= 131074
+# Deactivate of RC failed.
+isver 2.7.2.7
+new cg
+# Attach 
+# RC= 196610 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Total Guards Benefit
+# ERROR: Unable to process macro: 'Total Guards Benefit'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Benefit'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label 'Benefit Curve'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+isver 2.7.2.7
+new cg
+# Attach 
+# RC= 196609 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Performance Index
+# ERROR: Unable to process macro: 'Performance Index'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Index'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label 'Index Curve'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+isver 2.7.2.7
+new cg
+# Attach 
+# RC= 196611 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Total Guards Benefit
+# ERROR: Unable to process macro: 'Total Guards Benefit'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Benefit'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label 'Benefit Curve'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+isver 2.7.2.7
+new cg
+# Attach 
+# RC= 196608 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Performance Index
+# ERROR: Unable to process macro: 'Performance Index'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Index'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label 'Index Curve'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+# Detach of RC= 196611
+# Detach of RC= 196608
+# Detach of RC= 196609
+# Detach of RC= 196610
+# Deactivate of RC failed.
