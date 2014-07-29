@@ -102,6 +102,9 @@
     <ClInclude Include="BatalinArea.h">
       <Filter>Header Files\Area</Filter>
     </ClInclude>
+    <ClInclude Include="BatalinGuard.h">
+      <Filter>Header Files\Agent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoverageAlgorithm.cpp">

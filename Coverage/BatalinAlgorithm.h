@@ -27,7 +27,7 @@ namespace Robotics
 		*/
 		class COVERAGE_API BatalinAlgorithm : public LearningAlgorithm
 		{
-			std::shared_ptr<DiscretizedArea> m_space;
+			std::shared_ptr<BatalinArea> m_space;
 
 		protected:
 

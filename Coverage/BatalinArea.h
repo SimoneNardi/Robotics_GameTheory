@@ -10,6 +10,7 @@
 //	DTMManager
 #include "CoverageExport.h"
 #include "Area.h"
+#include "DiscretizedArea.h"
 
 #include "BaseGeometry/Box2D.h"
 
