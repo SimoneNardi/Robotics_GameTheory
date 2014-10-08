@@ -16,6 +16,7 @@ Guard::Guard( int _teamID, int _id, AgentPosition _position, int _trajectoryLeng
 	, m_memory(_memorySpace)
 	, m_coverage()
 	, m_oldCoverage()
+	, m_currentMood(Mood::C)
 {}
 
 Guard::~Guard()
@@ -113,7 +114,7 @@ double Guard::computeCurrentCosts() const
 //////////////////////////////////////////////////////////////////////////
 void Guard::updateMemoryTrajectories()
 {
-	m_memory.add(MemoryGuardTrajectory(m_currentTrajectory, m_currentTrajectoryPayoff));
+	m_memory.add(MemoryGuardTrajectory(m_currentTrajectory, m_currentTrajectoryPayoff, m_currentMood));
 	m_memory.computeBestWorstTrajectories();
 }
 
@@ -263,6 +264,29 @@ void Guard::updateMemoryTrajectories()
 //	return m_position.getVisibleArea();
 //}
 
+#pragma region PARETO
+
+Mood Guard::computeMood(double _explorationRate, double _maxValue)
+{
+	int l_index = getBestTrajectoryIndex(true);
+	
+	if( l_index >= 0 &&
+		m_memory.m_elems[l_index].equals(m_currentTrajectory, m_currentTrajectoryPayoff) && 
+		m_memory.m_elems[l_index].m_mood == Mood::C)
+	{
+		return Mood::C;
+	}
+
+	double l_explorationRate = pow( _explorationRate, 1 - m_currentTrajectoryPayoff );
+	bool l_agentHasToExperiments = agentHasToExperiments(l_explorationRate);
+	if(l_agentHasToExperiments)
+		return Mood::C;
+	else
+		return Mood::D;
+}
+
+#pragma endregion
+
 
 #pragma region DISLALGORITHM
 
@@ -275,10 +299,16 @@ bool Guard::isRunning() const
 }
 
 ///
-void Guard::reset()
+void Guard::reset(double _explorationRate, double _maxValue)
 {
 	if( !(m_currentTrajectory.size() == 0) )
+	{
+		Mood l_mood = computeMood(_explorationRate, _maxValue);
+
 		updateMemoryTrajectories();
+
+		setCurrentMood(l_mood);
+	}
 	m_currentTrajectory.clear();
 	m_currentTrajectoryPayoff = 0.;
 
@@ -287,16 +317,16 @@ void Guard::reset()
 }
 
 ///
-void Guard::startExperiment()
+void Guard::startExperiment(double _explorationRate, double _maxValue)
 {
-	reset();
+	reset(_explorationRate, _maxValue);
 	m_exploring = -1;
 }
 
 ///
-void Guard::followBestTrajectory(bool best)
+void Guard::followBestTrajectory(double _explorationRate, double _maxValue, bool best)
 {
-	reset();
+	reset(_explorationRate, _maxValue);
 	m_exploring = getBestTrajectoryIndex(best);
 }
 
@@ -350,6 +380,12 @@ AgentPosition Guard::selectNextFeasiblePositionWithoutConstraint(std::shared_ptr
 		if( _alreadyTested.find(i) != _alreadyTested.end() )
 			continue;
 
+		if( m_currentTrajectory.contains(l_feasible[i]) )
+		{
+			//std::cout << "selected an action already visited!" << std::endl;
+			continue;
+		}
+
 		l_notControlledFeasibleActions.push_back( std::make_pair<AgentPosition, int>(l_feasible[i], i) );
 	}
 
@@ -385,6 +421,10 @@ AgentPosition Guard::selectNextFeasiblePosition(std::shared_ptr<DiscretizedArea>
 	do
 	{
 		l_selectedPosition = this->selectNextFeasiblePositionWithoutConstraint(_space, l_alreadyTested);
+		
+		//if( (k < 8) && (m_currentTrajectory.contains(l_selectedPosition)) )
+		//	continue;
+		
 		SquarePtr l_selected = _space->getSquare( l_selectedPosition.getPoint2D() );
 
 		l_nodeDistance = _space->getDistance(l_source, l_selected);
@@ -407,6 +447,12 @@ void Guard::setCurrentPayoff(double _benefit)
 
 	m_currentTrajectory.add(m_currentPosition);
 	m_currentTrajectoryPayoff += m_currentPayoff;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void Guard::setCurrentMood(Mood _state)
+{
+	m_currentMood = _state;
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////
-//  DDISLAlgorithm.h
+//  DISLAlgorithm.h
 //  Created on:      13-may-2013 10.14.52
 //  Original author: s.nardi
 ///////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ namespace Robotics
 			
 			std::string getExplorationRateStr();
 			double getExplorationRate();
-			double computeExplorationRate();
+			double computeExplorationRate(std::shared_ptr<Guard> _agent = nullptr);
 			int getGlobalTrajectoryCoverage();
 
 		public:

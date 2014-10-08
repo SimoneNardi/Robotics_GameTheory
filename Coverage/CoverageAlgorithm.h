@@ -45,7 +45,7 @@ namespace Robotics
 			std::shared_ptr<LearningAlgorithm> m_learning;
 
 			//int m_time;
-
+		public:
 			/// For Stats:
 			Statistics m_stats;
 			/// For Stats:
@@ -62,7 +62,8 @@ namespace Robotics
 				std::string const & _areaFile, 
 				std::string const & _agentFile, 
 				int _type, 
-				int _period);
+				int _period,
+				double _epsilon = 0.2);
 
 			/************************************************************************/
 			/* \brief Compute initial position and payoff
@@ -142,6 +143,10 @@ namespace Robotics
 			void printPotential(std::string const& name, bool printOnFile = true);
 			void printBenefit(std::string const& name, bool printOnFile = true);
 			void printPerformanceIndex(std::string const& name, bool printOnFile = true);
+			void printNewPerformanceIndex(std::string const& name, bool printOnFile = true);
+			void printNewPerformanceIndexVersusExplorationRate(std::string const& name, bool printOnFile = true);
+			void printExplorationRate(std::string const& name, bool printOnFile = true);
+			
 			std::string getExplorationRateStr();
 			double getExplorationRate();
 
@@ -149,10 +154,16 @@ namespace Robotics
 
 			double getMaximumPotentialValue();
 			virtual double getMaximumBenefitValue();
-			double getBoxPlotValue();
+			virtual double getSteadyNonCoopertativeBenefitValue();
 
+			double getBoxPlotValue();
+			double getBoxPlotValueNewIndex();
+
+			void removeAllThieves();
 			void updateMonitor();
 			int getGlobalTrajectoryCoverage();
+
+			void setExperimentalRate(double _epsilon);
 
 #pragma endregion
 

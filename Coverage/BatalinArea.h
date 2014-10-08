@@ -1,3 +1,5 @@
+#if 0
+
 ///////////////////////////////////////////////////////////
 //  BatalinArea.h
 //  Created on:      28-jul-2014 10.14.52
@@ -74,4 +76,6 @@ namespace Robotics
 		};
 	}
 }
+#endif
+
 #endif

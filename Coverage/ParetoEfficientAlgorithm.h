@@ -1,10 +1,10 @@
 ///////////////////////////////////////////////////////////
-//  PIPIPAlgorithm.h
+//  ParetoEfficientAlgorithm.h
 //  Created on:      13-may-2013 10.14.52
 //  Original author: s.nardi
 ///////////////////////////////////////////////////////////
-#ifndef PIPIP_ALGORITHM_H
-#define PIPIP_ALGORITHM_H
+#ifndef PARETO_EFFICIENT_ALGORITHM_H
+#define PARETO_EFFICIENT_ALGORITHM_H
 #pragma once
 
 //	Coverage
@@ -18,17 +18,17 @@ namespace Robotics
 {
 	namespace GameTheory 
 	{
-		class Guard;
+		class Agent;
 		class DiscretizedArea;
 		class Thief;
 
 		/**
-		*	\brief	Inhomogeneous Synchronous Learning Algorithm
+		*	\brief	Distributed Inhomogeneous Synchronous Learning Algorithm
 		*	see M.Zhu and S.Martinez, 
 		*	Distributed coverage game for mobile visual sensors (I): Reaching the set of Nash equilibria.
 		*	in Proceedings of the 48th IEEE Conference on Decision and Control.
 		*/
-		class COVERAGE_API PIPIPAlgorithm : public LearningAlgorithm
+		class COVERAGE_API ParetoEfficientAlgorithm : public LearningAlgorithm
 		{
 			std::shared_ptr<DiscretizedArea> m_space;
 
@@ -46,7 +46,6 @@ namespace Robotics
 			//virtual void selectRandomFeasibleAction(std::shared_ptr<Guard> _agent);
 
 			void selectBestMemoryAction(std::shared_ptr<Guard> _agent);
-			void selectWorstMemoryAction(std::shared_ptr<Guard> _agent);
 
 			bool forwardOneStep(std::shared_ptr<Guard> _agent);
 			bool forwardOneStep();
@@ -61,19 +60,14 @@ namespace Robotics
 			void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas);
 			double getPotentialValue();
 			double getBenefitValue();
-
+			
 			std::string getExplorationRateStr();
 			double getExplorationRate();
-			double computeIrrationalRate();
 			double computeExplorationRate(std::shared_ptr<Guard> _agent = nullptr);
 			int getGlobalTrajectoryCoverage();
-			
-			double computeDeltaMemoryBenefit(std::shared_ptr<Guard> _agent);
-
-			void monitoringThieves(std::set< std::shared_ptr<Thief> > & _agents);
 
 		public:
-			PIPIPAlgorithm(std::shared_ptr<DiscretizedArea> _space);
+			ParetoEfficientAlgorithm (std::shared_ptr<DiscretizedArea> _space);
 
 			virtual void computeNextPosition();
 

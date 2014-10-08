@@ -63,6 +63,18 @@ std::set< std::shared_ptr<Thief> > World::getThieves() const
 }
 
 //////////////////////////////////////////////////////////////////////////
+void World::removeAllThieves()
+{
+	std::set< std::shared_ptr<Thief> > result = getThieves();
+
+	for(auto it = result.begin(); it != result.end(); ++it)
+	{
+		m_agent.erase(*it);
+	}
+	return;
+}
+
+//////////////////////////////////////////////////////////////////////////
 std::set< std::shared_ptr<Agent> > World::getNeutrals() const
 {
 	std::set< std::shared_ptr<Agent> > result;
@@ -172,4 +184,15 @@ int World::getNumberOfAgent()
 void World::addThief(std::shared_ptr<Thief> _thief)
 {
 	m_agent.insert(_thief);
+}
+
+//////////////////////////////////////////////////////////////////////////
+double World::getMaximumValue()
+{
+	std::set<ThiefPtr> l_thieves = this->getThieves();
+	for(auto it = l_thieves.begin(); it != l_thieves.end(); ++it)
+	{
+		return this->getSpace()->getThiefMaxValue( (*it)->getCurrentPosition() );
+	}
+	return 0.;
 }

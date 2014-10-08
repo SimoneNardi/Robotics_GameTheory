@@ -95,6 +95,7 @@
     <ClInclude Include="LearningAlgorithm.h" />
     <ClInclude Include="Monitor.h" />
     <ClInclude Include="Neutral.h" />
+    <ClInclude Include="ParetoEfficientAlgorithm.h" />
     <ClInclude Include="PIPIPAlgorithm.h" />
     <ClInclude Include="Probability.h" />
     <ClInclude Include="resource.h" />
@@ -113,6 +114,7 @@
     <ClCompile Include="DiscretizedArea.cpp" />
     <ClCompile Include="Guard.cpp" />
     <ClCompile Include="DISLAlgorithm.cpp" />
+    <ClCompile Include="ParetoEfficientAlgorithm.cpp" />
     <ClCompile Include="PIPIPAlgorithm.cpp" />
     <ClCompile Include="Probability.cpp" />
     <ClCompile Include="Statistics.cpp" />

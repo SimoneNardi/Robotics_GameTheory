@@ -3,6 +3,7 @@
 #include "LearningAlgorithm.h"
 #include "DISLAlgorithm.h"
 #include "PIPIPAlgorithm.h"
+#include "ParetoEfficientAlgorithm.h"
 #include "Probability.h"
 #include "DiscretizedArea.h"
 #include "StructuredArea.h"
@@ -46,6 +47,8 @@ Robotics::GameTheory::CoverageAlgorithm::CoverageAlgorithm(
 		l_learning = std::make_shared<DISLAlgorithm>(m_world->getSpace());
 	else if(_type == 1)
 		l_learning = std::make_shared<PIPIPAlgorithm>(m_world->getSpace());
+	else if(_type == 2)
+		l_learning = std::make_shared<ParetoEfficientAlgorithm>(m_world->getSpace());
 	else 
 		throw std::exception("Error on selection of the Learning Algorithm.");
 
@@ -72,6 +75,8 @@ Robotics::GameTheory::CoverageAlgorithm::CoverageAlgorithm(
 		l_learning = std::make_shared<DISLAlgorithm>(m_world->getSpace());
 	else if(_type == 1)
 		l_learning = std::make_shared<PIPIPAlgorithm>(m_world->getSpace());
+	else if(_type == 2)
+		l_learning = std::make_shared<ParetoEfficientAlgorithm>(m_world->getSpace());
 	else 
 		throw std::exception("Error on selection of the Learning Algorithm.");
 
@@ -116,7 +121,7 @@ bool Robotics::GameTheory::CoverageAlgorithm::update(int _nStep, int _monitorUpd
 			m_learning->updateTime();
 			m_learning->resetCounter();
 
-			if( _monitorUpdateTime > 0 && !( m_count % _monitorUpdateTime ) )
+			if( m_count == 0 || (_monitorUpdateTime > 0 && !( m_count % _monitorUpdateTime )) )
 			{
 				this->updateMonitor();
 			}
@@ -141,7 +146,9 @@ bool Robotics::GameTheory::CoverageAlgorithm::update(int _nStep, int _monitorUpd
 			this->numberOfSquaresCoveredByGuards(), 
 			m_learning->getPotentialValue(), 
 			m_learning->getBenefitValue(), 
-			this->getMaximumBenefitValue());
+			this->getMaximumPotentialValue(),
+			this->getSteadyNonCoopertativeBenefitValue(),
+			m_learning->getExplorationRate());
 	}
 	return res;
 }
@@ -269,6 +276,12 @@ int CoverageAlgorithm::getNumberOfAgent()
 }
 
 //////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::removeAllThieves()
+{
+	return m_world->removeAllThieves();
+}
+
+//////////////////////////////////////////////////////////////////////////
 void CoverageAlgorithm::setPositionOfThief(AgentPosition const& pos, ThiefPtr _agent)
 {
 	bool found = false;
@@ -370,6 +383,23 @@ void CoverageAlgorithm::printPerformanceIndex(std::string const& name, bool prin
 	return m_stats.printPerformanceIndex(name, printOnFile);
 }
 
+//////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::printNewPerformanceIndex(std::string const& name, bool printOnFile)
+{
+	return m_stats.printNewPerformanceIndex(name, printOnFile);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::printNewPerformanceIndexVersusExplorationRate(std::string const& name, bool printOnFile)
+{
+	return m_stats.printNewPerformanceIndexVersusExplorationRate(name, printOnFile);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::printExplorationRate(std::string const& name, bool printOnFile)
+{
+	return m_stats.printExplorationRate(name, printOnFile);
+}
 
 //////////////////////////////////////////////////////////////////////////
 std::string CoverageAlgorithm::getExplorationRateStr()
@@ -486,9 +516,9 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 		AgentPosition l_pos( 
 			l_agentDriver[i].position 
 			/*l_space->randomPosition()*/, 
-			CameraPosition( l_space->getDistance()/7. ) );
+			CameraPosition( l_space->getDistance()/15. ) );
 
-		std::shared_ptr<Agent> l_agent = std::make_shared<Guard>(1, l_id, l_pos, _period);
+		std::shared_ptr<Agent> l_agent = std::make_shared<Guard>(1, l_id, l_pos, _period, _type == 2? 1 : 2);
 
 		l_agents.insert(l_agent);
 	}
@@ -500,7 +530,7 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 		if(l_agentDriver[i].type != AgentDriver::THIEF)
 			continue;
 
-		AgentPosition l_pos( l_space->randomPosition(), CameraPosition( l_space->getDistance()/7. ) );
+		AgentPosition l_pos( l_space->randomPosition(), CameraPosition( l_space->getDistance()/15. ) );
 		Sleep(100);
 
 		ThiefPtr l_agent = std::make_shared<Thief>(l_algorithm->getNumberOfAgent(), l_pos/*l_agentDriver[i].position*/);
@@ -515,7 +545,8 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 	std::string const & _areaFile, 
 	std::string const & _agentFile,
 	int _type,
-	int _periodIndex)
+	int _periodIndex,
+	double _epsilon)
 {
 	std::vector<IDS::BaseGeometry::Point2D> l_bound;
 	std::vector<AgentDriver> l_agentDriver;
@@ -552,16 +583,16 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 		AgentPosition l_pos( 
 			l_agentDriver[i].position 
 			/*l_space->randomPosition()*/, 
-			CameraPosition( (l_space->getXStep() + l_space->getYStep() ) / 2 *3) );
+			CameraPosition( double(l_space->getXStep() + l_space->getYStep())/2. *1.5) );
 
 		Point2D l_point;
 		if( l_space->getRandomPosition(l_point) )
 		{
-			l_pos = AgentPosition ( l_point, CameraPosition( (l_space->getXStep() + l_space->getYStep() ) / 2 *3) );
+			l_pos = AgentPosition ( l_point, CameraPosition( double(l_space->getXStep() + l_space->getYStep())/2. *1.5) );
 			Sleep(50);
 		}
 		
-		std::shared_ptr<Agent> l_agent = std::make_shared<Guard>(1, l_id, l_pos, _periodIndex);
+		std::shared_ptr<Agent> l_agent = std::make_shared<Guard>(1, l_id, l_pos, _periodIndex, _type == 2? 1 : 2);
 		l_agents.insert(l_agent);
 	}
 #ifdef _PRINT
@@ -572,6 +603,9 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 	cout << "Creating algorithm"<<endl;
 #endif
 	std::shared_ptr<CoverageAlgorithm> l_algorithm = std::make_shared<CoverageAlgorithm>(l_agents, l_space, _type);
+	
+	l_algorithm->setExperimentalRate(_epsilon);
+
 #ifdef _PRINT
 	cout << "Created algorithm"<<endl;
 #endif
@@ -604,31 +638,40 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 }
 
 //////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::setExperimentalRate(double _epsilon)
+{
+	m_learning->setExperimentalRate(_epsilon);
+}
+
+//////////////////////////////////////////////////////////////////////////
 double CoverageAlgorithm::getMaximumPotentialValue()
 {
+	return m_world->getMaximumValue();
+}
+
+//////////////////////////////////////////////////////////////////////////
+double CoverageAlgorithm::getSteadyNonCoopertativeBenefitValue()
+{
 	std::set<ThiefPtr> l_thieves = m_world->getThieves();
-	for(auto it = l_thieves.begin(); it != l_thieves.end(); ++it)
-	{
-			return m_world->getSpace()->getThiefMaxValue( (*it)->getCurrentPosition() );
-	}
-	return 0.;//(m_agent.size() - numberOfThief) * g_thiefValue;
+	return double(l_thieves.size()) * std::log( double(m_world->getGuards().size()) ) * g_maxValue/g_maxValuePossible;
 }
 
 //////////////////////////////////////////////////////////////////////////
 double CoverageAlgorithm::getMaximumBenefitValue()
 {
+	// CONTROLLARE
 	std::set<ThiefPtr> l_thieves = m_world->getThieves();
-	return double(l_thieves.size()) * 100. * std::log( double(m_world->getGuards().size()) );// * m_world->getSpace()->getNumberOfValidSquare();
+	return double(l_thieves.size()) * 100.;// * m_world->getSpace()->getNumberOfValidSquare();
+}
 
-	for(auto it = l_thieves.begin(); it != l_thieves.end(); ++it)
-	{
-		return m_world->getSpace()->getThiefMaxValue( (*it)->getCurrentPosition() );
-	}
-	return 0.;
+
+double CoverageAlgorithm::getBoxPlotValue()
+{
+	return m_stats.getBoxPlotValue();
 }
 
 //////////////////////////////////////////////////////////////////////////
-double CoverageAlgorithm::getBoxPlotValue()
+double CoverageAlgorithm::getBoxPlotValueNewIndex()
 {
 	return m_stats.getBoxPlotValueNewIndex();
 }

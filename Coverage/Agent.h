@@ -56,6 +56,7 @@ namespace Robotics
 			double computeCosts() const {return 0.;}
 
 			bool operator==(CameraPosition const& other) const;
+			bool operator!=(CameraPosition const& other) const;
 		};
 
 		//////////////////////////////////////////////////////////////////////////
@@ -95,6 +96,7 @@ namespace Robotics
 			IDS::BaseGeometry::Shape2D getVisibleArea() const;
 
 			bool operator==(AgentPosition const& other) const;
+			bool operator!=(AgentPosition const& other) const;
 
 			friend class COVERAGE_API Agent;
 			friend class COVERAGE_API Guard;

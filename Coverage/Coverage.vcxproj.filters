@@ -105,6 +105,9 @@
     <ClInclude Include="BatalinGuard.h">
       <Filter>Header Files\Agent</Filter>
     </ClInclude>
+    <ClInclude Include="ParetoEfficientAlgorithm.h">
+      <Filter>Header Files\Learning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoverageAlgorithm.cpp">
@@ -147,6 +150,9 @@
       <Filter>Source Files\Learning</Filter>
     </ClCompile>
     <ClCompile Include="BatalinAlgorithm.cpp">
+      <Filter>Source Files\Learning</Filter>
+    </ClCompile>
+    <ClCompile Include="ParetoEfficientAlgorithm.cpp">
       <Filter>Source Files\Learning</Filter>
     </ClCompile>
   </ItemGroup>

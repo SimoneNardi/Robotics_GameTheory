@@ -1,3 +1,4 @@
+#if 0
 ///////////////////////////////////////////////////////////
 //  BatalinAlgorithm.h
 //  Created on:      28-Jul-2014 10.14.52
@@ -76,4 +77,5 @@ namespace Robotics
 		};
 	}
 }
+#endif
 #endif

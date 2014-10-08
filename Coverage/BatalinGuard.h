@@ -1,3 +1,4 @@
+#if 0
 ///////////////////////////////////////////////////////////
 //  BatalinGuard.h
 //  Created on:      29-jul-2014 10.14.52
@@ -30,4 +31,5 @@ namespace Robotics
 
 	}
 }
+#endif
 #endif

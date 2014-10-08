@@ -30,9 +30,11 @@ namespace Robotics
 			int m_time;
 			std::set< std::shared_ptr<Guard> > m_guards;
 
+			double m_experimentalRate;
+
 		public:
-			LearningAlgorithm() : m_time(0), m_guards() {}
-			LearningAlgorithm(std::set< std::shared_ptr<Guard> > const& _guards) : m_time(0), m_guards(_guards) {}
+			LearningAlgorithm() : m_time(0), m_guards(),m_experimentalRate(.2) {}
+			LearningAlgorithm(std::set< std::shared_ptr<Guard> > const& _guards) : m_time(0), m_guards(_guards), m_experimentalRate(.2) {}
 
 			virtual void initialize() = 0;
 
@@ -55,6 +57,7 @@ namespace Robotics
 			virtual void getGuardsPosition(std::vector<AgentPosition> & _pos) = 0;
 			virtual void getGuardsSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> & _pos) = 0;
 			virtual void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas) = 0;
+			virtual void setExperimentalRate(double _epsilon) {m_experimentalRate = _epsilon;}
 
 			int getTime() const {return m_time;}
 			virtual double getPotentialValue() = 0;

@@ -663,7 +663,7 @@ void DiscretizedArea::setThiefPosition(AgentPosition const& _pos)
 {
 	SquarePtr l_square = this->getSquare( _pos.getPoint2D() );
 	if(l_square)
-		l_square->setValue(100.);
+		l_square->setValue(g_maxValue/g_maxValuePossible);
 	else
 		assert(1 == 0);
 
@@ -683,19 +683,17 @@ void DiscretizedArea::setThiefPosition(AgentPosition const& _pos)
 			if(i == 0 && j == 0)
 				continue;
 
-			double l_value = 100./ double( abs(i)+abs(j) );
+			double l_value = g_maxValue/ double( abs(i)+abs(j) );
 			double l_valueEx = m_lattice[row * m_numCol + col]->getValue();
-			m_lattice[row * m_numCol + col]->setValue(l_value + l_valueEx);
+			m_lattice[row * m_numCol + col]->setValue( (l_value + l_valueEx) / g_maxValuePossible);
 		}
 	}
 }
 
-double g_thiefMaxValue = (100./8. + 100./7. * 2. +  100./6. * 3. +  100./5. * 4. + 100./4. * 3. + 100./3. * 2. + 100./2. ) * 4 + 100.*5. + 100./2.*4 + 100./3.*4 + 100./4.*4;
-
 //////////////////////////////////////////////////////////////////////////
 double DiscretizedArea::getThiefMaxValue(AgentPosition const& _pos)
 {
-	double tot = 100.;//g_thiefMaxValue;
+	double tot = g_maxValue/g_maxValuePossible;
 	AreaCoordinate l_coord = this->getCoordinate( _pos.getPoint2D() );
 
 	for(int i = -4; i < 5; ++i)
@@ -712,9 +710,9 @@ double DiscretizedArea::getThiefMaxValue(AgentPosition const& _pos)
 			if(i == 0 && j == 0)
 				continue;
 
-			double l_value = 100./ double( abs(i)+abs(j) );
+			double l_value = g_maxValue/ double( abs(i)+abs(j) );
 			if( m_lattice[row * m_numCol + col]->isValid() ) // CONTROLLARE: assume 1 solo ladro
-				tot += l_value;
+				tot += l_value/g_maxValuePossible;
 		}
 	}
 	return tot;

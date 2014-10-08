@@ -1,0 +1,5 @@
+Monitor	1
+Jump	0.01	0.5
+Period	1
+TestCase	1
+StopRate	1.e-3

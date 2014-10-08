@@ -14,9 +14,12 @@ using namespace Robotics::GameTheory;
 using namespace IDS::BaseGeometry;
 using namespace std;
 
-#define L_TEST
+#define _TEST
 #define _STATIC 
+#define _EPSILON 
+//const int N_MAX = 100000000;
 const int N_MAX = 100000;
+//const int N_MAX = 500;
 struct Log
 {
 	ofstream m_logFile;
@@ -107,9 +110,9 @@ void tokenize(const std::string& str, const std::string& separators, std::vector
 
 struct SimulationConfig
 {
-	double StopRate;
+	std::vector<double> StopRate;
 	std::vector<int> MonitorUpdateTime;
-	std::vector<int> ThiefJump;
+	std::vector<double> ThiefJump;
 	std::vector<int> TimeEnd;
 	std::vector<int> Period;
 	int TestCase;
@@ -117,6 +120,9 @@ struct SimulationConfig
 
 void readSimulationConfigFile(Log & _log)
 {
+#ifdef _EPSILON
+	std::ifstream file("simple_config_EPSILON.dat");
+#else
 #ifndef _TEST
 #ifdef _STATIC
 	std::ifstream file("config_STATIC.dat");
@@ -130,6 +136,7 @@ void readSimulationConfigFile(Log & _log)
 	std::ifstream file("simple_config.dat");
 #endif
 #endif	
+#endif
 	std::string l_sep("\t");
 
 	if( file.is_open() )
@@ -147,8 +154,8 @@ void readSimulationConfigFile(Log & _log)
 				_log << "StopRate" << endl;
 				for(size_t i = 1; i < l_token.size(); ++i)
 				{
-					g_config.StopRate = atof(l_token[i].c_str());
-					_log << g_config.StopRate << endl;
+					g_config.StopRate.push_back(atof(l_token[i].c_str()));
+					_log << g_config.StopRate.back() << endl;
 				}
 			}
 			else if(l_token[0] == "Monitor")
@@ -166,7 +173,7 @@ void readSimulationConfigFile(Log & _log)
 				_log << "Jump" << endl;
 				for(size_t i = 1; i < l_token.size(); ++i)
 				{
-					g_config.ThiefJump.push_back(atoi(l_token[i].c_str()));
+					g_config.ThiefJump.push_back(atof(l_token[i].c_str()));
 					_log << g_config.ThiefJump.back() << "\t";
 				}
 				_log << endl;
@@ -248,6 +255,355 @@ std::vector<std::string> getAreaNames(std::string const& _folname)
 	return l_result;
 }
 
+
+#ifdef _EPSILON// Test al variare di epsilon
+const int g_medianNumberObject = 100;
+const int g_steadyValueCompared = 10;
+void computeSteadyValue(std::vector<double> & _result_container, double& _steadyValue , int &_steadyIndex)
+{
+	_steadyIndex = _result_container.size();
+	//_steadyValue = 0.;
+	//for(int i = 1; i <= g_medianNumberObject; ++i)
+	//{
+	//	int index = _result_container.size() - i;
+	//	if(index < 0 && index >= _result_container.size())
+	//		break;
+	//	_steadyValue += _result_container[_result_container.size() - i];
+	//}
+
+	//_steadyValue /= double(g_medianNumberObject);
+
+	_steadyValue = 0.;
+	for(int i = 0; i < _result_container.size(); ++i)
+	{
+		if (_steadyValue < _result_container[i])
+			_steadyValue = _result_container[i];
+	}
+
+	for(int j = 0; j < _result_container.size(); ++j)
+	{
+		double l_steadyValuePartialMean=0;
+		int num = 0;
+		for(int i = 0; i < g_steadyValueCompared; ++i)
+		{
+			int index = i+j;
+			if(index >= _result_container.size())
+				break;
+
+			num++;
+			l_steadyValuePartialMean += _result_container[index];
+
+		}
+		l_steadyValuePartialMean /= double(num);
+
+		if(l_steadyValuePartialMean > _steadyValue * .95)
+		{
+			_steadyIndex = j;
+			break;
+		}
+	}
+}
+
+
+#if 1
+	int main(int argc, char* argv[])
+	{
+		Log l_log("log.txt");
+
+		//system("pause");
+	#ifndef _TEST
+		std::string l_folname = "scenarios_EPSILON.dat";
+	#else
+		std::string l_folname = "simple_scenarios_EPSILON.dat";
+	#endif
+		if(argc < 1)
+			return -1;
+		else if(argc >= 2)
+			l_folname = argv[1];
+
+		std::vector<std::string> l_AgentFilenames = getAgentNames(l_folname);
+		std::vector<std::string> l_AreaFilenames = getAreaNames(l_folname);
+
+		readSimulationConfigFile(l_log);
+
+		for(size_t o = 0; o < l_AgentFilenames.size(); ++o )
+		{
+			std::string l_AgentFilename = l_AgentFilenames[o];
+			std::string l_folder = l_AgentFilename.substr(0,l_AgentFilename.find_last_of("/\\")+1);
+			std::string l_AgentName = l_AgentFilename.substr(l_AgentFilename.find_last_of("/\\")+1, l_AgentFilename.find_last_of("."));
+
+			l_log << "******************************************" << endl;
+			l_log << "Agent File: " << l_AgentName << endl;
+
+			for( size_t l= 0; l < l_AreaFilenames.size(); ++l )
+			{
+				std::string l_AreaFilename = l_AreaFilenames[l];
+				std::string l_AreaName = l_AreaFilename.substr(l_AreaFilename.find_last_of("/\\")+1, l_AreaFilename.find_last_of("."));
+
+				std::string l_nameoriginal = l_AreaName.substr(0,l_AreaName.find_last_of("."));
+				l_nameoriginal += ("_" + l_AgentName.substr(0,l_AgentName.find_last_of(".")));
+
+				l_log << "-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-" << endl;
+				l_log << "Area File: " << l_AreaName << endl;
+
+				try
+				{
+					for(int l_algorithmType = 0; l_algorithmType < 1; ++l_algorithmType )
+					{
+						std::string l_name = l_nameoriginal;
+						std::string l_algName = (l_algorithmType == 0 ? "_DISL" : l_algorithmType == 1 ? "_PIPIP" : "_PARETO");
+						l_log << "-----Algorithm:" << l_algName << endl;
+						l_name += l_algName;
+						l_name+= "_EPSILON";
+						BoxPlotFile l_boxPlot;
+						for(size_t l_periodIndex = 0; l_periodIndex < g_config.Period.size(); ++l_periodIndex)
+						{
+							l_log << "---Period:" << g_config.Period[l_periodIndex] << endl;
+
+							// preparo i nomi dei file:
+							char buffername[1024], buffernameBoxplot[1024], buffernameBoxPlotAscissa[1024];
+							sprintf(buffername,"%s_Algorithm_%s_Period_%d",
+								l_name.c_str(), 
+								l_algName.c_str(),
+								g_config.Period[l_periodIndex]);
+
+							sprintf(buffernameBoxplot, "%s_boxplot.txt", buffername);
+							sprintf(buffernameBoxPlotAscissa, "%s_boxplot_ascissa.txt", buffername);
+							for(int l_epsilonIndex = 0; l_epsilonIndex < g_config.ThiefJump.size(); ++l_epsilonIndex)
+							{
+								double l_epsilon = g_config.ThiefJump[l_epsilonIndex];
+
+								for(int l_testIndex = 0; l_testIndex < g_config.TestCase; ++l_testIndex)
+									// per g_test volte ripeto lo stesso scenario! con punti di partenza diversi per gli agenti
+								{
+									l_log << "-Case: " << l_testIndex << "..." << endl;
+
+									std::shared_ptr<Robotics::GameTheory::CoverageAlgorithm> l_coverage = 
+										Robotics::GameTheory::CoverageAlgorithm::createFromAreaFile(
+										l_AreaFilename, 
+										l_AgentFilename, 
+										l_algorithmType, 
+										g_config.Period[l_periodIndex]);
+									l_coverage->setExperimentalRate(l_epsilon);
+
+	#ifdef _PRINT
+									l_log << "Ho creato lo scenario" << endl;
+	#endif
+
+									double l_rate= 2;// = l_coverage->getExplorationRate();
+									int k = 0;
+									l_coverage->updateMonitor();
+									for(auto l_stoprate_index = 0; l_stoprate_index < g_config.StopRate.size(); ++ l_stoprate_index)
+									{
+										l_coverage->update(	N_MAX, -1, 0);
+
+										l_coverage->m_stats.printNewPerformanceIndex("../pippo.jpg", false);
+										l_coverage->m_stats.printPerformanceIndex("../pippo.jpg", false);
+										l_coverage->m_stats.printPotential("../pippo.jpg", false);
+
+										system("pause");
+
+										double l_steadyValue;
+										int l_steadyIndex;
+										computeSteadyValue(l_coverage->m_stats.m_performanceIndex, l_steadyValue , l_steadyIndex);
+
+										l_boxPlot.add( 0, l_epsilonIndex,
+											g_config.Period[l_periodIndex], N_MAX,
+											l_steadyValue);
+
+										l_boxPlot.add( 1, l_epsilonIndex,
+											g_config.Period[l_periodIndex], N_MAX,
+											l_steadyIndex);
+
+										double l_steadyValue_old;
+										int l_steadyIndex_old;
+										computeSteadyValue(l_coverage->m_stats.m_oldPerformanceIndex, l_steadyValue_old , l_steadyIndex_old);
+
+										/// print data for BoxPlot:
+										l_log << "Steady Value " << l_steadyValue_old << "\t Steady Index " << l_steadyIndex_old;
+										l_log << endl;
+
+										l_boxPlot.add( 2, l_epsilonIndex,
+											g_config.Period[l_periodIndex], N_MAX,
+											l_steadyValue_old);
+
+										l_boxPlot.add( 3, l_epsilonIndex,
+											g_config.Period[l_periodIndex], N_MAX,
+											l_steadyIndex_old);
+
+									}
+								}
+							}
+						}
+						l_log << "Print BoxPlot Data _" << l_name << endl;
+						l_log.flush();
+						l_boxPlot.printOnNewFile(l_name + "_boxPlot.txt", l_name + "_VEC_boxPlot.txt");
+					}
+
+				}
+				catch(...)
+				{
+					l_log <<"Unable to process file " << l_nameoriginal << endl;
+					l_log.flush();
+				}
+			}
+		}
+
+		l_log <<"Process is ended!"<< endl;
+		l_log.close();
+
+		system("pause");
+
+		return 0;
+	}
+
+	#else
+	int main(int argc, char* argv[])
+	{
+		Log l_log("log.txt");
+
+		//system("pause");
+	#ifndef _TEST
+		std::string l_folname = "scenarios_EPSILON.dat";
+	#else
+		std::string l_folname = "simple_scenarios_EPSILON.dat";
+	#endif
+		if(argc < 1)
+			return -1;
+		else if(argc >= 2)
+			l_folname = argv[1];
+
+		std::vector<std::string> l_AgentFilenames = getAgentNames(l_folname);
+		std::vector<std::string> l_AreaFilenames = getAreaNames(l_folname);
+
+		readSimulationConfigFile(l_log);
+
+		for(size_t o = 0; o < l_AgentFilenames.size(); ++o )
+		{
+			std::string l_AgentFilename = l_AgentFilenames[o];
+			std::string l_folder = l_AgentFilename.substr(0,l_AgentFilename.find_last_of("/\\")+1);
+			std::string l_AgentName = l_AgentFilename.substr(l_AgentFilename.find_last_of("/\\")+1, l_AgentFilename.find_last_of("."));
+
+			l_log << "******************************************" << endl;
+			l_log << "Agent File: " << l_AgentName << endl;
+
+			for( size_t l= 0; l < l_AreaFilenames.size(); ++l )
+			{
+				std::string l_AreaFilename = l_AreaFilenames[l];
+				std::string l_AreaName = l_AreaFilename.substr(l_AreaFilename.find_last_of("/\\")+1, l_AreaFilename.find_last_of("."));
+
+				std::string l_nameoriginal = l_AreaName.substr(0,l_AreaName.find_last_of("."));
+				l_nameoriginal += ("_" + l_AgentName.substr(0,l_AgentName.find_last_of(".")));
+
+				l_log << "-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-" << endl;
+				l_log << "Area File: " << l_AreaName << endl;
+
+				try
+				{
+					for(int l_algorithmType = 1; l_algorithmType < 2; ++l_algorithmType )
+					{
+						std::string l_name = l_nameoriginal;
+						std::string l_algName = (l_algorithmType == 0 ? "_DISL" : l_algorithmType == 1 ? "_PIPIP" : "_PARETO");
+						l_log << "-----Algorithm:" << l_algName << endl;
+						l_name += l_algName;
+						l_name+= "_EPSILON";
+						BoxPlotFile l_boxPlot;
+						for(size_t l_periodIndex = 0; l_periodIndex < g_config.Period.size(); ++l_periodIndex)
+						{
+							l_log << "---Period:" << g_config.Period[l_periodIndex] << endl;
+
+							// preparo i nomi dei file:
+							char buffername[1024], buffernameBoxplot[1024], buffernameBoxPlotAscissa[1024];
+							sprintf(buffername,"%s_Algorithm_%s_Period_%d",
+								l_name.c_str(), 
+								l_algName.c_str(),
+								g_config.Period[l_periodIndex]);
+
+							sprintf(buffernameBoxplot, "%s_boxplot.txt", buffername);
+							sprintf(buffernameBoxPlotAscissa, "%s_boxplot_ascissa.txt", buffername);
+							for(int l_epsilonIndex = 0; l_epsilonIndex < g_config.ThiefJump.size(); ++l_epsilonIndex)
+							{
+								double l_epsilon = g_config.ThiefJump[l_epsilonIndex];
+
+								for(int l_testIndex = 0; l_testIndex < g_config.TestCase; ++l_testIndex)
+								// per g_test volte ripeto lo stesso scenario! con punti di partenza diversi per gli agenti
+								{
+									l_log << "-Case: " << l_testIndex << "..." << endl;
+
+									std::shared_ptr<Robotics::GameTheory::CoverageAlgorithm> l_coverage = 
+										Robotics::GameTheory::CoverageAlgorithm::createFromAreaFile(
+										l_AreaFilename, 
+										l_AgentFilename, 
+										l_algorithmType, 
+										g_config.Period[l_periodIndex]);
+									l_coverage->setExperimentalRate(l_epsilon);
+
+		#ifdef _PRINT
+									l_log << "Ho creato lo scenario" << endl;
+		#endif
+
+									double l_rate= 2;// = l_coverage->getExplorationRate();
+									int k = 0;
+									l_coverage->updateMonitor();
+									for(auto l_stoprate_index = 0; l_stoprate_index < g_config.StopRate.size(); ++ l_stoprate_index)
+									{
+										l_coverage->update(	N_MAX, -1, 0);
+
+										double l_steadyValue;
+										int l_steadyIndex;
+										computeSteadyValue(l_coverage->m_stats.m_performanceIndex, l_steadyValue , l_steadyIndex);
+
+										l_boxPlot.add( 0, l_epsilonIndex,
+											g_config.Period[l_periodIndex], N_MAX,
+											l_steadyValue);
+
+										l_boxPlot.add( 1, l_epsilonIndex,
+											g_config.Period[l_periodIndex], N_MAX,
+											l_steadyIndex);
+
+										double l_steadyValue_old;
+										int l_steadyIndex_old;
+										computeSteadyValue(l_coverage->m_stats.m_oldPerformanceIndex, l_steadyValue_old , l_steadyIndex_old);
+
+										/// print data for BoxPlot:
+										l_log << "Steady Value " << l_steadyValue_old << "\t Steady Index " << l_steadyIndex_old;
+										l_log << endl;
+
+										l_boxPlot.add( 2, l_epsilonIndex,
+											g_config.Period[l_periodIndex], N_MAX,
+											l_steadyValue_old);
+
+										l_boxPlot.add( 3, l_epsilonIndex,
+											g_config.Period[l_periodIndex], N_MAX,
+											l_steadyIndex_old);
+
+									}
+								}
+							}
+						}
+						l_log << "Print BoxPlot Data _" << l_name << endl;
+						l_log.flush();
+						l_boxPlot.printOnNewFile(l_name + "_boxPlot.txt", l_name + "_VEC_boxPlot.txt");
+					}
+
+				}
+				catch(...)
+				{
+					l_log <<"Unable to process file " << l_nameoriginal << endl;
+					l_log.flush();
+				}
+			}
+		}
+
+		l_log <<"Process is ended!"<< endl;
+		l_log.close();
+
+		system("pause");
+
+		return 0;
+	}
+	#endif
+#else
 #ifdef _STATIC
 int main(int argc, char* argv[])
 {
@@ -278,7 +634,7 @@ int main(int argc, char* argv[])
 		l_log << "******************************************" << endl;
 		l_log << "Agent File: " << l_AgentName << endl;
 
-		for(size_t l= 0; l < l_AreaFilenames.size(); ++l )
+		for( size_t l= 0; l < l_AreaFilenames.size(); ++l )
 		{
 			std::string l_AreaFilename = l_AreaFilenames[l];
 			std::string l_AreaName = l_AreaFilename.substr(l_AreaFilename.find_last_of("/\\")+1, l_AreaFilename.find_last_of("."));
@@ -294,8 +650,9 @@ int main(int argc, char* argv[])
 				for(int l_algorithmType = 0; l_algorithmType < 1; ++l_algorithmType )
 				{
 					std::string l_name = l_nameoriginal;
-					l_log << "-----Algorithm:" << (l_algorithmType == 0 ? "DISL" : "PIPIP") << endl;
-					l_name += (l_algorithmType == 0 ? "_DISL" : "_PIPIP");
+					std::string l_algName = (l_algorithmType == 0 ? "_DISL" : l_algorithmType == 1 ? "_PIPIP" : "_PARETO");
+					l_log << "-----Algorithm:" << l_algName << endl;
+					l_name += l_algName;
 					l_name+= "_STATIC";
 					BoxPlotFile l_boxPlot;
 					for(size_t l_periodIndex = 0; l_periodIndex < g_config.Period.size(); ++l_periodIndex)
@@ -306,7 +663,7 @@ int main(int argc, char* argv[])
 						char buffername[1024], buffernameBoxplot[1024], buffernameBoxPlotAscissa[1024];
 						sprintf(buffername,"%s_Algorithm_%s_Period_%d",
 							l_name.c_str(), 
-							l_algorithmType == 0 ? "DISL" : "PIPIP",
+							l_algName.c_str(),
 							g_config.Period[l_periodIndex]);
 
 						sprintf(buffernameBoxplot, "%s_boxplot.txt", buffername);
@@ -327,34 +684,46 @@ int main(int argc, char* argv[])
 #ifdef _PRINT
 							l_log << "Ho creato lo scenario" << endl;
 #endif
+
 							double l_rate= 2;// = l_coverage->getExplorationRate();
 							int k = 0;
-							do
+							l_coverage->updateMonitor();
+							for(auto l_stoprate_index = 0; l_stoprate_index < g_config.StopRate.size(); ++ l_stoprate_index)
 							{
-								l_coverage->updateMonitor();
-								l_coverage->update(	1, -1, 0);
-								l_rate = l_coverage->getExplorationRate();
-								k++;
+								do
+								{
+									l_coverage->update(	1, -1, 0);
+									l_rate = l_coverage->getExplorationRate();
+									k++;
+									if(k== 100000)
+										cout << "Rate 100000 = " << l_rate << endl;
+								}
+								while((l_rate >= g_config.StopRate[l_stoprate_index] - 1.e-9) && (k < g_config.Period[l_periodIndex]*N_MAX));
+
+								l_coverage->update(	g_config.Period[l_periodIndex]+1, -1, 0 );
+								k+=g_config.Period[l_periodIndex]+1;
+
+								double l_value = l_coverage->getGlobalTrajectoryCoverage();
+								double l_valueBenefit = l_coverage->getBoxPlotValue();
+								double l_valueBenefitNewIndex = l_coverage->getBoxPlotValueNewIndex();
+
+								/// print data for BoxPlot:
+								//l_valueBoxPlot.push_back(l_value);
+								l_log << "Coverage " << l_value << "\t Old Index " << l_valueBenefit << "\t New Index " << l_valueBenefitNewIndex;
+								l_log << endl;
+
+								l_boxPlot.add( 0, l_stoprate_index,
+									g_config.Period[l_periodIndex], k,
+									l_value);
+
+								l_boxPlot.add( 1, l_stoprate_index,
+									g_config.Period[l_periodIndex], k,
+									l_valueBenefit);
+
+								l_boxPlot.add( 2, l_stoprate_index,
+									g_config.Period[l_periodIndex], k,
+									l_valueBenefitNewIndex);
 							}
-							while( (l_rate >= g_config.StopRate - 1.e-9) && (k < N_MAX));
-
-							l_coverage->update(	g_config.Period[l_periodIndex]+1, -1, 0);
-
-							double l_value = l_coverage->getGlobalTrajectoryCoverage();
-							double l_valueBenefit = l_coverage->getBoxPlotValue();
-
-							/// print data for BoxPlot:
-							//l_valueBoxPlot.push_back(l_value);
-							l_log << l_value << "\t" << l_valueBenefit;
-							l_log << endl;
-
-							l_boxPlot.add( 0, 0,
-								g_config.Period[l_periodIndex], k,
-								l_value);
-
-							l_boxPlot.add( 1, 0,
-								g_config.Period[l_periodIndex], k,
-								l_valueBenefit);
 						}
 					}
 					l_log << "Print BoxPlot Data _" << l_name << endl;
@@ -423,8 +792,9 @@ int main(int argc, char* argv[])
 			{
 				for(int l_algorithmType = 1; l_algorithmType < 2; ++l_algorithmType )
 				{
-					l_log << "-----------Algorithm:" << (l_algorithmType == 0 ? "DISL" : "PIPIP") << endl;
-					l_name += (l_algorithmType == 0 ? " DISL" : " PIPIP");
+					std::string l_algName = (l_algorithmType == 0 ? "_DISL" : l_algorithmType == 1 ? "_PIPIP" : "_PARETO");
+					l_log << "-----Algorithm:" << l_algName << endl;
+					l_name += l_algName;
 					BoxPlotFile l_boxPlot;
 					for(size_t l_periodIndex = 0; l_periodIndex < g_config.Period.size(); ++l_periodIndex)
 					{
@@ -440,9 +810,9 @@ int main(int argc, char* argv[])
 
 								// preparo i nomi dei file:
 								char buffername[1024], buffernameBoxplot[1024], buffernameBoxPlotAscissa[1024];
-								sprintf(buffername,"%s_Algorithm_%s_Period_%d_MonitorUpdate_%d_ThiefJump_%d",
+								sprintf(buffername,"%s_Algorithm_%s_Period_%d_MonitorUpdate_%d_ThiefJump_%f",
 									l_name.c_str(), 
-									l_algorithmType == 0 ? "DISL" : "PIPIP",
+									l_algName.c_str(),
 									g_config.Period[l_periodIndex],
 									g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
 									g_config.ThiefJump[l_thiefJumpIndex]);
@@ -462,7 +832,8 @@ int main(int argc, char* argv[])
 										l_AreaFilename, 
 										l_AgentFilename, 
 										l_algorithmType, 
-										g_config.Period[l_periodIndex]);
+										g_config.Period[l_periodIndex],
+										g_config.ThiefJump[l_thiefJumpIndex]);
 
 									for(size_t l_TimeEndIndex = 0; l_TimeEndIndex < g_config.TimeEnd.size(); ++l_TimeEndIndex)
 									{
@@ -477,7 +848,7 @@ int main(int argc, char* argv[])
 										l_coverage->update(
 											g_config.TimeEnd[l_TimeEndIndex] - (l_TimeEndIndex==0? 0 : g_config.TimeEnd[l_TimeEndIndex-1]), 
 											g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
-											g_config.ThiefJump[l_thiefJumpIndex]);
+											1);
 
 #if 0
 										// non sono necessarie le stampe dei grafici, 
@@ -501,16 +872,24 @@ int main(int argc, char* argv[])
 #endif
 										/// print data for BoxPlot:
 										double l_value = l_coverage->getBoxPlotValue();
+										double l_valueNewIndex = l_coverage->getBoxPlotValueNewIndex();
 										//l_valueBoxPlot.push_back(l_value);
 										l_log << l_value;
 										l_log << endl;
 
 										l_boxPlot.add(
 											g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
-											g_config.ThiefJump[l_thiefJumpIndex],
+											l_thiefJumpIndex,
 											g_config.Period[l_periodIndex],
 											g_config.TimeEnd[l_TimeEndIndex],
 											l_value);
+
+										l_boxPlot.add(
+											-g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
+											l_thiefJumpIndex,
+											g_config.Period[l_periodIndex],
+											g_config.TimeEnd[l_TimeEndIndex],
+											l_valueNewIndex);
 									}
 								}
 							}
@@ -536,4 +915,5 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
+#endif
 #endif

@@ -60,12 +60,12 @@ CoverageTest::CoverageTest(const vector<Point2D>& bound, bool counterclockwise)
 	{
 		++l_id;
 		AgentPosition l_pos( l_space->randomPosition(), CameraPosition( l_space->getDistance()/7. ) );
-		std::shared_ptr<Agent> l_agent = std::make_shared<Guard>(1, l_id, l_pos, g_agentsPeriod);
+		std::shared_ptr<Agent> l_agent = std::make_shared<Guard>(1, l_id, l_pos, g_agentsPeriod, g_pareto?1:2);
 		l_agents.insert(l_agent);
 		Sleep(1000);
 	}
 
-	m_algorithm = std::make_shared<CoverageAlgorithm>(l_agents, l_space, 0);
+	m_algorithm = std::make_shared<CoverageAlgorithm>(l_agents, l_space, g_pareto? 2: g_DISL? 0 : 1);
 	//m_algorithm->Initialize();
 }
 
@@ -116,6 +116,24 @@ void CoverageTest::printBenefit(std::string const& name, bool _printOnFile)
 void CoverageTest::printPerformanceIndex(std::string const& name, bool _print)
 {
 	return m_algorithm->printPerformanceIndex(name, _print);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageTest::printNewPerformanceIndex(std::string const& name, bool _print)
+{
+	return m_algorithm->printNewPerformanceIndex(name, _print);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageTest::printNewPerformanceIndexVersusExplorationRate(std::string const& name, bool printOnFile)
+{
+	return m_algorithm->printNewPerformanceIndexVersusExplorationRate(name, printOnFile);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageTest::printExplorationRate(std::string const& name, bool printOnFile)
+{
+	return m_algorithm->printExplorationRate(name, printOnFile);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -448,7 +466,7 @@ void DrawAllPolygons(HDC hdc, int width, int height, int thickness)
 
 	for(size_t i = 0; i < l_squares.size(); ++i)
 	{
-		MyColour Col = l_colorMap.getColor( l_squares[i]->getValue());
+		MyColour Col = l_colorMap.getColor( l_squares[i]->getValue() * Robotics::GameTheory::g_maxValuePossible );
 		if( l_squares[i]->isValid() && (g_drawSquare || l_squares[i]->isChanged()) )
 			DrawSquare(l_squares[i], hdc, width, height, Col.R, Col.G, Col.B, thickness);
 	}
@@ -960,6 +978,105 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				g_drawing_loadCounter--;
 
 			break;
+		case ID_FILE_PARETO:
+			g_pareto = !g_pareto;
+			{HMENU hmenu = GetMenu(hWnd);
+			if(g_pareto)
+			{
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_CHECKED);
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+			}
+			else if(g_PIPIP)
+			{
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_CHECKED);
+			}
+			else if(g_DISL)
+			{
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_CHECKED);
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+			}
+			else 
+			{
+				g_DISL = true;
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_CHECKED);
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+			}
+			EndMenu();}
+			if( g_drawing_mode < 0 && g_drawing_mybool )
+				g_drawing_loadCounter--;
+
+			break;
+		case ID_FILE_DISL:
+			g_DISL = !g_DISL;
+			{HMENU hmenu = GetMenu(hWnd);
+			if(g_DISL)
+			{
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_CHECKED);
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+			}
+			else if(g_PIPIP)
+			{
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_CHECKED);
+			}
+			else if(g_pareto)
+			{
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_CHECKED);
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+			}
+			else 
+			{
+				g_pareto = true;
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_CHECKED);
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+			}
+			EndMenu();}
+			if( g_drawing_mode < 0 && g_drawing_mybool )
+				g_drawing_loadCounter--;
+
+			break;
+		case ID_FILE_PIPIP:
+			g_PIPIP = !g_PIPIP;
+			{HMENU hmenu = GetMenu(hWnd);
+			if(g_PIPIP)
+			{
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_CHECKED);
+			}
+			else if(g_DISL)
+			{
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_CHECKED);
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+			}
+			else if(g_pareto)
+			{
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_CHECKED);
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+			}
+			else 
+			{
+				g_pareto = true;
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_CHECKED);
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+			}
+			EndMenu();}
+			if( g_drawing_mode < 0 && g_drawing_mybool )
+				g_drawing_loadCounter--;
+
+			break;
 		case ID_FILE_DRAWREALPARTITION:
 			g_drawRealArea = !g_drawRealArea;
 			{HMENU hmenu = GetMenu(hWnd);
@@ -1050,146 +1167,149 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					delete g_path1;
 				g_path1 = new LineString2D;
 
-				if( g_drawing_mode < 0 && g_drawing_mybool && g_drawing_loadCounter != g_drawing_numToLoad )
+				if(!g_coverageTest)
 				{
-					FILE* f;
-					if( g_drawing_mode == -3 )
-						f = fopen("..\\TestM\\Test.txt","r");
-					else
-						f = fopen("..\\Test\\Test.txt","r");
-					fscanf(f,"%d",&g_drawing_numToLoad);
-					fclose(f);
-
-					bool loaded;
-					if( g_drawing_mode == -3 )
-						loaded = LoadBoundary(false,g_drawing_loadCounter);
-					else
-						loaded = LoadBoundary(g_drawing_mode+1,g_drawing_loadCounter);
-
-					if(!loaded)
+					if( g_drawing_mode < 0 && g_drawing_mybool && g_drawing_loadCounter != g_drawing_numToLoad )
 					{
-						MessageBox(hWnd,L"Error: Corridor not loaded!",L"Error",MB_OK | MB_ICONERROR);
-						g_drawing_mode = 0;
-						g_drawing_mybool = true;
+						FILE* f;
+						if( g_drawing_mode == -3 )
+							f = fopen("..\\TestM\\Test.txt","r");
+						else
+							f = fopen("..\\Test\\Test.txt","r");
+						fscanf(f,"%d",&g_drawing_numToLoad);
+						fclose(f);
+
+						bool loaded;
+						if( g_drawing_mode == -3 )
+							loaded = LoadBoundary(false,g_drawing_loadCounter);
+						else
+							loaded = LoadBoundary(g_drawing_mode+1,g_drawing_loadCounter);
+
+						if(!loaded)
+						{
+							MessageBox(hWnd,L"Error: Corridor not loaded!",L"Error",MB_OK | MB_ICONERROR);
+							g_drawing_mode = 0;
+							g_drawing_mybool = true;
+						}
+						else
+						{
+							g_LeftBoundary->clear();
+							if(g_coverageTest)
+							{
+								delete g_coverageTest;
+								g_coverageTest = NULL;
+							}
+							for( int i = 0; i != g_dim; i++ )
+							{
+								g_LeftBoundary->push_back(g_boundary2D[i]);
+							}
+							if( g_PrintPotential )
+							{
+								try
+								{
+									if( g_numberOfAgents < 0 )
+									{
+										vector<IDSReal2D> bb;
+										vector<IDSReal2D> ss;
+										for(int i = 0; i != g_dim + g_numberOfAgents - 1; i++)
+										{
+											bb.push_back(g_boundary2D[i].coord());
+										}
+										if( g_path2 )
+											delete g_path2;
+										g_path2 = new LineString2D;
+										for(int i = g_dim + g_numberOfAgents - 1; i != g_dim; i++)
+										{
+											ss.push_back(g_boundary2D[i].coord());
+											g_path2->push_back(g_boundary2D[i]);
+										}
+
+										///Create Point From Vertex:
+										std::vector<Point2D> bb_2D;
+										for(size_t i = 0; i != bb.size(); i++)
+										{
+											bb_2D.push_back(makePoint(bb[i], g_metric));
+										}
+
+										std::vector<Point2D> ss_2D;
+										for(size_t i = 0; i != ss.size(); i++)
+										{
+											ss_2D.push_back(makePoint(ss[i], g_metric));
+										}
+
+										//g_coverageTest= new CoverageTest(bb_2D,ss_2D);
+									}
+									//else if(!g_derIsInside)
+									//{
+									//	if( g_path2 )
+									//	{
+									//		delete g_path2;
+									//		g_path2 = 0;
+									//	}
+									//	g_coverageTest= new CoverageTest(g_dim,g_boundary2D,g_numberOfAgents,counterclockwise);
+									//}
+									else
+									{
+										vector<Point2D> v;
+										vector<Point2D> st;
+										int i;
+
+										//Separato start da corridoio!
+										for(i = 0; i != g_dim - g_numberOfAgents - 1; i++)
+										{
+											v.push_back(g_boundary2D[i]);
+										}
+										if( g_path2 )
+											delete g_path2;
+										g_path2 = new LineString2D;
+										for(i = g_dim - g_numberOfAgents - 1; i != g_dim; i++)
+										{
+											st.push_back(g_boundary2D[i]);
+											g_path2->push_back( g_boundary2D[i] );
+										}
+										g_coverageTest= new CoverageTest(v,g_counterclockwise);
+									}
+								}catch(...) {MessageBox(hWnd,L"Error: bad Corridor!",L"Error",MB_OK | MB_ICONERROR);}
+
+								/*if( __GetError() == 2 )
+								MessageBox(hWnd,L"Error: bad Corridor!",L"Error",MB_OK | MB_ICONERROR);*/
+								g_drawing_mybool = false;
+							}
+							g_drawing_loadCounter++;
+							if( g_drawing_loadCounter == g_drawing_numToLoad )
+							{
+								g_drawing_loadCounter = 0;
+								g_drawing_mode = 0;
+							}
+						}
 					}
-					else
+					else if( g_drawing_mybool )
 					{
-						g_LeftBoundary->clear();
-						if(g_coverageTest)
+						// 0 if you want to set boundary with mouse
+						// 1 if you want to load saved boundary
+						// 2 if you want to load saved boundary and invert it
+						// 3 if you want to write boundary
+						if(!SetBoundary2D( g_drawing_mode ))
 						{
-							delete g_coverageTest;
-							g_coverageTest = NULL;
+							MessageBox(hWnd,L"Error: Corridor not loaded!",L"Error",MB_OK | MB_ICONERROR);
+							g_drawing_mode = 0;
+							g_drawing_mybool = true;
 						}
-						for( int i = 0; i != g_dim; i++ )
-						{
-							g_LeftBoundary->push_back(g_boundary2D[i]);
-						}
-						if( g_PrintPotential )
+						else
 						{
 							try
 							{
-								if( g_numberOfAgents < 0 )
-								{
-									vector<IDSReal2D> bb;
-									vector<IDSReal2D> ss;
-									for(int i = 0; i != g_dim + g_numberOfAgents - 1; i++)
-									{
-										bb.push_back(g_boundary2D[i].coord());
-									}
-									if( g_path2 )
-										delete g_path2;
-									g_path2 = new LineString2D;
-									for(int i = g_dim + g_numberOfAgents - 1; i != g_dim; i++)
-									{
-										ss.push_back(g_boundary2D[i].coord());
-										g_path2->push_back(g_boundary2D[i]);
-									}
-
-									///Create Point From Vertex:
-									std::vector<Point2D> bb_2D;
-									for(size_t i = 0; i != bb.size(); i++)
-									{
-										bb_2D.push_back(makePoint(bb[i], g_metric));
-									}
-
-									std::vector<Point2D> ss_2D;
-									for(size_t i = 0; i != ss.size(); i++)
-									{
-										ss_2D.push_back(makePoint(ss[i], g_metric));
-									}
-
-									//g_coverageTest= new CoverageTest(bb_2D,ss_2D);
-								}
-								//else if(!g_derIsInside)
-								//{
-								//	if( g_path2 )
-								//	{
-								//		delete g_path2;
-								//		g_path2 = 0;
-								//	}
-								//	g_coverageTest= new CoverageTest(g_dim,g_boundary2D,g_numberOfAgents,counterclockwise);
-								//}
-								else
-								{
-									vector<Point2D> v;
-									vector<Point2D> st;
-									int i;
-
-									//Separato start da corridoio!
-									for(i = 0; i != g_dim - g_numberOfAgents - 1; i++)
-									{
-										v.push_back(g_boundary2D[i]);
-									}
-									if( g_path2 )
-										delete g_path2;
-									g_path2 = new LineString2D;
-									for(i = g_dim - g_numberOfAgents - 1; i != g_dim; i++)
-									{
-										st.push_back(g_boundary2D[i]);
-										g_path2->push_back( g_boundary2D[i] );
-									}
-									g_coverageTest= new CoverageTest(v,g_counterclockwise);
-								}
-							}catch(...) {MessageBox(hWnd,L"Error: bad Corridor!",L"Error",MB_OK | MB_ICONERROR);}
-
+								g_coverageTest= new CoverageTest(g_boundary2D,g_counterclockwise);
+							
+							}
+							catch(...) 
+							{
+								MessageBox(hWnd,L"Error: bad Area!",L"Error",MB_OK | MB_ICONERROR);
+							}
 							/*if( __GetError() == 2 )
 							MessageBox(hWnd,L"Error: bad Corridor!",L"Error",MB_OK | MB_ICONERROR);*/
 							g_drawing_mybool = false;
 						}
-						g_drawing_loadCounter++;
-						if( g_drawing_loadCounter == g_drawing_numToLoad )
-						{
-							g_drawing_loadCounter = 0;
-							g_drawing_mode = 0;
-						}
-					}
-				}
-				else if( g_drawing_mybool )
-				{
-					// 0 if you want to set boundary with mouse
-					// 1 if you want to load saved boundary
-					// 2 if you want to load saved boundary and invert it
-					// 3 if you want to write boundary
-					if(!SetBoundary2D( g_drawing_mode ))
-					{
-						MessageBox(hWnd,L"Error: Corridor not loaded!",L"Error",MB_OK | MB_ICONERROR);
-						g_drawing_mode = 0;
-						g_drawing_mybool = true;
-					}
-					else
-					{
-						try
-						{
-							g_coverageTest= new CoverageTest(g_boundary2D,g_counterclockwise);
-							
-						}
-						catch(...) 
-						{
-							MessageBox(hWnd,L"Error: bad Area!",L"Error",MB_OK | MB_ICONERROR);
-						}
-						/*if( __GetError() == 2 )
-						MessageBox(hWnd,L"Error: bad Corridor!",L"Error",MB_OK | MB_ICONERROR);*/
-						g_drawing_mybool = false;
 					}
 				}
 
@@ -1199,6 +1319,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				{
 					if( g_coverageTest->areaContains(g_thiefStartingPt) )
 					{
+						g_coverageTest->removeAllThieves();
+
 						ThiefPtr l_agent = std::make_shared<Thief>(g_coverageTest->getAlgorithm()->getNumberOfAgent(), g_thiefStartingPt);
 						g_coverageTest->setThief(g_thiefStartingPt, l_agent);
 						
@@ -1207,6 +1329,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						//g_coverageTest->addThief(l_thief);
 
 						g_coverageTest->exportOnFile("scenario.dat");
+
+						g_coverageTest->updateMonitor();
+
 
 					}
 				}
@@ -1295,12 +1420,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		else if((int)wParam < 0)
 			//scroll backward
 		{
-			if(g_PrintPotential)
-				g_coverageTest->printPotential("../Prova.txt", false);
-			else
-				g_coverageTest->printBenefit("../Prova.txt", false);
+			if(0)
+			{
+				if(g_PrintPotential)
+					g_coverageTest->printPotential("../Prova.txt", false);
+				else
+					g_coverageTest->printBenefit("../Prova.txt", false);
+			}
 
-			g_coverageTest->printPerformanceIndex("../performance_index.txt", false);
+
+			//g_coverageTest->printPerformanceIndex("../performance_index.txt", false);
+			//g_coverageTest->printNewPerformanceIndex("../performance_index.txt", false);
+			g_coverageTest->printBenefit("../Prova.txt", false);
+			//g_coverageTest->printExplorationRate("../performance_index.txt", false);
 
 			//g_coverageTest->moveThief();
 		}
@@ -1493,6 +1625,7 @@ INT_PTR CALLBACK SetAgentsPeriod(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 	return (INT_PTR)FALSE;
 }
 
+//////////////////////////////////////////////////////////////////////////
 void CoverageTest::exportOnFile(std::string const& filename)
 {
 	int count;
@@ -1533,3 +1666,8 @@ void CoverageTest::exportOnFile(std::string const& filename)
 
 }
 
+//////////////////////////////////////////////////////////////////////////
+void CoverageTest::updateMonitor()
+{
+	return m_algorithm->updateMonitor();
+}

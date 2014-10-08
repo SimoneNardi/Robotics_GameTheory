@@ -57,9 +57,25 @@ bool GuardTrajectoryPosition::operator==(GuardTrajectoryPosition const& other) c
 	return m_position == other.m_position && m_index == other.m_index;
 }
 
+bool GuardTrajectoryPosition::operator!=(GuardTrajectoryPosition const& other) const
+{
+	return !( *this == other );
+}
+
 //////////////////////////////////////////////////////////////////////////
 //	GuardTrajectory
 //////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
+bool GuardTrajectory::contains(AgentPosition _nextPos)
+{
+	for(auto i = 0; i < m_elems.size(); ++i)
+	{
+		if( m_elems[i].m_position.getPoint2D().equals(_nextPos.getPoint2D()) )
+			return true;
+	}
+	return false;
+}
 
 //////////////////////////////////////////////////////////////////////////
 bool GuardTrajectory::operator==(GuardTrajectory const& other) const
@@ -77,6 +93,12 @@ bool GuardTrajectory::operator==(GuardTrajectory const& other) const
 }
 
 //////////////////////////////////////////////////////////////////////////
+bool GuardTrajectory::operator!=(GuardTrajectory const& other) const
+{
+	return !(*this == other);
+}
+
+//////////////////////////////////////////////////////////////////////////
 //	AgentPosition
 //////////////////////////////////////////////////////////////////////////
 
@@ -84,6 +106,12 @@ bool GuardTrajectory::operator==(GuardTrajectory const& other) const
 bool AgentPosition::operator==(AgentPosition const& other) const
 {
 	return m_point.equals(other.m_point) && m_camera == other.m_camera;
+}
+
+//////////////////////////////////////////////////////////////////////////
+bool AgentPosition::operator!=(AgentPosition const& other) const
+{
+	return !(*this == other);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -159,6 +187,12 @@ bool CameraPosition::operator==(CameraPosition const& other) const
 }
 
 //////////////////////////////////////////////////////////////////////////
+bool CameraPosition::operator!=(CameraPosition const& other) const
+{
+	return !(*this==other);
+}
+
+//////////////////////////////////////////////////////////////////////////
 std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, std::shared_ptr<DiscretizedArea> _area) const
 {
 	Point2D l_pt = _area->getPosition(_center);
@@ -212,6 +246,38 @@ catch (...)
 {
 	return Shape2D();
 }
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+
+//////////////////////////////////////////////////////////////////////////
+/*						MemoryGuardTrajectory							*/
+//////////////////////////////////////////////////////////////////////////
+
+bool MemoryGuardTrajectory::equals(MemoryGuardTrajectory const& _other) const
+{
+	if(this->m_memTrajectory != _other.m_memTrajectory)
+		return false;
+
+	if(fabs( this->m_payoff - _other.m_payoff ) > IDSMath::TOLERANCE )
+		return false;
+
+	return true;
+}
+
+bool MemoryGuardTrajectory::equals(GuardTrajectory const& _trajectory, double _payoff) const
+{
+	if(this->m_memTrajectory != _trajectory)
+		return false;
+
+	if(fabs( this->m_payoff - _payoff ) > IDSMath::TOLERANCE )
+		return false;
+
+	return true;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////

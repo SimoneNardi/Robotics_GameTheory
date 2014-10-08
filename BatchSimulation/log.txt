@@ -1,19 +1,17 @@
 Monitor
-4	5	
+1	
 Jump
-1	2	
-EndTime
-1	10	20	
+0.01	0.5	
 Period
-3	4	
+1	
 TestCase
-3
+1
 StopRate
-0.5
+0.001
 ******************************************
 Agent File: Scenario_5G_1T_multiAgent
 -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
 Area File: External
 -----Algorithm:DISL
----Period:3
+---Period:1
 -Case: 0...

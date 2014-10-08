@@ -62,6 +62,10 @@ namespace Robotics
 			int getNumberOfAgent();
 
 			void addThief(std::shared_ptr<Thief> _thief);
+
+			double getMaximumValue();
+
+			void removeAllThieves();
 		};
 	}
 }

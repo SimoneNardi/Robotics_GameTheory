@@ -57,11 +57,15 @@ double DISLAlgorithm::getExplorationRate()
 }
 
 //////////////////////////////////////////////////////////////////////////
-double DISLAlgorithm::computeExplorationRate()
+double DISLAlgorithm::computeExplorationRate(std::shared_ptr<Guard> _agent)
 {
-	//return 0.2;
-	double rate = double(Robotics::GameTheory::DISCRETIZATION_COL) + double(Robotics::GameTheory::DISCRETIZATION_ROW) + 1.;
-	return pow(double(m_time) , -double(m_guards.size())/rate);
+	//return m_experimentalRate;
+
+	if(!_agent)
+		_agent = *m_guards.begin();
+	
+	double rate = max(double(Robotics::GameTheory::DISCRETIZATION_COL), double(Robotics::GameTheory::DISCRETIZATION_ROW)) + 1.;
+	return pow(double(m_time)/double(_agent->getTrajectoryLength()) , -double(m_guards.size())/rate); 
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -77,11 +81,11 @@ void DISLAlgorithm::update(std::shared_ptr<Guard> _agent)
 		bool l_agentHasToExperiments = agentHasToExperiments(l_explorationRate);
 		if(l_agentHasToExperiments)
 		{
-			_agent->startExperiment();
+			_agent->startExperiment(l_explorationRate, 0.);
 		}
 		else
 		{
-			_agent->followBestTrajectory();
+			_agent->followBestTrajectory(l_explorationRate, 0.);
 		}
 	}
 

@@ -52,6 +52,9 @@ BEGIN
         MENUITEM "Agents Period",					ID_FILE_AGENTS_PERIOD
         MENUITEM "&Draw Squares",					ID_FILE_DRAWSQUARES, CHECKED
         MENUITEM "&Print Potential",				ID_FILE_POTENTIAL, CHECKED
+        MENUITEM "&Pareto Algorithm",				ID_FILE_PARETO
+		MENUITEM "&DISL Algorithm",					ID_FILE_DISL, CHECKED
+		MENUITEM "&PIPIP Algorithm",				ID_FILE_PIPIP
         MENUITEM "&Highlight Triangle",				ID_FILE_HIGHLIGHT
         MENUITEM "Draw Real Partition",				ID_FILE_DRAWREALPARTITION
         MENUITEM "&Undo",							ID_FILE_UNDO
@@ -83,6 +86,9 @@ BEGIN
     "/",            IDM_ABOUT,              ASCII,  ALT, NOINVERT
     "?",            IDM_ABOUT,              ASCII,  ALT, NOINVERT
     "P",            ID_FILE_POTENTIAL, VIRTKEY, CONTROL, NOINVERT
+	"Q",            ID_FILE_PARETO, VIRTKEY, CONTROL, NOINVERT
+	"W",            ID_FILE_DISL, VIRTKEY, CONTROL, NOINVERT
+	"E",            ID_FILE_PIPIP, VIRTKEY, CONTROL, NOINVERT
 END
 
 

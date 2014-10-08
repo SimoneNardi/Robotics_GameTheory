@@ -21,11 +21,18 @@ namespace Robotics
 		public:
 			AgentPosition m_position;
 			int m_index;
-
+			
 			GuardTrajectoryPosition(AgentPosition const& _position, int _index = 0) 
 				: m_position(_position), m_index(_index) {}
 
 			bool operator==(GuardTrajectoryPosition const& other) const;
+			bool operator!=(GuardTrajectoryPosition const& other) const;
+		};
+
+		enum Mood
+		{
+			C,	//	Content
+			D	//	Discontent
 		};
 
 		//////////////////////////////////////////////////////////////////////////
@@ -50,6 +57,8 @@ namespace Robotics
 
 			/// Check if the two trajectory are equals until now.
 			bool operator==(GuardTrajectory const& other) const;
+			/// Check if the two trajectory are equals until now.
+			bool operator!=(GuardTrajectory const& other) const;
 
 			/// Check if the trajectory is length maxLength - 1, if it is necessary one last movement
 			bool isLast(int _maxLength) {return int(m_elems.size()) < _maxLength-1;}
@@ -62,6 +71,9 @@ namespace Robotics
 			inline void clear() {m_elems.clear();}
 
 			inline void add(AgentPosition pos) {m_elems.push_back( GuardTrajectoryPosition(pos, m_elems.size()) );};
+
+			bool contains(AgentPosition _nextPos);
+
 		};
 
 		//////////////////////////////////////////////////////////////////////////
@@ -69,14 +81,18 @@ namespace Robotics
 		{
 			GuardTrajectory m_memTrajectory;
 			double m_payoff;
+			Mood m_mood;
 			
 			/// Constructor for reference trajectory
-			MemoryGuardTrajectory() : m_memTrajectory(), m_payoff(0.) {}
+			MemoryGuardTrajectory() : m_memTrajectory(), m_payoff(0.), m_mood(Mood::C) {}
 
-			MemoryGuardTrajectory(GuardTrajectory const& _action, double _payoff) : m_memTrajectory(_action), m_payoff(_payoff) {}
+			MemoryGuardTrajectory(GuardTrajectory const& _action, double _payoff, Mood _state = C)
+				: m_memTrajectory(_action), m_payoff(_payoff), m_mood(_state) {}
 			
 			/// Check if the two trajectory are equals until now.
 			bool equals(MemoryGuardTrajectory const& _other) const;
+			/// Check if the two trajectory are equals until now.
+			bool equals(GuardTrajectory const& _trajectory, double _payoff) const;
 			
 			/// Get the last position of the trajectory
 			AgentPosition getLastPosition() const {return m_memTrajectory.getLastPosition();}
@@ -126,6 +142,8 @@ namespace Robotics
 			
 			/// Current payoff in current position
 			double m_currentPayoff;
+
+			Mood m_currentMood;
 
 			MemoryGuardTrajectories m_memory;
 
@@ -181,15 +199,15 @@ namespace Robotics
 
 			bool isRunning() const;
 
-			void startExperiment();
+			void startExperiment(double _explorationRate, double _maxValue);
 
-			void followBestTrajectory(bool best = true);
+			void followBestTrajectory(double _explorationRate, double _maxValue, bool best = true);
 
 			void selectNextAction(std::shared_ptr<DiscretizedArea> _space);
 
 			virtual void moveToNextPosition();
 
-			void reset();
+			void reset(double _explorationRate, double _maxValue);
 
 			AgentPosition selectNextFeasiblePosition(std::shared_ptr<DiscretizedArea> _space);
 
@@ -197,12 +215,18 @@ namespace Robotics
 			/// Get Current Payoff
 			inline double getCurrentPayoff() const {return m_currentPayoff;}
 
+			void setCurrentMood(Mood _state);
+			/// Get Current Payoff
+			inline Mood getCurrentMood() const {return m_currentMood;}
+			Mood computeMood(double _explorationRate, double _maxValue);
+
 			int actualActionIndex();
 			int totalActions();
 
 			std::set< std::shared_ptr<Square> > getTrajectoryCoverage() const;
 			void collectVisitedSquare(std::set<std::shared_ptr<Square>>const& _squares);
 			std::set<std::shared_ptr<Square> > getVisibleSquares( std::shared_ptr<DiscretizedArea> _space );
+			int getTrajectoryLength() const {return m_maxTrajectoryLength;}
 
 		protected:
 			AgentPosition selectNextFeasiblePositionWithoutConstraint(std::shared_ptr<DiscretizedArea> _space);

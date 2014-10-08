@@ -201,7 +201,7 @@ public:
 
 	int goForward(int numberOfStep)
 	{
-		m_algorithm->update(numberOfStep,10);
+		m_algorithm->update(numberOfStep,-1);
 		return 1;
 	}
 
@@ -211,6 +211,11 @@ public:
 	{
 		m_algorithm->setPositionOfThief(_thiefStartingPt, _agent);
 		return 1;
+	}
+
+	inline void removeAllThieves()
+	{
+		return m_algorithm->removeAllThieves();
 	}
 
 	bool areaContains(const BaseGeometry::Point2D & _thiefStartingPt)
@@ -227,10 +232,16 @@ public:
 	void printPotential(std::string const& name, bool printOnFile = true);
 	void printBenefit(std::string const& name, bool printOnFile = true);
 	void printPerformanceIndex(std::string const& name, bool printOnFile = true);
+	void printNewPerformanceIndex(std::string const& name, bool printOnFile = true);
+	void printNewPerformanceIndexVersusExplorationRate(std::string const& name, bool printOnFile = true);
+	void printExplorationRate(std::string const& name, bool printOnFile = true);
+
 	std::string getExplorationRateStr();
 	double getExplorationRate();
 
 	void exportOnFile(std::string const& filename);
+
+	void updateMonitor();
 };
 
 CoverageTest *g_coverageTest= NULL;
@@ -238,13 +249,16 @@ CoverageTest *g_coverageTest= NULL;
 // For the window application
 int g_window_Ox, g_window_Oy, g_window_rad1, g_window_rad2, g_window_ang1, g_window_ang2, g_window_camp;
 
-int g_numberOfAgents = 2;
+int g_numberOfAgents = 7;
 int g_numberOfSteps = 1;
 int g_agentsPeriod = 1;
 bool g_drawSquare = true;
 bool g_drawRealArea = false;
 bool g_drawone = false;
 bool g_PrintPotential = true;
+bool g_pareto = false;
+bool g_DISL = true;
+bool g_PIPIP = false;
 
 SquarePtr RR;
 enum SpaceElemType

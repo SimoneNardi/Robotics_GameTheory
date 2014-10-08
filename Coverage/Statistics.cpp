@@ -13,28 +13,37 @@ namespace Robotics
 		{
 			m_potValues.clear();
 			m_benefitValues.clear();
-			m_maxThiefValue.clear();
+			m_maxBenefitValue.clear();
+			m_NonCooperativeSteadyValue.clear();
 			m_squares.clear();
 			m_times.clear();
+			m_explorationRate.clear();
+			m_performanceIndex.clear();
+			m_oldPerformanceIndex.clear();
+			m_explorationRate.clear();
 		}
 
 		//////////////////////////////////////////////////////////////////////////
-		void Statistics::addValues(int time, int square, double potValue, double benefitValue, double maxThiefValue)
+		void Statistics::addValues(int time, int square, double potValue, double benefitValue, double maxBenefitValue, double NonCooperativeSteadyValue, double _explorationRate)
 		{
 			m_times.push_back(time);
 			m_squares.push_back(square);
 			m_potValues.push_back(potValue);
 			m_benefitValues.push_back(benefitValue);
-			m_maxThiefValue.push_back(maxThiefValue);
-			m_performanceIndex.push_back(potValue/maxThiefValue);
+			m_maxBenefitValue.push_back(maxBenefitValue);
+			m_NonCooperativeSteadyValue.push_back(NonCooperativeSteadyValue);
+			m_performanceIndex.push_back(potValue/NonCooperativeSteadyValue);
+			m_oldPerformanceIndex.push_back( ( maxBenefitValue-benefitValue ) / maxBenefitValue );
+			m_explorationRate.push_back(_explorationRate);
 		}
 
 		//////////////////////////////////////////////////////////////////////////
+		//	Benefit Value
 		double Statistics::getBoxPlotValue()
 		{
 			double tot = 0;
 			for(size_t i = 0; i < m_benefitValues.size(); ++i)
-				tot+= (m_maxThiefValue[i] - m_benefitValues[i]) / m_maxThiefValue[i];
+				tot+= (m_maxBenefitValue[i] - m_benefitValues[i]) / m_maxBenefitValue[i];
 
 			double l_value = 1.;
 			if(m_benefitValues.size() != 0)
@@ -50,6 +59,7 @@ namespace Robotics
 		}
 
 		//////////////////////////////////////////////////////////////////////////
+		//	Non Cooperative Index
 		double Statistics::getBoxPlotValueNewIndex()
 		{
 			double tot = 0;
@@ -140,8 +150,31 @@ namespace Robotics
 		//////////////////////////////////////////////////////////////////////////
 		void Statistics::printPerformanceIndex(std::string const& _filename, bool _printOnFile)
 		{
+			std::string l_title = "Old Performance Index";
+			std::string l_yLabel = "Old Performance Index";
+			std::string l_xLabel = "Time";
+
+			std::string l_curveLabel = "Old Index Curve";
+
+			//std::vector<double> l_ascissa;
+			//l_ascissa.insert(l_ascissa.end(), m_times.begin(), m_times.end());
+
+			//std::vector<double> l_ordinata;
+			//l_ordinata.insert(l_ordinata.end(), m_performanceIndex.begin(), m_performanceIndex.end());
+
+			printGraph(
+				_filename, 
+				l_title, l_xLabel, l_yLabel, l_curveLabel, 
+				m_times,
+				m_oldPerformanceIndex,
+				_printOnFile);
+		}
+
+		//////////////////////////////////////////////////////////////////////////
+		void Statistics::printNewPerformanceIndex(std::string const& _filename, bool _printOnFile)
+		{
 			std::string l_title = "Performance Index";
-			std::string l_yLabel = "Index";
+			std::string l_yLabel = "Performance Index";
 			std::string l_xLabel = "Time";
 
 			std::string l_curveLabel = "Index Curve";
@@ -161,10 +194,56 @@ namespace Robotics
 		}
 
 		//////////////////////////////////////////////////////////////////////////
+		void Statistics::printNewPerformanceIndexVersusExplorationRate(std::string const& _filename, bool _printOnFile)
+		{
+			std::string l_title = "Performance Index";
+			std::string l_yLabel = "Performance Index";
+			std::string l_xLabel = "Experimental Rate";
+
+			std::string l_curveLabel = "Index Curve";
+
+			//std::vector<double> l_ascissa;
+			//l_ascissa.insert(l_ascissa.end(), m_times.begin(), m_times.end());
+
+			//std::vector<double> l_ordinata;
+			//l_ordinata.insert(l_ordinata.end(), m_performanceIndex.begin(), m_performanceIndex.end());
+
+			printGraph(
+				_filename, 
+				l_title, l_xLabel, l_yLabel, l_curveLabel, 
+				m_explorationRate,
+				m_performanceIndex,
+				_printOnFile);
+		}
+
+		//////////////////////////////////////////////////////////////////////////
+		void Statistics::printExplorationRate(std::string const& _filename, bool _printOnFile)
+		{
+			std::string l_title = "Exploration rate behaviour";
+			std::string l_yLabel = "Exploration Rate";
+			std::string l_xLabel = "Time";
+
+			std::string l_curveLabel = "Index Curve";
+
+			//std::vector<double> l_ascissa;
+			//l_ascissa.insert(l_ascissa.end(), m_times.begin(), m_times.end());
+
+			//std::vector<double> l_ordinata;
+			//l_ordinata.insert(l_ordinata.end(), m_performanceIndex.begin(), m_performanceIndex.end());
+
+			printGraph(
+				_filename, 
+				l_title, l_xLabel, l_yLabel, l_curveLabel, 
+				m_times,
+				m_explorationRate,
+				_printOnFile);
+		}
+
+		//////////////////////////////////////////////////////////////////////////
 		void Statistics::printBenefit(std::string const& _filename, bool _printOnFile)
 		{
 			std::string l_yLabel = "Benefit";
-			std::string l_title = "Total Guards Benefit";
+			std::string l_title = "Benefit";
 			std::string l_xLabel = "Time";
 
 			//std::vector<double> l_ascissa;
