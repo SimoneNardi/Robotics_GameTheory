@@ -5,3 +5,31 @@ new cg
 # Generated texture: 2 in VTexture2
 # Generated texture: 3 in VTexture2
 # Generated texture: 4 in VTexture2
+# RC= 65536 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Benefit
+# ERROR: Unable to process macro: 'Benefit'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Benefit'
+isver 2.7.2.7
+curve 0 color 0 0 1
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0 0 1
+isver 2.7.2.7
+curve 0 label 'Benefit Curve'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+# Detach of RC= 65536

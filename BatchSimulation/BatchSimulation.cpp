@@ -118,25 +118,10 @@ struct SimulationConfig
 	int TestCase;
 } g_config;
 
-void readSimulationConfigFile(Log & _log)
+void readSimulationConfigFile(Log & _log, std::string const& _filename)
 {
-#ifdef _EPSILON
-	std::ifstream file("simple_config_EPSILON.dat");
-#else
-#ifndef _TEST
-#ifdef _STATIC
-	std::ifstream file("config_STATIC.dat");
-#else
-	std::ifstream file("config.dat");
-#endif
-#else
-#ifdef _STATIC
-	std::ifstream file("simple_config_STATIC.dat");
-#else
-	std::ifstream file("simple_config.dat");
-#endif
-#endif	
-#endif
+	std::ifstream file(_filename);
+
 	std::string l_sep("\t");
 
 	if( file.is_open() )
@@ -216,22 +201,11 @@ std::vector<std::string> getAgentNames(std::string const& _folname)
 {
 	std::vector<std::string> l_result;
 	l_result.push_back("Scenario_5G_1T_multiAgent.dat");
+
 #ifndef _TEST
 	l_result.push_back("Scenario_10G_1T_multiAgent.dat");
 	l_result.push_back("Scenario_15G_1T_multiAgent.dat");
 	l_result.push_back("Scenario_20G_1T_multiAgent.dat");
-#endif
-#if 0
-	//l_result.push_back("Scenario_7G_1T_multiAgent.dat");
-	//l_result.push_back("Scenario_7G_1T_collide.dat");
-	//l_result.push_back("Scenario_15G_1T_collide.dat");
-
-	//l_result.push_back("Scenario_7G_1T_b.dat");
-	////l_result.push_back("Scenario_7G_1T_c.dat");
-	////l_result.push_back("Scenario_7G_1T_d.dat");
-	//l_result.push_back("Scenario_14G_1T_a.dat");
-	////l_result.push_back("Scenario_14G_1T_b.dat");
-	//l_result.push_back("Scenario_25G_1T_a.dat");
 #endif
 	return l_result;
 }
@@ -248,10 +222,6 @@ std::vector<std::string> getAreaNames(std::string const& _folname)
 	l_result.push_back("External_road.txt");
 	l_result.push_back("External_room.txt");
 #endif
-
-#if 0
-	//l_result.push_back("sagoma.txt");
-#endif
 	return l_result;
 }
 
@@ -262,17 +232,6 @@ const int g_steadyValueCompared = 10;
 void computeSteadyValue(std::vector<double> & _result_container, double& _steadyValue , int &_steadyIndex)
 {
 	_steadyIndex = _result_container.size();
-	//_steadyValue = 0.;
-	//for(int i = 1; i <= g_medianNumberObject; ++i)
-	//{
-	//	int index = _result_container.size() - i;
-	//	if(index < 0 && index >= _result_container.size())
-	//		break;
-	//	_steadyValue += _result_container[_result_container.size() - i];
-	//}
-
-	//_steadyValue /= double(g_medianNumberObject);
-
 	_steadyValue = 0.;
 	for(int i = 0; i < _result_container.size(); ++i)
 	{
@@ -324,7 +283,25 @@ void computeSteadyValue(std::vector<double> & _result_container, double& _steady
 		std::vector<std::string> l_AgentFilenames = getAgentNames(l_folname);
 		std::vector<std::string> l_AreaFilenames = getAreaNames(l_folname);
 
-		readSimulationConfigFile(l_log);
+#ifdef _EPSILON
+		std::string l_file("simple_config_EPSILON.dat");
+#else
+#ifndef _TEST
+#ifdef _STATIC
+		std::string l_file("config_STATIC.dat");
+#else
+		std::string l_file("config.dat");
+#endif
+#else
+#ifdef _STATIC
+		std::string l_file("simple_config_STATIC.dat");
+#else
+		std::string l_file("simple_config.dat");
+#endif
+#endif	
+#endif
+		
+		readSimulationConfigFile(l_log, l_file);
 
 		for(size_t o = 0; o < l_AgentFilenames.size(); ++o )
 		{
@@ -348,7 +325,7 @@ void computeSteadyValue(std::vector<double> & _result_container, double& _steady
 
 				try
 				{
-					for(int l_algorithmType = 0; l_algorithmType < 1; ++l_algorithmType )
+					for(int l_algorithmType = 2; l_algorithmType < 3; ++l_algorithmType )
 					{
 						std::string l_name = l_nameoriginal;
 						std::string l_algName = (l_algorithmType == 0 ? "_DISL" : l_algorithmType == 1 ? "_PIPIP" : "_PARETO");
