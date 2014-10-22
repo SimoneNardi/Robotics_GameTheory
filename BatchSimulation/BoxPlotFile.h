@@ -28,31 +28,48 @@ struct Period_EndTime
 	std::vector<double> get(int _period, int _endTime);
 };
 
-struct ThiefJump_Period
+struct Epsilon_Period
 {
-	std::map<int, Period_EndTime> m_thiefJump;
+	std::map<double, Period_EndTime> m_epsilon;
 
-	void set(int _jump, int _period, int endTime, std::vector<double> const& _values);
-	void set(int _jump, int _period, int endTime, double _value);
-	std::vector<double> get(int _jump, int _period, int _endTime);
+	void set(double _epsilon, int _period, int endTime, std::vector<double> const& _values);
+	void set(double _epsilon, int _period, int endTime, double _value);
+	std::vector<double> get(double _epsilon, int _period, int _endTime);
+};
+
+struct ThiefJump_Epsilon
+{
+	std::map<double, Epsilon_Period> m_thiefJump;
+
+	void set(double _jump, double _epsilon, int _period, int endTime, std::vector<double> const& _values);
+	void set(double _jump, double _epsilon, int _period, int endTime, double _value);
+	std::vector<double> get(double _jump, double _epsilon, int _period, int _endTime);
 };
 
 struct MonitorUpdate_ThiefJump
 {
-	std::map<int, ThiefJump_Period> m_monitorUpdate;
-	void set(int _monitor, int _jump, int _period, int endTime, std::vector<double> const& _values);
-	void set(int _monitor, int _jump, int _period, int endTime, double _value);
-	std::vector<double> get(int _monitor, int _jump, int _period, int _endTime);
+	std::map<int, ThiefJump_Epsilon> m_monitorUpdate;
+	void set(int _monitor, double _jump, double _epsilon, int _period, int endTime, std::vector<double> const& _values);
+	void set(int _monitor, double _jump, double _epsilon, int _period, int endTime, double _value);
+	std::vector<double> get(int _monitor, double _jump, double _epsilon, int _period, int _endTime);
+};
+
+struct Index_MonitorUpdate
+{
+	std::map<std::string, MonitorUpdate_ThiefJump> m_index;
+	void set(std::string index, int _monitor, double _jump, double _epsilon, int _period, int endTime, std::vector<double> const& _values);
+	void set(std::string index, int _monitor, double _jump, double _epsilon, int _period, int endTime, double _value);
+	std::vector<double> get(std::string index, int _monitor, double _jump, double _epsilon, int _period, int _endTime);
 };
 
 class BoxPlotFile
 {
 public:
-	MonitorUpdate_ThiefJump m_values;
+	Index_MonitorUpdate m_values;
 public:
 
-	void add(int _monitorUpdate, int _thiefJump, int _period, int _endTime, double _value);
-	void add(int _monitorUpdate, int _thiefJump, int _period, int _endTime, std::vector<double> const& _values);
+	void add(std::string index, int _monitorUpdate, double _thiefJump, double _epsilon, int _period, int _endTime, double _value);
+	void add(std::string index, int _monitorUpdate, double _thiefJump, double _epsilon, int _period, int _endTime, std::vector<double> const& _values);
 
 	void printOnFile(std::string const& _filename);
 

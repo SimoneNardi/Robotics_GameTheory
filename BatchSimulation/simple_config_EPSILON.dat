@@ -1,5 +1,6 @@
-Monitor	1
-Jump	0.01	0.5
+Monitor	-1
+Jump	0
+Epsilon	0	0.1
+Print	1	500	2000
 Period	1
 TestCase	1
-StopRate	1.e-3

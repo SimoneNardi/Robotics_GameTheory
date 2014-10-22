@@ -15,6 +15,10 @@
 #include <memory>
 #include <set>
 
+//const int N_MAX = 100000000;
+const int N_MAX = 100000;
+//const int N_MAX = 500;
+
 namespace Robotics 
 {
 	namespace GameTheory 
@@ -33,8 +37,8 @@ namespace Robotics
 			double m_experimentalRate;
 
 		public:
-			LearningAlgorithm() : m_time(0), m_guards(),m_experimentalRate(.2) {}
-			LearningAlgorithm(std::set< std::shared_ptr<Guard> > const& _guards) : m_time(0), m_guards(_guards), m_experimentalRate(.2) {}
+			LearningAlgorithm() : m_time(0), m_guards(),m_experimentalRate(0.) {}
+			LearningAlgorithm(std::set< std::shared_ptr<Guard> > const& _guards) : m_time(0), m_guards(_guards), m_experimentalRate(0.) {}
 
 			virtual void initialize() = 0;
 
@@ -65,6 +69,11 @@ namespace Robotics
 			virtual std::string getExplorationRateStr() =0;
 			virtual double getExplorationRate() =0;
 			virtual int getGlobalTrajectoryCoverage()=0;
+
+			virtual double computeExplorationRate(std::shared_ptr<Guard> _agent = nullptr);
+
+			virtual int getNumberOfSteps(double _stopRate);
+
 		};
 
 		typedef std::shared_ptr<LearningAlgorithm> LearningAlgorithmPtr;

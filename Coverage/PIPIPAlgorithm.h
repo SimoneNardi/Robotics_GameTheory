@@ -65,7 +65,6 @@ namespace Robotics
 			std::string getExplorationRateStr();
 			double getExplorationRate();
 			double computeIrrationalRate();
-			double computeExplorationRate(std::shared_ptr<Guard> _agent = nullptr);
 			int getGlobalTrajectoryCoverage();
 			
 			double computeDeltaMemoryBenefit(std::shared_ptr<Guard> _agent);

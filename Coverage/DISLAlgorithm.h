@@ -63,7 +63,6 @@ namespace Robotics
 			
 			std::string getExplorationRateStr();
 			double getExplorationRate();
-			double computeExplorationRate(std::shared_ptr<Guard> _agent = nullptr);
 			int getGlobalTrajectoryCoverage();
 
 		public:

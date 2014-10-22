@@ -155,6 +155,9 @@
     <ClCompile Include="ParetoEfficientAlgorithm.cpp">
       <Filter>Source Files\Learning</Filter>
     </ClCompile>
+    <ClCompile Include="LearningAlgorithm.cpp">
+      <Filter>Source Files\Learning</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Coverage.rc">

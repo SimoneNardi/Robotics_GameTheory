@@ -231,7 +231,7 @@ public:
 	//int getTime();
 	void printPotential(std::string const& name, bool printOnFile = true);
 	void printBenefit(std::string const& name, bool printOnFile = true);
-	void printPerformanceIndex(std::string const& name, bool printOnFile = true);
+	void printPotentialIndex(std::string const& name, bool printOnFile = true);
 	void printNewPerformanceIndex(std::string const& name, bool printOnFile = true);
 	void printNewPerformanceIndexVersusExplorationRate(std::string const& name, bool printOnFile = true);
 	void printExplorationRate(std::string const& name, bool printOnFile = true);

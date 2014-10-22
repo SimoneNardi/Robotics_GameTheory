@@ -114,6 +114,7 @@
     <ClCompile Include="DiscretizedArea.cpp" />
     <ClCompile Include="Guard.cpp" />
     <ClCompile Include="DISLAlgorithm.cpp" />
+    <ClCompile Include="LearningAlgorithm.cpp" />
     <ClCompile Include="ParetoEfficientAlgorithm.cpp" />
     <ClCompile Include="PIPIPAlgorithm.cpp" />
     <ClCompile Include="Probability.cpp" />

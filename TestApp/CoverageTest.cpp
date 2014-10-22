@@ -113,9 +113,9 @@ void CoverageTest::printBenefit(std::string const& name, bool _printOnFile)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CoverageTest::printPerformanceIndex(std::string const& name, bool _print)
+void CoverageTest::printPotentialIndex(std::string const& name, bool _print)
 {
-	return m_algorithm->printPerformanceIndex(name, _print);
+	return m_algorithm->printPotentialIndex(name, _print);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -1429,7 +1429,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 
 
-			//g_coverageTest->printPerformanceIndex("../performance_index.txt", false);
+			//g_coverageTest->printPotentialIndex("../performance_index.txt", false);
 			//g_coverageTest->printNewPerformanceIndex("../performance_index.txt", false);
 			g_coverageTest->printBenefit("../Prova.txt", false);
 			//g_coverageTest->printExplorationRate("../performance_index.txt", false);

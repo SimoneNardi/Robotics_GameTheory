@@ -57,18 +57,6 @@ double ParetoEfficientAlgorithm::getExplorationRate()
 }
 
 //////////////////////////////////////////////////////////////////////////
-double ParetoEfficientAlgorithm::computeExplorationRate(std::shared_ptr<Guard> _agent)
-{
-	//return m_experimentalRate;
-
-	if(!_agent)
-		_agent = *m_guards.begin();
-
-	double rate = max(double(Robotics::GameTheory::DISCRETIZATION_COL), double(Robotics::GameTheory::DISCRETIZATION_ROW)) + 1.;
-	return pow(double(m_time)/double(_agent->getTrajectoryLength()) , -double(m_guards.size())/rate);
-}
-
-//////////////////////////////////////////////////////////////////////////
 void ParetoEfficientAlgorithm::update(std::shared_ptr<Guard> _agent)
 {
 	if(!_agent->isRunning())
@@ -89,18 +77,18 @@ void ParetoEfficientAlgorithm::update(std::shared_ptr<Guard> _agent)
 				bool l_agentHasToExperiments = agentHasToExperiments(l_powExplorationRate);
 				if(l_agentHasToExperiments)
 				{
-					_agent->startExperiment(l_explorationRate, l_maxValue);
+					_agent->startExperiment(l_explorationRate);
 				}
 				else
 				{
-					_agent->followBestTrajectory(l_explorationRate, l_maxValue);
+					_agent->followBestTrajectory(l_explorationRate);
 				}
 				break;
 			}
 		case Mood::D:
 		default:
 			{
-				_agent->startExperiment(l_explorationRate, l_maxValue);
+				_agent->startExperiment(l_explorationRate);
 				break;
 			}
 		}

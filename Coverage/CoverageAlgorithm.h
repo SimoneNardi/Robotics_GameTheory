@@ -142,9 +142,9 @@ namespace Robotics
 			//int getTime() const;
 			void printPotential(std::string const& name, bool printOnFile = true);
 			void printBenefit(std::string const& name, bool printOnFile = true);
-			void printPerformanceIndex(std::string const& name, bool printOnFile = true);
-			void printNewPerformanceIndex(std::string const& name, bool printOnFile = true);
-			void printNewPerformanceIndexVersusExplorationRate(std::string const& name, bool printOnFile = true);
+			void printPotentialIndex(std::string const& name, bool printOnFile = true);
+			void printBenefitIndex(std::string const& name, bool printOnFile = true);
+			void printPotentialIndexVersusExplorationRate(std::string const& name, bool printOnFile = true);
 			void printExplorationRate(std::string const& name, bool printOnFile = true);
 			
 			std::string getExplorationRateStr();
@@ -156,14 +156,16 @@ namespace Robotics
 			virtual double getMaximumBenefitValue();
 			virtual double getSteadyNonCoopertativeBenefitValue();
 
-			double getBoxPlotValue();
-			double getBoxPlotValueNewIndex();
+			double getPotentialIndexMediumValue();
+			double getBenefitIndexMediumValue();
 
 			void removeAllThieves();
 			void updateMonitor();
 			int getGlobalTrajectoryCoverage();
 
 			void setExperimentalRate(double _epsilon);
+
+			int getNumberOfSteps(double _stopRate);
 
 #pragma endregion
 

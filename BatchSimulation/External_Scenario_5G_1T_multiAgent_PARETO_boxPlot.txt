@@ -1,0 +1,17 @@
+Index	Monitor	Thief Jump	Epsilon	Period	End Time
+BenefitIndex Steady Index	-1	0	0.01	1	50
+33;
+BenefitIndex Steady Index	-1	0	0.5	1	50
+42;
+BenefitIndex Steady Value	-1	0	0.01	1	50
+0.828458;
+BenefitIndex Steady Value	-1	0	0.5	1	50
+0.745734;
+PotentialIndex Steady Index	-1	0	0.01	1	50
+33;
+PotentialIndex Steady Index	-1	0	0.5	1	50
+42;
+PotentialIndex Steady Value	-1	0	0.01	1	50
+0.828458;
+PotentialIndex Steady Value	-1	0	0.5	1	50
+0.745734;

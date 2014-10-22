@@ -366,6 +366,12 @@ int CoverageAlgorithm::numberOfSquaresCoveredByGuards() const
 //}
 
 //////////////////////////////////////////////////////////////////////////
+int CoverageAlgorithm::getNumberOfSteps(double _stopRate)
+{
+	return m_learning->getNumberOfSteps(_stopRate);
+}
+
+//////////////////////////////////////////////////////////////////////////
 void CoverageAlgorithm::printPotential(std::string const& _filename, bool printOnFile)
 {
 	return m_stats.printPotential(_filename, printOnFile);
@@ -378,21 +384,21 @@ void CoverageAlgorithm::printBenefit(std::string const& _filename, bool printOnF
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CoverageAlgorithm::printPerformanceIndex(std::string const& name, bool printOnFile)
+void CoverageAlgorithm::printPotentialIndex(std::string const& name, bool printOnFile)
 {
-	return m_stats.printPerformanceIndex(name, printOnFile);
+	return m_stats.printPotentialIndex(name, printOnFile);
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CoverageAlgorithm::printNewPerformanceIndex(std::string const& name, bool printOnFile)
+void CoverageAlgorithm::printBenefitIndex(std::string const& name, bool printOnFile)
 {
-	return m_stats.printNewPerformanceIndex(name, printOnFile);
+	return m_stats.printBenefitIndex(name, printOnFile);
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CoverageAlgorithm::printNewPerformanceIndexVersusExplorationRate(std::string const& name, bool printOnFile)
+void CoverageAlgorithm::printPotentialIndexVersusExplorationRate(std::string const& name, bool printOnFile)
 {
-	return m_stats.printNewPerformanceIndexVersusExplorationRate(name, printOnFile);
+	return m_stats.printPotentialIndexVersusExplorationRate(name, printOnFile);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -665,15 +671,15 @@ double CoverageAlgorithm::getMaximumBenefitValue()
 }
 
 
-double CoverageAlgorithm::getBoxPlotValue()
+double CoverageAlgorithm::getPotentialIndexMediumValue()
 {
-	return m_stats.getBoxPlotValue();
+	return m_stats.getPotentialIndexMediumValue();
 }
 
 //////////////////////////////////////////////////////////////////////////
-double CoverageAlgorithm::getBoxPlotValueNewIndex()
+double CoverageAlgorithm::getBenefitIndexMediumValue()
 {
-	return m_stats.getBoxPlotValueNewIndex();
+	return m_stats.getBenefitIndexMediumValue();
 }
 
 //////////////////////////////////////////////////////////////////////////

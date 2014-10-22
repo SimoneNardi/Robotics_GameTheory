@@ -1,0 +1,8 @@
+BenefitIndex Steady Index -1 0 0.01 1
+BenefitIndex Steady Index -1 0 0.5 1
+BenefitIndex Steady Value -1 0 0.01 1
+BenefitIndex Steady Value -1 0 0.5 1
+PotentialIndex Steady Index -1 0 0.01 1
+PotentialIndex Steady Index -1 0 0.5 1
+PotentialIndex Steady Value -1 0 0.01 1
+PotentialIndex Steady Value -1 0 0.5 1

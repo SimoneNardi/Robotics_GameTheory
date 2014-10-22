@@ -199,15 +199,15 @@ namespace Robotics
 
 			bool isRunning() const;
 
-			void startExperiment(double _explorationRate, double _maxValue);
+			void startExperiment(double _explorationRate);
 
-			void followBestTrajectory(double _explorationRate, double _maxValue, bool best = true);
+			void followBestTrajectory(double _explorationRate, bool best = true);
 
 			void selectNextAction(std::shared_ptr<DiscretizedArea> _space);
 
 			virtual void moveToNextPosition();
 
-			void reset(double _explorationRate, double _maxValue);
+			void reset(double _explorationRate);
 
 			AgentPosition selectNextFeasiblePosition(std::shared_ptr<DiscretizedArea> _space);
 
@@ -218,7 +218,7 @@ namespace Robotics
 			void setCurrentMood(Mood _state);
 			/// Get Current Payoff
 			inline Mood getCurrentMood() const {return m_currentMood;}
-			Mood computeMood(double _explorationRate, double _maxValue);
+			Mood computeMood(double _explorationRate);
 
 			int actualActionIndex();
 			int totalActions();

@@ -266,7 +266,7 @@ void Guard::updateMemoryTrajectories()
 
 #pragma region PARETO
 
-Mood Guard::computeMood(double _explorationRate, double _maxValue)
+Mood Guard::computeMood(double _explorationRate)
 {
 	int l_index = getBestTrajectoryIndex(true);
 	
@@ -299,11 +299,11 @@ bool Guard::isRunning() const
 }
 
 ///
-void Guard::reset(double _explorationRate, double _maxValue)
+void Guard::reset(double _explorationRate)
 {
 	if( !(m_currentTrajectory.size() == 0) )
 	{
-		Mood l_mood = computeMood(_explorationRate, _maxValue);
+		Mood l_mood = computeMood(_explorationRate);
 
 		updateMemoryTrajectories();
 
@@ -317,16 +317,16 @@ void Guard::reset(double _explorationRate, double _maxValue)
 }
 
 ///
-void Guard::startExperiment(double _explorationRate, double _maxValue)
+void Guard::startExperiment(double _explorationRate)
 {
-	reset(_explorationRate, _maxValue);
+	reset(_explorationRate);
 	m_exploring = -1;
 }
 
 ///
-void Guard::followBestTrajectory(double _explorationRate, double _maxValue, bool best)
+void Guard::followBestTrajectory(double _explorationRate, bool best)
 {
-	reset(_explorationRate, _maxValue);
+	reset(_explorationRate);
 	m_exploring = getBestTrajectoryIndex(best);
 }
 

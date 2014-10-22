@@ -57,18 +57,6 @@ double PIPIPAlgorithm::getExplorationRate()
 }
 
 //////////////////////////////////////////////////////////////////////////
-double PIPIPAlgorithm::computeExplorationRate(std::shared_ptr<Guard> _agent)
-{
-	//return m_experimentalRate;
-
-	if(!_agent)
-		_agent = *m_guards.begin();
-
-	double rate = max(double(Robotics::GameTheory::DISCRETIZATION_COL), double(Robotics::GameTheory::DISCRETIZATION_ROW)) + 1.;
-	return pow(double(m_time)/double(_agent->getTrajectoryLength()) , -double(m_guards.size())/rate);
-}
-
-//////////////////////////////////////////////////////////////////////////
 double PIPIPAlgorithm::computeIrrationalRate()
 {
 	return 1./3.;
@@ -98,7 +86,7 @@ void PIPIPAlgorithm::update(std::shared_ptr<Guard> _agent)
 		{
 			if(l_agentHasToExplore)
 			{
-				_agent->startExperiment(l_explorationRate, 0.);
+				_agent->startExperiment(l_explorationRate);
 				//this->selectBestMemoryAction(_agent);
 				//this->selectRandomFeasibleAction(_agent);
 			}
@@ -114,12 +102,12 @@ void PIPIPAlgorithm::update(std::shared_ptr<Guard> _agent)
 				if(l_agentHasToBeIrrational)
 				{
 					//this->selectWorstMemoryAction(_agent);
-					_agent->followBestTrajectory(l_explorationRate, 0., true);
+					_agent->followBestTrajectory(l_explorationRate, true);
 				}
 				else
 				{
 					//this->selectBestMemoryAction(_agent);
-					_agent->followBestTrajectory(l_explorationRate, 0., false);
+					_agent->followBestTrajectory(l_explorationRate, false);
 				}
 			}
 		}
@@ -127,11 +115,11 @@ void PIPIPAlgorithm::update(std::shared_ptr<Guard> _agent)
 		{
 			if(l_agentHasToExplore)
 			{
-				_agent->startExperiment(l_explorationRate, 0.);
+				_agent->startExperiment(l_explorationRate);
 			}
 			else
 			{
-				_agent->followBestTrajectory(l_explorationRate, 0., true);
+				_agent->followBestTrajectory(l_explorationRate, true);
 			}
 		}
 	}

@@ -9,6 +9,44 @@ namespace Robotics
 	namespace GameTheory 
 	{
 		//////////////////////////////////////////////////////////////////////////
+		const int g_medianNumberObject = 100;
+		const int g_steadyValueCompared = 10;
+		//////////////////////////////////////////////////////////////////////////
+		void computeSteadyValue(std::vector<double> & _result_container, double& _steadyValue , int &_steadyIndex)
+		{
+			_steadyIndex = _result_container.size();
+			_steadyValue = 0.;
+			for(int i = 0; i < _result_container.size(); ++i)
+			{
+				if (_steadyValue < _result_container[i])
+					_steadyValue = _result_container[i];
+			}
+
+			for(int j = 0; j < _result_container.size(); ++j)
+			{
+				double l_steadyValuePartialMean=0;
+				int num = 0;
+				for(int i = 0; i < g_steadyValueCompared; ++i)
+				{
+					int index = i+j;
+					if(index >= _result_container.size())
+						break;
+
+					num++;
+					l_steadyValuePartialMean += _result_container[index];
+
+				}
+				l_steadyValuePartialMean /= double(num);
+
+				if(l_steadyValuePartialMean > _steadyValue * .95)
+				{
+					_steadyIndex = j;
+					break;
+				}
+			}
+		}
+
+		//////////////////////////////////////////////////////////////////////////
 		void Statistics::reset()
 		{
 			m_potValues.clear();
@@ -18,8 +56,8 @@ namespace Robotics
 			m_squares.clear();
 			m_times.clear();
 			m_explorationRate.clear();
-			m_performanceIndex.clear();
-			m_oldPerformanceIndex.clear();
+			m_potentialIndex.clear();
+			m_benefitIndex.clear();
 			m_explorationRate.clear();
 		}
 
@@ -32,22 +70,22 @@ namespace Robotics
 			m_benefitValues.push_back(benefitValue);
 			m_maxBenefitValue.push_back(maxBenefitValue);
 			m_NonCooperativeSteadyValue.push_back(NonCooperativeSteadyValue);
-			m_performanceIndex.push_back(potValue/NonCooperativeSteadyValue);
-			m_oldPerformanceIndex.push_back( ( maxBenefitValue-benefitValue ) / maxBenefitValue );
+			m_potentialIndex.push_back(potValue/NonCooperativeSteadyValue);
+			m_benefitIndex.push_back( ( maxBenefitValue-benefitValue ) / maxBenefitValue );
 			m_explorationRate.push_back(_explorationRate);
 		}
-
+		
 		//////////////////////////////////////////////////////////////////////////
 		//	Benefit Value
-		double Statistics::getBoxPlotValue()
+		double Statistics::getBenefitIndexMediumValue()
 		{
 			double tot = 0;
-			for(size_t i = 0; i < m_benefitValues.size(); ++i)
-				tot+= (m_maxBenefitValue[i] - m_benefitValues[i]) / m_maxBenefitValue[i];
+			for(size_t i = 0; i < m_benefitIndex.size(); ++i)
+				tot+= m_benefitIndex[i];
 
 			double l_value = 1.;
-			if(m_benefitValues.size() != 0)
-				l_value = tot / double(m_benefitValues.size());
+			if(m_benefitIndex.size() != 0)
+				l_value = tot / double(m_benefitIndex.size());
 			else
 				std::cout << "NoData" << "\t";
 
@@ -56,19 +94,31 @@ namespace Robotics
 
 			//std::cout << "Value: " << l_value << "\t";
 			return l_value;
+		}
+
+
+		//////////////////////////////////////////////////////////////////////////
+		//	Steady Benefit Value
+		double Statistics::getBenefitIndexSteadyValue()
+		{
+			double l_steadyValue;
+			int l_steadyIndex;
+			computeSteadyValue(m_benefitIndex, l_steadyValue, l_steadyIndex);
+
+			return l_steadyValue;
 		}
 
 		//////////////////////////////////////////////////////////////////////////
 		//	Non Cooperative Index
-		double Statistics::getBoxPlotValueNewIndex()
+		double Statistics::getPotentialIndexMediumValue()
 		{
 			double tot = 0;
-			for(size_t i = 0; i < m_performanceIndex.size(); ++i)
-				tot+= m_performanceIndex[i];
+			for(size_t i = 0; i < m_potentialIndex.size(); ++i)
+				tot+= m_potentialIndex[i];
 
 			double l_value = 1.;
-			if(m_performanceIndex.size() != 0)
-				l_value = tot / double(m_performanceIndex.size());
+			if(m_potentialIndex.size() != 0)
+				l_value = tot / double(m_potentialIndex.size());
 			else
 				std::cout << "NoData" << "\t";
 
@@ -78,6 +128,21 @@ namespace Robotics
 			//std::cout << "Value: " << l_value << "\t";
 			return l_value;
 		}
+
+		//////////////////////////////////////////////////////////////////////////
+		//	Steady Benefit Value
+		double Statistics::getPotentialIndexSteadyValue()
+		{
+			double l_steadyValue;
+			int l_steadyIndex;
+			computeSteadyValue(m_potentialIndex, l_steadyValue, l_steadyIndex);
+
+			return l_steadyValue;
+		}
+
+		//////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////
 
 		//////////////////////////////////////////////////////////////////////////
 		void printGraph(
@@ -148,71 +213,53 @@ namespace Robotics
 		}
 
 		//////////////////////////////////////////////////////////////////////////
-		void Statistics::printPerformanceIndex(std::string const& _filename, bool _printOnFile)
+		void Statistics::printPotentialIndex(std::string const& _filename, bool _printOnFile)
 		{
-			std::string l_title = "Old Performance Index";
-			std::string l_yLabel = "Old Performance Index";
+			std::string l_title = "Potential Index";
+			std::string l_yLabel = "Potential Index";
 			std::string l_xLabel = "Time";
 
 			std::string l_curveLabel = "Old Index Curve";
 
-			//std::vector<double> l_ascissa;
-			//l_ascissa.insert(l_ascissa.end(), m_times.begin(), m_times.end());
-
-			//std::vector<double> l_ordinata;
-			//l_ordinata.insert(l_ordinata.end(), m_performanceIndex.begin(), m_performanceIndex.end());
-
 			printGraph(
 				_filename, 
 				l_title, l_xLabel, l_yLabel, l_curveLabel, 
 				m_times,
-				m_oldPerformanceIndex,
+				m_potentialIndex,
 				_printOnFile);
 		}
 
 		//////////////////////////////////////////////////////////////////////////
-		void Statistics::printNewPerformanceIndex(std::string const& _filename, bool _printOnFile)
+		void Statistics::printBenefitIndex(std::string const& _filename, bool _printOnFile)
 		{
-			std::string l_title = "Performance Index";
-			std::string l_yLabel = "Performance Index";
+			std::string l_title = "Benefit Index";
+			std::string l_yLabel = "Benefit Index";
 			std::string l_xLabel = "Time";
 
 			std::string l_curveLabel = "Index Curve";
 
-			//std::vector<double> l_ascissa;
-			//l_ascissa.insert(l_ascissa.end(), m_times.begin(), m_times.end());
-
-			//std::vector<double> l_ordinata;
-			//l_ordinata.insert(l_ordinata.end(), m_performanceIndex.begin(), m_performanceIndex.end());
-
 			printGraph(
 				_filename, 
 				l_title, l_xLabel, l_yLabel, l_curveLabel, 
 				m_times,
-				m_performanceIndex,
+				m_benefitIndex,
 				_printOnFile);
 		}
 
 		//////////////////////////////////////////////////////////////////////////
-		void Statistics::printNewPerformanceIndexVersusExplorationRate(std::string const& _filename, bool _printOnFile)
+		void Statistics::printPotentialIndexVersusExplorationRate(std::string const& _filename, bool _printOnFile)
 		{
-			std::string l_title = "Performance Index";
-			std::string l_yLabel = "Performance Index";
+			std::string l_title = "Potential Index";
+			std::string l_yLabel = "Potential Index";
 			std::string l_xLabel = "Experimental Rate";
 
 			std::string l_curveLabel = "Index Curve";
-
-			//std::vector<double> l_ascissa;
-			//l_ascissa.insert(l_ascissa.end(), m_times.begin(), m_times.end());
-
-			//std::vector<double> l_ordinata;
-			//l_ordinata.insert(l_ordinata.end(), m_performanceIndex.begin(), m_performanceIndex.end());
 
 			printGraph(
 				_filename, 
 				l_title, l_xLabel, l_yLabel, l_curveLabel, 
 				m_explorationRate,
-				m_performanceIndex,
+				m_potentialIndex,
 				_printOnFile);
 		}
 
@@ -224,12 +271,6 @@ namespace Robotics
 			std::string l_xLabel = "Time";
 
 			std::string l_curveLabel = "Index Curve";
-
-			//std::vector<double> l_ascissa;
-			//l_ascissa.insert(l_ascissa.end(), m_times.begin(), m_times.end());
-
-			//std::vector<double> l_ordinata;
-			//l_ordinata.insert(l_ordinata.end(), m_performanceIndex.begin(), m_performanceIndex.end());
 
 			printGraph(
 				_filename, 
@@ -245,12 +286,6 @@ namespace Robotics
 			std::string l_yLabel = "Benefit";
 			std::string l_title = "Benefit";
 			std::string l_xLabel = "Time";
-
-			//std::vector<double> l_ascissa;
-			//l_ascissa.insert(l_ascissa.end(), m_times.begin(), m_times.end());
-
-			//std::vector<double> l_ordinata;
-			//l_ordinata.insert(l_ordinata.end(), m_benefitValues.begin(), m_benefitValues.end());
 
 			std::string l_curveLabel = "Benefit Curve";
 
@@ -268,12 +303,6 @@ namespace Robotics
 			std::string l_yLabel = "Potential Function";
 			std::string l_title = "Potential";
 			std::string l_xLabel = "Time";
-
-			//std::vector<double> l_ascissa;
-			//l_ascissa.insert(l_ascissa.end(), m_times.begin(), m_times.end());
-
-			//std::vector<double> l_ordinata;
-			//l_ordinata.insert(l_ordinata.end(), m_potValues.begin(), m_potValues.end());
 
 			std::string l_curveLabel = "Potential";
 
