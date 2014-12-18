@@ -4,6 +4,7 @@
 #include "DISLAlgorithm.h"
 #include "PIPIPAlgorithm.h"
 #include "ParetoEfficientAlgorithm.h"
+#include "CoarseCorrelatedAlgorithm.h"
 #include "Probability.h"
 #include "DiscretizedArea.h"
 #include "StructuredArea.h"
@@ -49,6 +50,8 @@ Robotics::GameTheory::CoverageAlgorithm::CoverageAlgorithm(
 		l_learning = std::make_shared<PIPIPAlgorithm>(m_world->getSpace());
 	else if(_type == 2)
 		l_learning = std::make_shared<ParetoEfficientAlgorithm>(m_world->getSpace());
+	else if(_type == 3)
+		l_learning = std::make_shared<CoarseCorrelatedAlgorithm>(m_world->getSpace());
 	else 
 		throw std::exception("Error on selection of the Learning Algorithm.");
 
@@ -77,6 +80,8 @@ Robotics::GameTheory::CoverageAlgorithm::CoverageAlgorithm(
 		l_learning = std::make_shared<PIPIPAlgorithm>(m_world->getSpace());
 	else if(_type == 2)
 		l_learning = std::make_shared<ParetoEfficientAlgorithm>(m_world->getSpace());
+	else if(_type == 3)
+		l_learning = std::make_shared<CoarseCorrelatedAlgorithm>(m_world->getSpace());
 	else 
 		throw std::exception("Error on selection of the Learning Algorithm.");
 
@@ -107,7 +112,7 @@ void Robotics::GameTheory::CoverageAlgorithm::updateMonitor()
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool Robotics::GameTheory::CoverageAlgorithm::update(int _nStep, int _monitorUpdateTime, int _thiefJump)
+bool Robotics::GameTheory::CoverageAlgorithm::update(int _nStep, int _monitorUpdateTime, int _thiefJump, bool _continuousUpdate)
 {
 	bool res = true;
 
@@ -141,14 +146,15 @@ bool Robotics::GameTheory::CoverageAlgorithm::update(int _nStep, int _monitorUpd
 
 		this->wakeUpAgentIfSecurityIsLow();
 
-		m_stats.addValues(
-			m_learning->getTime(), 
-			this->numberOfSquaresCoveredByGuards(), 
-			m_learning->getPotentialValue(), 
-			m_learning->getBenefitValue(), 
-			this->getMaximumPotentialValue(),
-			this->getSteadyNonCoopertativeBenefitValue(),
-			m_learning->getExplorationRate());
+		if(_continuousUpdate || i == _nStep-1)
+			m_stats.addValues(
+				m_learning->getTime(), 
+				this->numberOfSquaresCoveredByGuards(), 
+				m_learning->getPotentialValue(), 
+				m_learning->getBenefitValue(), 
+				this->getMaximumPotentialValue(),
+				this->getSteadyNonCoopertativeBenefitValue(),
+				m_learning->getExplorationRate());
 	}
 	return res;
 }
@@ -405,6 +411,18 @@ void CoverageAlgorithm::printPotentialIndexVersusExplorationRate(std::string con
 void CoverageAlgorithm::printExplorationRate(std::string const& name, bool printOnFile)
 {
 	return m_stats.printExplorationRate(name, printOnFile);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::printNewPerformanceIndex(std::string const& name, bool _print)
+{
+	return m_stats.printBenefitIndex(name, _print);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::printNewPerformanceIndexVersusExplorationRate(std::string const& name, bool printOnFile)
+{
+	return m_stats.printPotentialIndexVersusExplorationRate(name, printOnFile);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -703,3 +721,55 @@ void CoverageAlgorithm::printArea(const std::string & filename)
 		}
 	}
 }
+
+#pragma region CONFIGURATION
+
+//////////////////////////////////////////////////////////////////////////
+double CoverageAlgorithm::getTrajectoryPotentialIndex()
+{
+	double l_potValue = m_learning->getPotentialValue();
+	double l_nonCooperativeSteadyValue = this->getSteadyNonCoopertativeBenefitValue();
+	
+	return l_potValue/l_nonCooperativeSteadyValue;
+}
+
+//////////////////////////////////////////////////////////////////////////
+double CoverageAlgorithm::getTrajectoryBenefitIndex()
+{
+	double l_maxBenefitValue = this->getMaximumPotentialValue();
+	double l_benefitValue = m_learning->getBenefitValue();
+
+	return ( l_maxBenefitValue-l_benefitValue ) / l_maxBenefitValue;
+}
+
+//////////////////////////////////////////////////////////////////////////
+double CoverageAlgorithm::getTrajectoryCoverage()
+{
+	return m_learning->getGlobalTrajectoryCoverage();
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::printPhoto(std::string const& _outputFileName)
+{
+	std::ofstream l_file;
+	l_file.open(_outputFileName);
+	if (!l_file.is_open())
+		return; 
+
+	m_world->saveConfiguration(l_file);
+
+	double l_potentialIndex = this->getTrajectoryPotentialIndex();
+	l_file << "Potential Index " << l_potentialIndex << endl;
+	double l_benefitIndex = this->getTrajectoryBenefitIndex();
+	l_file << "Benefit Index " << l_benefitIndex << endl;
+	double l_coverageIndex = this->getTrajectoryCoverage();
+	l_file << "Coverage Index " << l_coverageIndex << endl;
+	double l_explorationRate = m_learning->computeExplorationRate();
+	l_file << "Esploration Rate " << l_explorationRate << endl;
+
+	l_file.close();
+	
+	return;
+}
+
+#pragma endregion

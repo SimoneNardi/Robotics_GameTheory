@@ -5,6 +5,8 @@
 #include "DiscretizedArea.h"
 #include "CoverageUtility.h"
 
+#include <fstream>
+
 using namespace Robotics;
 using namespace Robotics::GameTheory;
 using namespace std;
@@ -196,3 +198,29 @@ double World::getMaximumValue()
 	}
 	return 0.;
 }
+
+//////////////////////////////////////////////////////////////////////////
+void World::saveConfiguration(std::ofstream & _stream)
+{
+	this->getSpace()->printOnFile(_stream);
+
+	for(auto it = this->m_agent.begin(); it != this->m_agent.end(); ++it)
+	{
+		AgentPtr l_agent = *it;
+		AgentPosition l_position = l_agent->getCurrentPosition();
+
+		AreaCoordinate l_coord = this->getSpace()->getCoordinate( l_position.getPoint2D() );
+
+		if (l_agent->isGuard())
+			_stream << "G" << '\t';
+		else if (l_agent->isThief())
+			_stream << "T" << '\t';
+		else
+			_stream << "N" << '\t';
+
+		_stream << l_coord.col << '\t' << l_coord.row << endl;
+	}
+
+	return;
+}
+

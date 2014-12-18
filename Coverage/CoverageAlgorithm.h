@@ -108,7 +108,7 @@ namespace Robotics
 			*	@throw 
 			*/
 			/************************************************************************/
-			bool update(int nStep, int _monitorUpdateTime = 5, int _thiefJump = 1);
+			bool update(int nStep, int _monitorUpdateTime = 5, int _thiefJump = 1, bool _continuousUpdate = true);
 
 			/************************************************************************/
 			/*	\brief Initialize position of agent uniformly at random in the area.
@@ -147,6 +147,10 @@ namespace Robotics
 			void printPotentialIndexVersusExplorationRate(std::string const& name, bool printOnFile = true);
 			void printExplorationRate(std::string const& name, bool printOnFile = true);
 			
+			void printNewPerformanceIndex(std::string const& name, bool printOnFile = true);
+			void printNewPerformanceIndexVersusExplorationRate(std::string const& name, bool printOnFile = true);
+
+
 			std::string getExplorationRateStr();
 			double getExplorationRate();
 
@@ -170,11 +174,21 @@ namespace Robotics
 #pragma endregion
 
 			std::shared_ptr<Square> findSquare(IDS::BaseGeometry::Point2D const& point) const;
+
+#pragma region CONFIGURATION
+
+			/// print data for BoxPlot:
+			double getTrajectoryPotentialIndex();
+			double getTrajectoryBenefitIndex();
+			double getTrajectoryCoverage();
+
+			void printPhoto(std::string const& _outputFileName);
+
+#pragma endregion
+
 		protected:
 			/// Wake Up agent if the security is too low.
 			void wakeUpAgentIfSecurityIsLow();
-
-			
 		};
 	}
 }

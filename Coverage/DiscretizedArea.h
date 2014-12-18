@@ -196,12 +196,15 @@ namespace Robotics
 			int getNumberOfValidSquare();
 			void computeNumberOfValidSquare();
 
+			void printOnFile(std::ofstream & _stream);
+
 		protected:
 			void addEdges();
 
 			friend class COVERAGE_API DISLAlgorithm;
 			friend class COVERAGE_API PIPIPAlgorithm;
 			friend class COVERAGE_API ParetoEfficientAlgorithm;
+			friend class COVERAGE_API CoarseCorrelatedAlgorithm;
 		};
 	}
 }
