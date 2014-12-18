@@ -3,16 +3,17 @@
 
 #include "stdafx.h"
 #include "Resource.h"
+#include "CoverageTest.h"
+
 #include "BaseGeometry/PointEuclidean2D.h"
 #include "BaseGeometry/PointEllipsoidic2D.h"
 #include "BaseGeometry/Point2D.h"
-#include "CoverageTest.h"
-#include "Agent.h"
-#include "Thief.h"
-#include "Sink.h"
 
 #include "Coverage/Agent.h"
+#include "Coverage/Thief.h"
 #include "Coverage/Guard.h"
+#include "Coverage/Sink.h"
+
 #include "Coverage/StructuredArea.h"
 
 #include <iostream>
@@ -488,7 +489,7 @@ void DrawAllPolygons(HDC hdc, int width, int height, int thickness)
 
 	for(size_t i = 0; i < l_squares.size(); ++i)
 	{
-		MyColour Col = l_colorMap.getColor( l_squares[i]->getValue() * Robotics::GameTheory::g_maxValuePossible );
+		MyColour Col = l_colorMap.getColor( l_squares[i]->getThiefValue() * Robotics::GameTheory::g_maxValuePossible );
 		if( l_squares[i]->isValid() && (g_drawSquare || l_squares[i]->isChanged()) )
 			DrawSquare(l_squares[i], hdc, width, height, Col.R, Col.G, Col.B, thickness);
 	}
@@ -1401,30 +1402,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		else if(g_drawing_thiefPosition)
 		{
-			if( g_drawing_mode == 0 )
-			{
-				g_boundary->clear();
+			g_boundary->clear();
 
-				if(g_coverageTest)
-				{
-					delete g_coverageTest;
-					g_coverageTest = NULL;
-				}
-
-				g_drawing_externalBoundary=true;
-				g_drawing_thiefPosition=false;
-			}
-			else if( g_drawing_mode < 0 )
+			if(g_coverageTest)
 			{
-				g_drawing_a=false;
-				g_boundary->clear();
-				if(g_coverageTest)
-				{
-					delete g_coverageTest;
-					g_coverageTest = NULL;
-				}
-				g_drawing_mybool = true;
+				delete g_coverageTest;
+				g_coverageTest = NULL;
 			}
+
+			g_drawing_externalBoundary = false;
+			g_drawing_thiefPosition = false;
+			g_drawing_sink = true;
+		}
+		else if(g_drawing_sink)
+		{
+			g_boundary->clear();
+
+			if(g_coverageTest)
+			{
+				delete g_coverageTest;
+				g_coverageTest = NULL;
+			}
+
+			g_drawing_externalBoundary = true;
+			g_drawing_thiefPosition = false;
+			g_drawing_sink = false;
 		}
 		InvalidateRect(hWnd, NULL, TRUE);
 		UpdateWindow(hWnd);

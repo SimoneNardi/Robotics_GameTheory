@@ -21,7 +21,7 @@ void MemoryGuardTrajectories::add(MemoryGuardTrajectory const& _elem)
 {
 	m_elems.insert(m_elems.begin(), _elem);
 
-	if(m_elems.size() > m_maxSize)
+	if(m_elems.size() > size_t(m_maxSize))
 		m_elems.erase(m_elems.begin()+m_maxSize);
 }
 
@@ -69,7 +69,7 @@ bool GuardTrajectoryPosition::operator!=(GuardTrajectoryPosition const& other) c
 //////////////////////////////////////////////////////////////////////////
 bool GuardTrajectory::contains(AgentPosition _nextPos)
 {
-	for(auto i = 0; i < m_elems.size(); ++i)
+	for(size_t i = 0; i < m_elems.size(); ++i)
 	{
 		if( m_elems[i].m_position.getPoint2D().equals(_nextPos.getPoint2D()) )
 			return true;

@@ -1,13 +1,12 @@
 ///////////////////////////////////////////////////////////
 //  Sink.h
-//  Created on:      13-may-2013 10.14.52
+//  Created on:      18-dec-2014 15.14.52
 //  Original author: s.nardi
 ///////////////////////////////////////////////////////////
 #ifndef SINK_H
 #define SINK_H
 #pragma once
 
-//	DTMManager
 #include "CoverageExport.h"
 #include "Agent.h"
 

@@ -71,11 +71,11 @@ namespace Robotics
 			int m_counter;
 
 			/// The value associated to the square by the monitor
-			double m_value;
+			std::vector<double> m_values;
 
 			IDS::BaseGeometry::Box2D m_box;
 
-			double m_old_value;
+			std::vector<double> m_old_values;
 		public:
 
 			/// Set the box of the Square
@@ -94,8 +94,11 @@ namespace Robotics
 
 			inline int getTheNumberOfAgent() const {return m_counter;}
 
-			inline double getValue() const {return m_value;}
-			inline void setValue(double _value);
+			inline double getThiefValue() const {return m_values.size() > 0 ? m_values.at(1) : 0;}
+			inline void setThiefValue(double _value);
+
+			inline double getEnergyValue() const {return m_values.size() > 1 ? m_values.at(2) : 0;}
+			inline void setEnergyValue(double _value);
 
 			//Square() : m_valid(true), m_counter(0), m_value(0.), m_old_value(0.) {}
 			Square(std::shared_ptr<lemon::ListGraph> _graph);
@@ -106,7 +109,8 @@ namespace Robotics
 
 			bool isChanged() const;
 			/// Set the value to zero.
-			void resetValue();
+			void resetThiefValue();
+			void resetEnergyValue();
 
 			//bool equals(std::shared_ptr<Square> _other) const;
 
@@ -172,6 +176,7 @@ namespace Robotics
 			
 			bool getRandomPosition(IDS::BaseGeometry::Point2D & _point) const;
 			void setThiefPosition(AgentPosition const& _pos);
+			void setSinkPosition(AgentPosition const& _pos);
 			double getThiefMaxValue(AgentPosition const& _pos);
 
 			bool isOut(AgentPosition const& pos) const;

@@ -375,7 +375,7 @@ AgentPosition Guard::selectNextFeasiblePositionWithoutConstraint(std::shared_ptr
 	std::vector<AgentPosition> l_feasible = this->getFeasibleActions(_space);
 
 	std::vector< std::pair<AgentPosition, int> > l_notControlledFeasibleActions;
-	for(auto i = 0; i < l_feasible.size(); ++i)
+	for(size_t i = 0; i < l_feasible.size(); ++i)
 	{
 		if( _alreadyTested.find(i) != _alreadyTested.end() )
 			continue;

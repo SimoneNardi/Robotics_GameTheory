@@ -21,6 +21,7 @@ namespace Robotics
 		class Agent;
 		class Guard;
 		class Thief;
+		class Sink;
 		class LearningAlgorithm;
 		class Area;
 
@@ -46,6 +47,9 @@ namespace Robotics
 			/// Neutrals
 			std::set< std::shared_ptr<Agent> > getNeutrals() const;
 
+			/// Sink
+			std::set< std::shared_ptr<Sink> > getSinks() const;
+
 			// Move Thieves in the world
 			void moveThieves(int _thiefJump);
 
@@ -62,6 +66,8 @@ namespace Robotics
 			int getNumberOfAgent();
 
 			void addThief(std::shared_ptr<Thief> _thief);
+
+			void addSink(std::shared_ptr<Sink> _sink);
 
 			double getMaximumValue();
 

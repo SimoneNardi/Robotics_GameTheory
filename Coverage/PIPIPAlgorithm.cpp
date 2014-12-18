@@ -165,7 +165,7 @@ void PIPIPAlgorithm::compute(std::shared_ptr<Guard> _agent)
 		if(!l_square->isValid())
 			continue;
 		int l_nq = l_square->getTheNumberOfAgent();
-		double l_value = l_square->getValue();
+		double l_value = l_square->getThiefValue();
 		l_benefit += l_value / double(l_nq);
 	}
 	l_benefit -= _agent->computeCurrentCosts();
@@ -394,7 +394,7 @@ double PIPIPAlgorithm::getPotentialValue()
 	for(size_t i = 0;  i < m_space->m_lattice.size(); ++i)
 	{
 		double l_partialTotal = 0.;
-		double l_Wq = m_space->m_lattice[i]->getValue();
+		double l_Wq = m_space->m_lattice[i]->getThiefValue();
 		for(int j = 1; j <= m_space->m_lattice[i]->getTheNumberOfAgent(); ++j)
 		{
 			l_partialTotal += l_Wq / j;

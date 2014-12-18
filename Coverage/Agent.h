@@ -28,6 +28,7 @@ namespace Robotics
 		struct AreaCoordinate;
 		class Area;
 		class Agent;
+		class Sink;
 		class Square;
 
 		//////////////////////////////////////////////////////////////////////////
@@ -101,6 +102,7 @@ namespace Robotics
 			friend class COVERAGE_API Agent;
 			friend class COVERAGE_API Guard;
 			friend class COVERAGE_API Thief;
+			friend class COVERAGE_API Sink;
 		};
 
 		//////////////////////////////////////////////////////////////////////////
@@ -167,6 +169,8 @@ namespace Robotics
 			std::shared_ptr<Thief> toThief();
 
 			std::shared_ptr<Guard> toGuard();
+
+			std::shared_ptr<Sink> toSink();
 
 			virtual void moveToNextPosition();
 

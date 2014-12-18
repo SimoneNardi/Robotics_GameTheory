@@ -7,7 +7,6 @@
 #define GUARD_H
 #pragma once
 
-//	DTMManager
 #include "CoverageExport.h"
 #include "Agent.h"
 

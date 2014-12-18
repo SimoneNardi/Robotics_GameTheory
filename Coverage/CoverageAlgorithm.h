@@ -30,6 +30,7 @@ namespace Robotics
 		class DiscretizedArea;
 		class Agent;
 		class Thief;
+		class Sink;
 		class LearningAlgorithm;
 		class Area;
 		class AgentPosition;

@@ -65,6 +65,19 @@ std::set< std::shared_ptr<Thief> > World::getThieves() const
 }
 
 //////////////////////////////////////////////////////////////////////////
+std::set< std::shared_ptr<Sink> > World::getSinks() const
+{
+	std::set< std::shared_ptr<Sink> > result;
+	for(auto it = m_agent.begin(); it != m_agent.end(); ++it)
+	{
+		AgentPtr l_agent = *it;
+		if(l_agent->isSink())
+			result.insert(l_agent->toSink());
+	}
+	return result;
+}
+
+//////////////////////////////////////////////////////////////////////////
 void World::removeAllThieves()
 {
 	std::set< std::shared_ptr<Thief> > result = getThieves();

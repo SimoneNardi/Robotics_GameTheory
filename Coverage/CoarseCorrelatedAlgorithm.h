@@ -21,6 +21,7 @@ namespace Robotics
 		class Agent;
 		class DiscretizedArea;
 		class Thief;
+		class Sink;
 
 		/**
 		*	\brief	Learning Efficient Correlated Equilibria
