@@ -882,14 +882,14 @@ bool Square::isChanged() const
 void Square::resetThiefValue()
 {
 	if(m_values.size() > 0)
-		m_values[1] = 0.;
+		m_values[0] = 0.;
 }
 
 //////////////////////////////////////////////////////////////////////////
 void Square::resetEnergyValue()
 {
 	if(m_values.size() > 1)
-		m_values[2] = 0.;
+		m_values[1] = 0.;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -903,8 +903,8 @@ void Square::setThiefValue(double _value)
 {
 	if(m_values.size() > 0)
 	{
-		m_old_values[1] = m_values[1];
-		m_values[1] = _value;
+		m_old_values[0] = m_values[0];
+		m_values[0] = _value;
 	}
 	else
 	{
@@ -918,8 +918,8 @@ void Square::setEnergyValue(double _value)
 {
 	if(m_values.size() > 1)
 	{
-		m_old_values[2] = m_values[2];
-		m_values[2] = _value;
+		m_old_values[1] = m_values[1];
+		m_values[1] = _value;
 	}
 	else if(m_values.size() > 0)
 	{

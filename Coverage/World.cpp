@@ -2,8 +2,11 @@
 #include "Agent.h"
 #include "Neutral.h"
 #include "Thief.h"
+#include "Sink.h"
 #include "DiscretizedArea.h"
 #include "CoverageUtility.h"
+
+#include "BaseGeometry/Point2D.h"
 
 #include <fstream>
 
@@ -79,6 +82,7 @@ std::set< std::shared_ptr<Sink> > World::getSinks() const
 
 //////////////////////////////////////////////////////////////////////////
 void World::removeAllThieves()
+	// CONTROLLARE
 {
 	std::set< std::shared_ptr<Thief> > result = getThieves();
 
@@ -88,6 +92,20 @@ void World::removeAllThieves()
 	}
 	return;
 }
+
+//////////////////////////////////////////////////////////////////////////
+void World::removeAllSinks()
+	// CONTROLLARE
+{
+	std::set< std::shared_ptr<Sink> > result = getSinks();
+
+	for(auto it = result.begin(); it != result.end(); ++it)
+	{
+		m_agent.erase(*it);
+	}
+	return;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 std::set< std::shared_ptr<Agent> > World::getNeutrals() const
@@ -195,10 +213,16 @@ int World::getNumberOfAgent()
 	return m_agent.size();
 }
 
-///
+//////////////////////////////////////////////////////////////////////////
 void World::addThief(std::shared_ptr<Thief> _thief)
 {
 	m_agent.insert(_thief);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void World::addSink(std::shared_ptr<Sink> _sink)
+{
+	m_agent.insert(_sink);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -237,3 +261,53 @@ void World::saveConfiguration(std::ofstream & _stream)
 	return;
 }
 
+//////////////////////////////////////////////////////////////////////////
+void World::getSinksPosition(std::vector<AgentPosition> & _pos)
+{
+	std::set<SinkPtr> l_sinks = this->getSinks();
+	_pos.clear();
+	_pos.reserve(l_sinks.size());
+	for(auto it = l_sinks.begin(); it != l_sinks.end(); ++it)
+	{
+		SinkPtr l_agent = *it;
+		if(l_agent->isSink())
+		{
+			_pos.push_back( l_agent->getCurrentPosition() );
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+void World::getSinksSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> & _pos)
+{
+	std::set<SinkPtr> l_sinks = this->getSinks();
+	_pos.clear();
+	_pos.reserve(l_sinks.size());
+	for(auto it = l_sinks.begin(); it != l_sinks.end(); ++it)
+	{
+		SinkPtr l_agent = *it;
+		if(l_agent->isSink())
+		{
+			_pos.push_back( std::make_pair(m_space->getSquare( l_agent->getCurrentPosition().getPoint2D() ), 255. ) );
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+void World::getSinksCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas)
+{
+	std::set<SinkPtr> l_sinks = this->getSinks();
+	for(auto it = l_sinks.begin(); it != l_sinks.end(); ++it)
+	{
+		std::vector<IDS::BaseGeometry::Point2D> l_agentArea;
+		SinkPtr l_agent = *it;
+		Shape2D l_area = l_agent->getVisibleArea();
+		std::vector<Curve2D> l_bound = l_area.getBoundary();
+		for(size_t i = 0 ; i < l_bound.size(); ++i)
+		{
+			std::vector<IDS::BaseGeometry::Point2D> l_partial = l_bound[i].approxByPoints(1);
+			l_agentArea.insert(l_agentArea.end(), l_partial.begin(), l_partial.end());
+		}
+		_areas.push_back(l_agentArea);
+	}
+}

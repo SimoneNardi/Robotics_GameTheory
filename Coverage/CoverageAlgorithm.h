@@ -140,6 +140,13 @@ namespace Robotics
 			void getGuardsSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> & _pos);
 			void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas);
 			int numberOfSquaresCoveredByGuards() const;
+
+			void getSinksPosition(std::vector<AgentPosition> & _pos);
+			void getSinksSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> & _pos);
+			void getSinksCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas);
+			void setPositionOfSink(AgentPosition const& pos, std::shared_ptr<Sink> _agent/* = nullptr*/);
+			void removeAllSinks();
+
 			//int getTime() const;
 			void printPotential(std::string const& name, bool printOnFile = true);
 			void printBenefit(std::string const& name, bool printOnFile = true);

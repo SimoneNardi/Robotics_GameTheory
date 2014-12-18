@@ -388,6 +388,7 @@ double PIPIPAlgorithm::getBenefitValue()
 	return l_total;
 }
 
+//////////////////////////////////////////////////////////////////////////
 double PIPIPAlgorithm::getPotentialValue()
 {
 	double l_total = 0.;

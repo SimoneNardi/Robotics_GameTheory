@@ -89,15 +89,15 @@ void CoverageTest::getGuardsCoverage(std::vector<LineString2D>& _areas)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CoverageTest::getSinkCoverage(std::vector<LineString2D>& _areas)
+void CoverageTest::getSinksCoverage(std::vector<LineString2D>& _areas)
 {
-	//return m_algorithm->getSinkCoverage(_areas); // CONTROLLARE
+	return m_algorithm->getSinksCoverage(_areas); // CONTROLLARE
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CoverageTest::getSinkSquare(std::vector< std::pair<SquarePtr,int> > & _pos)
+void CoverageTest::getSinksSquare(std::vector< std::pair<SquarePtr,int> > & _pos)
 {
-	//return m_algorithm->getSinkSquare(_pos); // CONTROLLARE
+	return m_algorithm->getSinksSquare(_pos); // CONTROLLARE
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -278,12 +278,12 @@ void DrawSink(
 	int R, int G, int B, int thickness )
 {
 	std::vector<LineString2D> l_coverageArea;
-	g_coverageTest->getSinkCoverage(l_coverageArea);
+	g_coverageTest->getSinksCoverage(l_coverageArea);
 	for(size_t i = 0; i < l_coverageArea.size(); ++i)
 		DrawPath(&l_coverageArea[i], hdc, width, height, 255,0,255, 1);
 
 	std::vector< std::pair<SquarePtr,int> > l_pos;
-	g_coverageTest->getSinkSquare(l_pos);
+	g_coverageTest->getSinksSquare(l_pos);
 	for(size_t i = 0; i < l_pos.size(); ++i)
 	{
 		DrawGuard(l_pos[i].first, hdc, width, height, 255,0,255, thickness);
@@ -692,8 +692,10 @@ bool SetBoundary2D(int mode = 0)
 	return true;
 }
 
-
-
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////WINDOW CONTROL//////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY _tWinMain(HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
@@ -739,8 +741,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 	return (int) msg.wParam;
 }
-
-
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -1308,45 +1308,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			if(!g_coverageTest)
 			{
-				g_boundary->clear();
-				if(g_coverageTest)
-				{
-					delete g_coverageTest;
-					g_coverageTest = NULL;
-				}
-
-				for( int i = 0; i != g_dim; i++ )
-				{
-					g_boundary->push_back(g_boundary2D[i]);
-				}
-							
 				try
 				{
-					if( g_numberOfAgents < 0 )
+					vector<Point2D> v;
+					for(int i = 0; i != g_dim; i++)
 					{
-						vector<IDSReal2D> bb;
-						for(int i = 0; i != g_dim + g_numberOfAgents - 1; i++)
-						{
-							bb.push_back(g_boundary2D[i].coord());
-						}
-
-						///Create Point From Vertex:
-						std::vector<Point2D> bb_2D;
-						for(size_t i = 0; i != bb.size(); i++)
-						{
-							bb_2D.push_back(makePoint(bb[i], g_metric));
-						}
+						v.push_back(g_boundary2D[i]);
 					}
-					else
-					{
-						vector<Point2D> v;
-						for(int i = 0; i != g_dim - g_numberOfAgents - 1; i++)
-						{
-							v.push_back(g_boundary2D[i]);
-						}
-						g_coverageTest= new CoverageTest(v,g_counterclockwise);
-							
-					}
+					g_coverageTest= new CoverageTest(v,g_counterclockwise);
 				}
 				catch(...) 
 				{
@@ -1385,6 +1354,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			if(g_coverageTest)
 			{
+				g_coverageTest->removeAllSinks();
+
 				SinkPtr l_agent = std::make_shared<Sink>(g_coverageTest->getAlgorithm()->getNumberOfAgent(), g_sinkPt);
 				g_coverageTest->setSink(g_sinkPt, l_agent);
 			}
@@ -1399,6 +1370,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			g_drawing_externalBoundary = false;
 			g_drawing_thiefPosition = true;
+			SetStandardBoundary();
 		}
 		else if(g_drawing_thiefPosition)
 		{
@@ -1410,9 +1382,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				g_coverageTest = NULL;
 			}
 
-			g_drawing_externalBoundary = false;
+			g_drawing_externalBoundary = true;
 			g_drawing_thiefPosition = false;
-			g_drawing_sink = true;
+			g_drawing_sink = false;
 		}
 		else if(g_drawing_sink)
 		{

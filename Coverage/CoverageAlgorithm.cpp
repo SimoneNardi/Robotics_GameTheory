@@ -12,6 +12,7 @@
 #include "Guard.h"
 #include "Neutral.h"
 #include "Thief.h"
+#include "Sink.h"
 #include "World.h"
 
 #include "BaseGeometry/MakePoint2D.h"
@@ -288,6 +289,39 @@ void CoverageAlgorithm::removeAllThieves()
 }
 
 //////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::removeAllSinks()
+{
+	return m_world->removeAllSinks();
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::setPositionOfSink(AgentPosition const& pos, SinkPtr _agent)
+{
+	bool found = false;
+	/// Put agent in the space
+	std::set< SinkPtr > l_agents = m_world->getSinks();
+	for(auto it = l_agents.begin(); it != l_agents.end(); ++it)
+	{
+		SinkPtr l_agent = *it;
+		if(_agent != l_agent)
+			continue;
+
+		found = true;
+
+		// set position of the agent:
+		l_agent->setCurrentPosition(pos);
+	}
+
+	if(!found)
+	{
+		if(!_agent)
+			_agent = std::make_shared<Sink>(m_world->getNumberOfAgent(), pos);
+
+		m_world->addSink( _agent );
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
 void CoverageAlgorithm::setPositionOfThief(AgentPosition const& pos, ThiefPtr _agent)
 {
 	bool found = false;
@@ -363,6 +397,24 @@ void CoverageAlgorithm::getGuardsSquare(std::vector<std::pair<SquarePtr,int>> & 
 int CoverageAlgorithm::numberOfSquaresCoveredByGuards() const
 {
 	return m_world->getSpace()->numberOfSquaresCoveredByGuards();
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::getSinksPosition(std::vector<AgentPosition> & _pos)
+{
+	return m_world->getSinksPosition(_pos);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::getSinksSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> & _pos)
+{
+	return m_world->getSinksSquare(_pos);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::getSinksCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas)
+{
+	return m_world->getSinksCoverage(_areas);
 }
 
 ////////////////////////////////////////////////////////////////////////////

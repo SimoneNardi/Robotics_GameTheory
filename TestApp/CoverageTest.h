@@ -133,13 +133,18 @@ public:
 
 	inline int setSink(const BaseGeometry::Point2D & _sinkStartingPt, std::shared_ptr<Sink> _agent)
 	{
-		//m_algorithm->setPositionOfSink(_sinkStartingPt, _agent);
+		m_algorithm->setPositionOfSink(_sinkStartingPt, _agent);
 		return 1;
 	}
 
 	inline void removeAllThieves()
 	{
 		return m_algorithm->removeAllThieves();
+	}
+
+	inline void removeAllSinks()
+	{
+		return m_algorithm->removeAllSinks();
 	}
 
 	bool areaContains(const BaseGeometry::Point2D & _thiefStartingPt)
@@ -151,8 +156,8 @@ public:
 	void getGuardsSquare(std::vector< std::pair<std::shared_ptr<Square>,int> > & _pos);
 	void getGuardsCoverage(std::vector<LineString2D>& _areas);
 
-	void getSinkSquare(std::vector< std::pair<std::shared_ptr<Square>,int> > & _pos);
-	void getSinkCoverage(std::vector<LineString2D>& _areas);
+	void getSinksSquare(std::vector< std::pair<std::shared_ptr<Square>,int> > & _pos);
+	void getSinksCoverage(std::vector<LineString2D>& _areas);
 
 	int numberOfSquaresCoveredByGuards();
 	//int getTime();
