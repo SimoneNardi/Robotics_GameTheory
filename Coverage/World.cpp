@@ -296,6 +296,7 @@ void World::getSinksSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> &
 //////////////////////////////////////////////////////////////////////////
 void World::getSinksCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas)
 {
+	return;
 	std::set<SinkPtr> l_sinks = this->getSinks();
 	for(auto it = l_sinks.begin(); it != l_sinks.end(); ++it)
 	{
