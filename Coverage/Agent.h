@@ -160,6 +160,10 @@ namespace Robotics
 			
 			virtual bool isGuard() const {return false;}
 
+			virtual bool isSink() const {return false;}
+
+			virtual bool isNeutral() const {return false;}
+
 			std::shared_ptr<Thief> toThief();
 
 			std::shared_ptr<Guard> toGuard();

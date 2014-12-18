@@ -24,7 +24,6 @@ namespace Robotics
 			~Thief() {}
 
 			virtual bool isThief() const {return true;}
-
 		};
 		
 		typedef std::shared_ptr<Thief> ThiefPtr;
