@@ -85,6 +85,7 @@
     <ClInclude Include="BatalinAlgorithm.h" />
     <ClInclude Include="BatalinArea.h" />
     <ClInclude Include="BatalinGuard.h" />
+    <ClInclude Include="CoarseCorrelatedAlgorithm.h" />
     <ClInclude Include="CoverageAlgorithm.h" />
     <ClInclude Include="CoverageExport.h" />
     <ClInclude Include="CoverageUtility.h" />
@@ -110,6 +111,7 @@
     <ClCompile Include="AgentTrajectory.cpp" />
     <ClCompile Include="Area.cpp" />
     <ClCompile Include="BatalinAlgorithm.cpp" />
+    <ClCompile Include="CoarseCorrelatedAlgorithm.cpp" />
     <ClCompile Include="CoverageAlgorithm.cpp" />
     <ClCompile Include="DiscretizedArea.cpp" />
     <ClCompile Include="Guard.cpp" />

@@ -65,7 +65,7 @@ CoverageTest::CoverageTest(const vector<Point2D>& bound, bool counterclockwise)
 		Sleep(1000);
 	}
 
-	m_algorithm = std::make_shared<CoverageAlgorithm>(l_agents, l_space, g_pareto? 2: g_DISL? 0 : 1);
+	m_algorithm = std::make_shared<CoverageAlgorithm>(l_agents, l_space, g_correlated? 3 : g_pareto? 2: g_DISL? 0 : 1);
 	//m_algorithm->Initialize();
 }
 
@@ -819,6 +819,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		g_drawing_externalBoundary=true;
 		g_drawing_r=false;
 		g_drawing_thiefPosition=false; 
+		g_drawing_sink=false;
 
 	case WM_COMMAND:
 		wmId    = LOWORD(wParam);
@@ -849,6 +850,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			g_drawing_externalBoundary=true;
 			g_drawing_r=false;
 			g_drawing_thiefPosition=false;
+			g_drawing_sink=false;
 			g_drawing_mybool = true;
 			break;
 		case ID_MODE_LOADPATH:
@@ -863,6 +865,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			g_drawing_a = false;
 			g_drawing_externalBoundary = false;
 			g_drawing_thiefPosition = true;
+			g_drawing_sink=false;
 			g_drawing_mybool = true;
 			break;
 		case ID_MODE_DRAWCURVE:
@@ -877,6 +880,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			g_drawing_a = false;
 			g_drawing_externalBoundary = false;
 			g_drawing_thiefPosition = true;
+			g_drawing_sink=false;
 			g_drawing_mybool = true;
 			break;
 		case ID_MODE_TESTALLPAT:
@@ -891,6 +895,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			g_drawing_a = false;
 			g_drawing_externalBoundary = false;
 			g_drawing_thiefPosition = true;
+			g_drawing_sink=false;
 			g_drawing_mybool = true;
 			break;
 		case ID_MODE_TESTMULTISTARTPATHS:
@@ -905,6 +910,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			g_drawing_a = false;
 			g_drawing_externalBoundary = false;
 			g_drawing_thiefPosition = true;
+			g_drawing_sink=false;
 			g_drawing_mybool = true;
 			break;
 		case ID_FILE_NUMBER_OF_GUARDS:
@@ -983,28 +989,121 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{HMENU hmenu = GetMenu(hWnd);
 			if(g_pareto)
 			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
 				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_CHECKED);
+				g_pareto = true;
 				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				g_PIPIP=false;
 				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_DISL=false;
+			}
+			else if(g_correlated)
+			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_CHECKED);
+				g_correlated = true;
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				g_pareto = false;
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				g_PIPIP=false;
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_DISL=false;
 			}
 			else if(g_PIPIP)
 			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
 				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
-				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
-				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_CHECKED);
+				g_pareto = false;
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_CHECKED);
+				g_PIPIP=true;
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_DISL=false;
 			}
 			else if(g_DISL)
 			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
 				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
-				CheckMenuItem(hmenu,ID_FILE_DISL,MF_CHECKED);
-				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_pareto = false;
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				g_PIPIP=false;
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_CHECKED);
+				g_DISL=true;
 			}
 			else 
 			{
-				g_DISL = true;
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
 				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
-				CheckMenuItem(hmenu,ID_FILE_DISL,MF_CHECKED);
+				g_pareto = false;
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				g_PIPIP=false;
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_CHECKED);
+				g_DISL=true;
+			}
+			EndMenu();}
+			if( g_drawing_mode < 0 && g_drawing_mybool )
+				g_drawing_loadCounter--;
+
+			break;
+		case ID_FILE_CORRELATED:
+			g_correlated = !g_correlated;
+			{HMENU hmenu = GetMenu(hWnd);
+			if(g_correlated)
+			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_CHECKED);
+				g_correlated = true;
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				g_pareto = false;
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				g_PIPIP=false;
 				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_DISL=false;
+			}
+			else if(g_pareto)
+			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_CHECKED);
+				g_pareto = true;
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				g_PIPIP=false;
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_DISL=false;
+			}
+			else if(g_PIPIP)
+			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				g_pareto = false;
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_CHECKED);
+				g_PIPIP=true;
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_DISL=false;
+			}
+			else if(g_DISL)
+			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				g_pareto = false;
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				g_PIPIP=false;
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_CHECKED);
+				g_DISL=true;
+			}
+			else 
+			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				g_pareto = false;
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				g_PIPIP=false;
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_CHECKED);
+				g_DISL=true;
 			}
 			EndMenu();}
 			if( g_drawing_mode < 0 && g_drawing_mybool )
@@ -1016,28 +1115,58 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{HMENU hmenu = GetMenu(hWnd);
 			if(g_DISL)
 			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
 				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
-				CheckMenuItem(hmenu,ID_FILE_DISL,MF_CHECKED);
-				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
-			}
-			else if(g_PIPIP)
-			{
-				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				g_pareto = false;
 				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				g_PIPIP=false;
 				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_CHECKED);
+				g_DISL=true;
+			}
+			else if(g_correlated)
+			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_CHECKED);
+				g_correlated = true;
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				g_pareto = false;
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				g_PIPIP=false;
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_DISL=false;
 			}
 			else if(g_pareto)
 			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
 				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_CHECKED);
+				g_pareto = true;
 				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				g_PIPIP=false;
 				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_DISL=false;
+			}
+			else if(g_PIPIP)
+			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				g_pareto = false;
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_CHECKED);
+				g_PIPIP=true;
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_DISL=false;
 			}
 			else 
 			{
-				g_pareto = true;
-				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_CHECKED);
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				g_pareto = false;
 				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
-				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_PIPIP=false;
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_CHECKED);
+				g_DISL=true;
 			}
 			EndMenu();}
 			if( g_drawing_mode < 0 && g_drawing_mybool )
@@ -1049,28 +1178,58 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{HMENU hmenu = GetMenu(hWnd);
 			if(g_PIPIP)
 			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
 				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
-				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
-				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_CHECKED);
+				g_pareto = false;
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_CHECKED);
+				g_PIPIP=true;
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_DISL=false;
 			}
 			else if(g_DISL)
 			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
 				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
-				CheckMenuItem(hmenu,ID_FILE_DISL,MF_CHECKED);
+				g_pareto = false;
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				g_PIPIP=false;
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_CHECKED);
+				g_DISL=true;
+			}
+			else if(g_correlated)
+			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_CHECKED);
+				g_correlated = true;
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				g_pareto = false;
+				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				g_PIPIP=false;
 				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_DISL=false;
 			}
 			else if(g_pareto)
 			{
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
 				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_CHECKED);
+				g_pareto = true;
 				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
+				g_PIPIP=false;
 				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_DISL=false;
 			}
 			else 
 			{
-				g_pareto = true;
-				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_CHECKED);
+				CheckMenuItem(hmenu,ID_FILE_CORRELATED,MF_UNCHECKED);
+				g_correlated = false;
+				CheckMenuItem(hmenu,ID_FILE_PARETO,MF_UNCHECKED);
+				g_pareto = false;
 				CheckMenuItem(hmenu,ID_FILE_DISL,MF_UNCHECKED);
-				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_UNCHECKED);
+				g_PIPIP=false;
+				CheckMenuItem(hmenu,ID_FILE_PIPIP,MF_CHECKED);
+				g_DISL=true;
 			}
 			EndMenu();}
 			if( g_drawing_mode < 0 && g_drawing_mybool )
@@ -1337,20 +1496,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}
 				if(g_coverageTest)
 					g_coverageTest->FindSquare(l_thief, RR);
-				int n = 0;
-				std::vector<Point2D> l_track;
-				l_track.resize(n);
-
-				g_coverageTest->RetrieveTrack(l_thief, l_track);
-
-				g_path1->clear();
-				for(int i = 0; i != n; i++)
-				{
-					Point2D temp;
-					temp.coord().v[0]=(l_track[i].coord()[0]);
-					temp.coord().v[1]=(l_track[i].coord()[1]);
-					g_path1->insert(g_path1->end(),temp);
-				}
 			}
 			else
 			{
@@ -1360,6 +1505,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				g_path1 = 0;
 				delete g_path2;
 				g_path2 = 0;
+			}
+
+			g_drawing_thiefPosition = false;
+			g_drawing_sink = true;
+		}
+		else if(g_drawing_sink)
+		{
+			g_sinkPt = makePoint( 
+				IDSReal2D( ((double)LOWORD(lParam)/(winrect.right-winrect.left)*kk), 
+				((double)HIWORD(lParam)/(winrect.top-winrect.bottom)*kk)), 
+				g_metric );
+			g_drawing_c=true;
+		
+			if(!g_coverageTest)
+			{
 			}
 		}
 		InvalidateRect(hWnd, NULL, TRUE);

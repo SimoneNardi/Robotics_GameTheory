@@ -13,6 +13,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BatchSimulation", "BatchSim
 		{1651E017-88AC-4E1D-A2E6-6AB795CBBA59} = {1651E017-88AC-4E1D-A2E6-6AB795CBBA59}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoverageConfigurationApp", "CoverageConfigurationApp\CoverageConfigurationApp.vcxproj", "{3F6C69B3-A521-485B-82EA-9D34F2C40519}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1651E017-88AC-4E1D-A2E6-6AB795CBBA59} = {1651E017-88AC-4E1D-A2E6-6AB795CBBA59}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -41,6 +46,12 @@ Global
 		{5893CA50-3A47-4995-BF43-31142D934F9B}.Release|Win32.ActiveCfg = Release|Win32
 		{5893CA50-3A47-4995-BF43-31142D934F9B}.Release|Win32.Build.0 = Release|Win32
 		{5893CA50-3A47-4995-BF43-31142D934F9B}.Release|x64.ActiveCfg = Release|Win32
+		{3F6C69B3-A521-485B-82EA-9D34F2C40519}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3F6C69B3-A521-485B-82EA-9D34F2C40519}.Debug|Win32.Build.0 = Debug|Win32
+		{3F6C69B3-A521-485B-82EA-9D34F2C40519}.Debug|x64.ActiveCfg = Debug|Win32
+		{3F6C69B3-A521-485B-82EA-9D34F2C40519}.Release|Win32.ActiveCfg = Release|Win32
+		{3F6C69B3-A521-485B-82EA-9D34F2C40519}.Release|Win32.Build.0 = Release|Win32
+		{3F6C69B3-A521-485B-82EA-9D34F2C40519}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

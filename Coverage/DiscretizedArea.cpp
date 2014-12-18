@@ -153,7 +153,7 @@ void DiscretizedArea::addEdges()
 			continue;
 
 		SquarePtr l_square = m_lattice.at(row * m_numCol + col);
-		
+
 		if(!l_square->isValid())
 			continue;
 
@@ -252,7 +252,7 @@ DiscretizedArea::DiscretizedArea(std::string const& _filename)
 
 	double l_xdist = l_bottomLeft.distance(l_bottomRight);
 	double l_ydist = l_bottomLeft.distance(l_topLeft);
-	
+
 	m_xStep = l_xdist / double(l_numcol);
 	m_yStep = l_ydist / double(l_numrow);
 
@@ -772,6 +772,27 @@ int DiscretizedArea::getNumberOfValidSquare()
 	return m_numberOfValidSquare;
 }
 
+//////////////////////////////////////////////////////////////////////////
+void DiscretizedArea::printOnFile(std::ofstream & _stream)
+{
+	_stream << "col "<< m_numCol << endl; 
+	_stream << "row "<< m_numRow << endl; 
+
+	for(auto i = 0; i < m_lattice.size(); ++i)
+	{
+		if ( m_lattice[i]->isValid() )
+			_stream << 1;
+		else
+			_stream << 0;
+
+		if (i ==  m_lattice.size()-1)
+			_stream << endl;
+		else
+			_stream << "\t";
+	}
+
+	return;
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////

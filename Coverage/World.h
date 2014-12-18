@@ -66,6 +66,8 @@ namespace Robotics
 			double getMaximumValue();
 
 			void removeAllThieves();
+
+			void saveConfiguration(std::ofstream & _stream);
 		};
 	}
 }

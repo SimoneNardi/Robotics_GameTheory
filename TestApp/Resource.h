@@ -45,6 +45,7 @@
 #define ID_FILE_DRAWREALPARTITION       32795
 #define ID_FILE_STARTSEGMENTINSIDE      32796
 #define ID_FILE_AGENTS_PERIOD			32797
+#define ID_FILE_CORRELATED				32798
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

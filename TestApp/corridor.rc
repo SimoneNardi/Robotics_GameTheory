@@ -55,6 +55,7 @@ BEGIN
         MENUITEM "&Pareto Algorithm",				ID_FILE_PARETO
 		MENUITEM "&DISL Algorithm",					ID_FILE_DISL, CHECKED
 		MENUITEM "&PIPIP Algorithm",				ID_FILE_PIPIP
+		MENUITEM "&Correlated Algorithm",			ID_FILE_CORRELATED
         MENUITEM "&Highlight Triangle",				ID_FILE_HIGHLIGHT
         MENUITEM "Draw Real Partition",				ID_FILE_DRAWREALPARTITION
         MENUITEM "&Undo",							ID_FILE_UNDO
@@ -89,6 +90,7 @@ BEGIN
 	"Q",            ID_FILE_PARETO, VIRTKEY, CONTROL, NOINVERT
 	"W",            ID_FILE_DISL, VIRTKEY, CONTROL, NOINVERT
 	"E",            ID_FILE_PIPIP, VIRTKEY, CONTROL, NOINVERT
+	"R",            ID_FILE_CORRELATED, VIRTKEY, CONTROL, NOINVERT
 END
 
 

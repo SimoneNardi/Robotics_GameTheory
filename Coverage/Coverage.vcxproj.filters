@@ -108,6 +108,9 @@
     <ClInclude Include="ParetoEfficientAlgorithm.h">
       <Filter>Header Files\Learning</Filter>
     </ClInclude>
+    <ClInclude Include="CoarseCorrelatedAlgorithm.h">
+      <Filter>Header Files\Learning</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoverageAlgorithm.cpp">
@@ -156,6 +159,9 @@
       <Filter>Source Files\Learning</Filter>
     </ClCompile>
     <ClCompile Include="LearningAlgorithm.cpp">
+      <Filter>Source Files\Learning</Filter>
+    </ClCompile>
+    <ClCompile Include="CoarseCorrelatedAlgorithm.cpp">
       <Filter>Source Files\Learning</Filter>
     </ClCompile>
   </ItemGroup>

@@ -38,7 +38,8 @@ bool	g_drawing_a=false,
 		g_drawing_b=false,
 		g_drawing_externalBoundary=true,
 		g_drawing_r=false,
-		g_drawing_thiefPosition=false;
+		g_drawing_thiefPosition=false,
+		g_drawing_sink = false;
 bool g_drawing_mybool = true;
 int g_drawing_mode = 0;
 int g_drawing_numToLoad = 1;
@@ -257,6 +258,7 @@ bool g_drawRealArea = false;
 bool g_drawone = false;
 bool g_PrintPotential = true;
 bool g_pareto = false;
+bool g_correlated = false;
 bool g_DISL = true;
 bool g_PIPIP = false;
 
