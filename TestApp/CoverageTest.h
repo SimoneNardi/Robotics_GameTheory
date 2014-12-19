@@ -181,7 +181,7 @@ CoverageTest *g_coverageTest= NULL;
 // For the window application
 int g_window_Ox, g_window_Oy, g_window_rad1, g_window_rad2, g_window_ang1, g_window_ang2, g_window_camp;
 
-int g_numberOfAgents = 7;
+int g_numberOfAgents = 3;
 int g_numberOfSteps = 1;
 int g_agentsPeriod = 1;
 bool g_drawSquare = true;

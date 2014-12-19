@@ -363,15 +363,15 @@ void DrawGuards(
 			thickness);
 		string name = NumberToString(i+1);
 		string name_complete = name;
-		if (l_pos[i].second.m_total > 1)
+		if (l_pos[i].second.m_total > 1 || 1)
 		{
 			string actionElem = NumberToString(l_pos[i].second.m_elem);
 			string actionTotal = NumberToString(l_pos[i].second.m_total);
 			name_complete +=  ": " + actionElem + "/" + actionTotal;
 		}
 		DrawString(hdc, width, height, 
-			(l_pos[i].first->vertex(2).coord().v[0] + l_pos[i].first->vertex(3).coord().v[0])/2.,
-			l_pos[i].first->agentVertex(2).coord().v[1],
+			l_pos[i].first->agentVertex(3).coord().v[0],
+			l_pos[i].first->agentVertex(3).coord().v[1],
 			0, 0, 0, name_complete);
 	}
 }
