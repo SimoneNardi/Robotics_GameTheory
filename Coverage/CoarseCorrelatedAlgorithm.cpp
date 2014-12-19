@@ -69,7 +69,7 @@ void CoarseCorrelatedAlgorithm::update(std::shared_ptr<Guard> _agent)
 
 		switch(_agent->getCurrentMood())
 		{
-		case Mood::C:
+		case Content:
 			{
 				double l_powExplorationRate = pow( l_explorationRate, l_maxValue );
 
@@ -85,7 +85,7 @@ void CoarseCorrelatedAlgorithm::update(std::shared_ptr<Guard> _agent)
 				}
 				break;
 			}
-		case Mood::D:
+		case Discontent:
 		default:
 			{
 				_agent->startExperiment(l_explorationRate);
@@ -257,7 +257,7 @@ void CoarseCorrelatedAlgorithm::getGuardsPosition(std::vector<AgentPosition> & _
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CoarseCorrelatedAlgorithm::getGuardsSquare(std::vector<std::pair<SquarePtr,int>> & _pos)
+void CoarseCorrelatedAlgorithm::getGuardsSquare(std::vector<std::pair<SquarePtr, AgentActionIndex>> & _pos)
 {
 	_pos.clear();
 	_pos.reserve(m_guards.size());
@@ -267,7 +267,7 @@ void CoarseCorrelatedAlgorithm::getGuardsSquare(std::vector<std::pair<SquarePtr,
 		if(l_agent->isGuard())
 		{
 			_pos.push_back( std::make_pair(m_space->getSquare( l_agent->getCurrentPosition().getPoint2D() ),
-				double(l_agent->actualActionIndex()) / double(l_agent->totalActions()) * 255. ) );
+				AgentActionIndex( l_agent->actualActionIndex(), l_agent->totalActions() ) ) );
 		}
 	}
 }

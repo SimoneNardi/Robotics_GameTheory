@@ -36,6 +36,7 @@ namespace Robotics
 		class AgentPosition;
 		class Square;
 		class World;
+		class AgentActionIndex;
 
 		class COVERAGE_API CoverageAlgorithm
 		{
@@ -137,7 +138,7 @@ namespace Robotics
 			bool areaContains(const IDS::BaseGeometry::Point2D & _thiefStartingPt) const;
 
 			void getGuardsPosition(std::vector<AgentPosition> & _pos);
-			void getGuardsSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> & _pos);
+			void getGuardsSquare(std::vector<std::pair<std::shared_ptr<Square>, AgentActionIndex>> & _pos);
 			void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas);
 			int numberOfSquaresCoveredByGuards() const;
 

@@ -388,7 +388,7 @@ int CoverageAlgorithm::getGlobalTrajectoryCoverage()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CoverageAlgorithm::getGuardsSquare(std::vector<std::pair<SquarePtr,int>> & _pos)
+void CoverageAlgorithm::getGuardsSquare(std::vector<std::pair<SquarePtr, AgentActionIndex>> & _pos)
 {
 	return m_learning->getGuardsSquare(_pos);
 }

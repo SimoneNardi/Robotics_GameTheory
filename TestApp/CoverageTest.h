@@ -153,7 +153,7 @@ public:
 	}
 
 	void getGuardsPosition(std::vector< AgentPosition > & _pos);
-	void getGuardsSquare(std::vector< std::pair<std::shared_ptr<Square>,int> > & _pos);
+	void getGuardsSquare(std::vector< std::pair<std::shared_ptr<Square>, AgentActionIndex> > & _pos);
 	void getGuardsCoverage(std::vector<LineString2D>& _areas);
 
 	void getSinksSquare(std::vector< std::pair<std::shared_ptr<Square>,int> > & _pos);

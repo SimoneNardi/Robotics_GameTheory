@@ -101,6 +101,7 @@ std::vector<AgentPosition> Agent::getFeasibleActions( std::shared_ptr<Discretize
 	return l_result;
 }
 
+//////////////////////////////////////////////////////////////////////////
 AgentPosition Agent::selectRandomFeasibleAction(std::shared_ptr<DiscretizedArea> _space)
 {
 	std::vector<AgentPosition> l_feasible = this->getFeasibleActions(_space);

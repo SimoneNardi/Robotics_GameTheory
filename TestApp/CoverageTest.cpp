@@ -1,6 +1,5 @@
 // corridor.cpp : Defines the entry point for the application.
 //
-
 #include "stdafx.h"
 #include "Resource.h"
 #include "CoverageTest.h"
@@ -77,7 +76,7 @@ void CoverageTest::getGuardsPosition(std::vector<AgentPosition> & _pos)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CoverageTest::getGuardsSquare(std::vector< std::pair<SquarePtr,int> > & _pos)
+void CoverageTest::getGuardsSquare(std::vector< std::pair<SquarePtr, AgentActionIndex> > & _pos)
 {
 	return m_algorithm->getGuardsSquare(_pos);
 }
@@ -155,6 +154,42 @@ double CoverageTest::getExplorationRate()
 }
 
 //////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
+std::wstring s2ws(const std::string& s)
+{
+	int len;
+	int slength = (int)s.length() + 1;
+	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0); 
+	wchar_t* buf = new wchar_t[len];
+	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+	std::wstring r(buf);
+	delete[] buf;
+	return r;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void DrawString(HDC hdc, int width, int height, double pt_x, double pt_y,
+	int R, int G, int B, std::string const& text)
+{
+	std::wstring stemp = s2ws(text);
+	LPCWSTR result = stemp.c_str();
+
+	int x = (int) (pt_x/kk*(double)width);
+	int y = (int) (pt_y/kk*(double)height);
+
+	TextOut(hdc, x,y, result, wcslen(result));
+
+	g_explorationFile << text << std::endl;
+	g_explorationFile.flush();
+
+}
+
+//////////////////////////////////////////////////////////////////////////
 void MarkPoint(LONG x, LONG y, HDC hdc, int R, int G, int B, int thickness)
 {
 	HPEN markerPen=CreatePen(PS_SOLID, thickness, RGB(R,G,B));
@@ -199,29 +234,36 @@ void DrawPath(LineString2D *path, HDC hdc, int width, int height,
 }
 
 //////////////////////////////////////////////////////////////////////////
-//void DrawTriangle(Triangolo *tri, HDC hdc, int width, int height,
-//										 int R, int G, int B, int thickness)
-//{
-//	HPEN myPen=CreatePen(PS_SOLID, thickness, RGB(0,0,0));
-//	HBRUSH myBrush=CreateSolidBrush(RGB(R,G,B));
-//	HGDIOBJ oldPen=SelectObject(hdc,myPen);
-//	HGDIOBJ oldBrush=SelectObject(hdc,myBrush);
-//
-//	POINT points[3];
-//	points[0].x=tri->principal->v[0]/kk*(double)width;
-//	points[0].y=tri->principal->v[1]/kk*(double)height;
-//	points[1].x=tri->v1.coord().v[0]/kk*(double)width;
-//	points[1].y=tri->v1.coord().v[1]/kk*(double)height;
-//	points[2].x=tri->v2.coord().v[0]/kk*(double)width;
-//	points[2].y=tri->v2.coord().v[1]/kk*(double)height;
-//
-//	Polygon(hdc,points,3);
-//
-//	SelectObject(hdc,oldPen);
-//	SelectObject(hdc,oldBrush);
-//	DeleteObject(myPen);
-//	DeleteObject(myBrush);
-//}
+void DrawTriangle(SquarePtr rect, HDC hdc, int width, int height,
+	int R, int G, int B, int thickness)
+{
+	HPEN myPen=CreatePen(PS_SOLID, thickness, RGB(0,0,0));
+	HBRUSH myBrush=CreateSolidBrush(RGB(R,G,B));
+	HGDIOBJ oldPen=SelectObject(hdc,myPen);
+	HGDIOBJ oldBrush=SelectObject(hdc,myBrush);
+
+	POINT l_points[4];
+	for(int i=0; i!=4; i++)
+	{
+		l_points[i].x=rect->agentVertex(i).coord().v[0]/kk*(double)width;
+		l_points[i].y=rect->agentVertex(i).coord().v[1]/kk*(double)height;
+	}
+
+	POINT points[3];
+	points[0].x=l_points[0].x;
+	points[0].y=l_points[0].y;
+	points[1].x=l_points[1].x;
+	points[1].y=l_points[1].y;
+	points[2].x=(l_points[2].x + l_points[3].x) / 2.;
+	points[2].y=(l_points[2].y + l_points[3].y) / 2.;
+
+	Polygon(hdc,points,3);
+
+	SelectObject(hdc,oldPen);
+	SelectObject(hdc,oldBrush);
+	DeleteObject(myPen);
+	DeleteObject(myBrush);
+}
 
 //////////////////////////////////////////////////////////////////////////
 void DrawSquare(
@@ -273,6 +315,7 @@ void DrawGuard(
 	DeleteObject(myBrush);
 }
 
+//////////////////////////////////////////////////////////////////////////
 void DrawSink(
 	HDC hdc, int width, int height,
 	int R, int G, int B, int thickness )
@@ -286,10 +329,20 @@ void DrawSink(
 	g_coverageTest->getSinksSquare(l_pos);
 	for(size_t i = 0; i < l_pos.size(); ++i)
 	{
-		DrawGuard(l_pos[i].first, hdc, width, height, 255,0,255, thickness);
+		DrawTriangle(l_pos[i].first, hdc, width, height, 255,0,255, thickness);
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////
+template <typename T>
+string NumberToString ( T Number )
+{
+	ostringstream ss;
+	ss << Number;
+	return ss.str();
+}
+
+//////////////////////////////////////////////////////////////////////////
 void DrawGuards(
 	HDC hdc, int width, int height,
 	int R, int G, int B, int thickness )
@@ -297,52 +350,30 @@ void DrawGuards(
 	std::vector<LineString2D> l_coverageArea;
 	g_coverageTest->getGuardsCoverage(l_coverageArea);
 	for(size_t i = 0; i < l_coverageArea.size(); ++i)
-		DrawPath(&l_coverageArea[i], hdc, width, height, 0,255,255, 1);
+		DrawPath(&l_coverageArea[i], hdc, width, height, 255,0,0, 1);
 
-	std::vector< std::pair<SquarePtr,int> > l_pos;
+	std::vector< std::pair<SquarePtr, AgentActionIndex> > l_pos;
 	g_coverageTest->getGuardsSquare(l_pos);
 	for(size_t i = 0; i < l_pos.size(); ++i)
 	{
-		DrawGuard(l_pos[i].first, hdc, width, height, (R + i*50 + l_pos[i].second) % 255, (G + i*50) % 255, (B + i*50) % 255, thickness);
+		DrawGuard(l_pos[i].first, 
+			hdc, 
+			width, height, 
+			255,255,255, 
+			thickness);
+		string name = NumberToString(i+1);
+		string name_complete = name;
+		if (l_pos[i].second.m_total > 1)
+		{
+			string actionElem = NumberToString(l_pos[i].second.m_elem);
+			string actionTotal = NumberToString(l_pos[i].second.m_total);
+			name_complete +=  ": " + actionElem + "/" + actionTotal;
+		}
+		DrawString(hdc, width, height, 
+			(l_pos[i].first->vertex(2).coord().v[0] + l_pos[i].first->vertex(3).coord().v[0])/2.,
+			l_pos[i].first->agentVertex(2).coord().v[1],
+			0, 0, 0, name_complete);
 	}
-}
-
-std::wstring s2ws(const std::string& s)
-{
-	int len;
-	int slength = (int)s.length() + 1;
-	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0); 
-	wchar_t* buf = new wchar_t[len];
-	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
-	std::wstring r(buf);
-	delete[] buf;
-	return r;
-}
-
-void DrawString(HDC hdc, int width, int height,
-	int R, int G, int B, std::string const& text)
-{
-	LPRECT rec = new tagRECT();
-	rec->left = width/2.;
-	rec->right = width/2. + text.size()*2;
-
-	rec->bottom = -height/2.;
-	rec->top = -height/2. + text.size()*2;
-
-	std::wstring stemp = s2ws(text);
-	LPCWSTR result = stemp.c_str();
-
-	DrawText(
-		hdc,
-		result,
-		text.size(),
-		rec,
-		DT_CENTER
-		);
-
-	g_explorationFile << text << std::endl;
-	g_explorationFile.flush();
-
 }
 class ColorMap;
 
@@ -1272,11 +1303,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			if(g_coverageTest)
 			{
-				DrawString(hdc, width, height, 0,0,0, g_coverageTest->getExplorationRateStr() );
+				DrawString(hdc, width, height, g_boundary->at(0).coord().v[0], g_boundary->at(0).coord().v[1], 0,255,0, g_coverageTest->getExplorationRateStr() );
 			}
-			else
-				DrawString(hdc, width, height, 0,0,0, "Ciao");
-
 
 		EndPaint(hWnd, &ps);
 		break;
@@ -1430,7 +1458,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			//g_coverageTest->printPotentialIndex("../performance_index.txt", false);
 			//g_coverageTest->printNewPerformanceIndex("../performance_index.txt", false);
-			g_coverageTest->printBenefit("../Prova.txt", false);
+			if(g_coverageTest)
+				g_coverageTest->printBenefit("../Prova.txt", false);
 			//g_coverageTest->printExplorationRate("../performance_index.txt", false);
 
 			//g_coverageTest->moveThief();

@@ -57,7 +57,7 @@ namespace Robotics
 			virtual void monitoringThieves(std::set< std::shared_ptr<Thief> > const& _agents);
 
 			virtual void getGuardsPosition(std::vector<AgentPosition> & _pos);
-			void getGuardsSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> & _pos);
+			virtual void getGuardsSquare(std::vector<std::pair<std::shared_ptr<Square>, AgentActionIndex>> & _pos);
 			void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas);
 			double getPotentialValue();
 			double getBenefitValue();

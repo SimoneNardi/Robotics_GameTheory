@@ -240,7 +240,7 @@ void DISLAlgorithm::getGuardsPosition(std::vector<AgentPosition> & _pos)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void DISLAlgorithm::getGuardsSquare(std::vector<std::pair<SquarePtr,int>> & _pos)
+void DISLAlgorithm::getGuardsSquare(std::vector<std::pair<SquarePtr, AgentActionIndex>> & _pos)
 {
 	_pos.clear();
 	_pos.reserve(m_guards.size());
@@ -250,7 +250,7 @@ void DISLAlgorithm::getGuardsSquare(std::vector<std::pair<SquarePtr,int>> & _pos
 		if(l_agent->isGuard())
 		{
 			_pos.push_back( std::make_pair(m_space->getSquare( l_agent->getCurrentPosition().getPoint2D() ),
-				double(l_agent->actualActionIndex()) / double(l_agent->totalActions()) * 255. ) );
+				AgentActionIndex( l_agent->actualActionIndex(), l_agent->totalActions() ) ) );
 		}
 	}
 }

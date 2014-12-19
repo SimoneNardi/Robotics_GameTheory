@@ -190,6 +190,15 @@ namespace Robotics
 		};
 
 		typedef std::shared_ptr<Agent> AgentPtr;
+
+		class COVERAGE_API AgentActionIndex
+		{
+		public:
+			int m_elem;
+			int m_total;
+
+			AgentActionIndex( int _elem, int _total ) : m_elem(_elem), m_total(_total) {}
+		};
 	}
 }
 #endif

@@ -30,8 +30,10 @@ namespace Robotics
 
 		enum Mood
 		{
-			C,	//	Content
-			D	//	Discontent
+			Content,	//	Content
+			Hopeful,
+			Watchful,
+			Discontent	//	Discontent
 		};
 
 		//////////////////////////////////////////////////////////////////////////
@@ -83,9 +85,9 @@ namespace Robotics
 			Mood m_mood;
 			
 			/// Constructor for reference trajectory
-			MemoryGuardTrajectory() : m_memTrajectory(), m_payoff(0.), m_mood(Mood::C) {}
+			MemoryGuardTrajectory() : m_memTrajectory(), m_payoff(0.), m_mood(Content) {}
 
-			MemoryGuardTrajectory(GuardTrajectory const& _action, double _payoff, Mood _state = C)
+			MemoryGuardTrajectory(GuardTrajectory const& _action, double _payoff, Mood _state = Content)
 				: m_memTrajectory(_action), m_payoff(_payoff), m_mood(_state) {}
 			
 			/// Check if the two trajectory are equals until now.

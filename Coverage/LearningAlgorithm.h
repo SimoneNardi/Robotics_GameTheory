@@ -27,6 +27,7 @@ namespace Robotics
 		class Thief;
 		class AgentPosition;
 		class Square;
+		class AgentActionIndex;
 
 		class COVERAGE_API LearningAlgorithm
 		{
@@ -59,7 +60,7 @@ namespace Robotics
 			virtual void monitoringThieves(std::set<std::shared_ptr<Thief>> const& ) = 0;
 
 			virtual void getGuardsPosition(std::vector<AgentPosition> & _pos) = 0;
-			virtual void getGuardsSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> & _pos) = 0;
+			virtual void getGuardsSquare(std::vector< std::pair<std::shared_ptr<Square>, AgentActionIndex> > & _pos) = 0;
 			virtual void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas) = 0;
 			virtual void setExperimentalRate(double _epsilon) {m_experimentalRate = _epsilon;}
 

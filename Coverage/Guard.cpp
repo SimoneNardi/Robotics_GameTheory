@@ -16,7 +16,7 @@ Guard::Guard( int _teamID, int _id, AgentPosition _position, int _trajectoryLeng
 	, m_memory(_memorySpace)
 	, m_coverage()
 	, m_oldCoverage()
-	, m_currentMood(Mood::C)
+	, m_currentMood(Content)
 {}
 
 Guard::~Guard()
@@ -272,17 +272,17 @@ Mood Guard::computeMood(double _explorationRate)
 	
 	if( l_index >= 0 &&
 		m_memory.m_elems[l_index].equals(m_currentTrajectory, m_currentTrajectoryPayoff) && 
-		m_memory.m_elems[l_index].m_mood == Mood::C)
+		m_memory.m_elems[l_index].m_mood == Content)
 	{
-		return Mood::C;
+		return Content;
 	}
 
 	double l_explorationRate = pow( _explorationRate, 1 - m_currentTrajectoryPayoff );
 	bool l_agentHasToExperiments = agentHasToExperiments(l_explorationRate);
 	if(l_agentHasToExperiments)
-		return Mood::C;
+		return Content;
 	else
-		return Mood::D;
+		return Discontent;
 }
 
 #pragma endregion
