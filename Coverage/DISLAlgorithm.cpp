@@ -123,6 +123,8 @@ void DISLAlgorithm::compute(std::shared_ptr<Guard> _agent)
 	}
 	l_benefit -= _agent->computeCurrentCosts();
 
+	l_benefit -= _agent->computeBatteryCosts(m_space);
+
 	_agent->setCurrentPayoff(l_benefit);
 
 	//	ogni agente guardia identifica le nuove azioni feasible:

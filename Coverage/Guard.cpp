@@ -17,6 +17,9 @@ Guard::Guard( int _teamID, int _id, AgentPosition _position, int _trajectoryLeng
 	, m_coverage()
 	, m_oldCoverage()
 	, m_currentMood(Content)
+	, m_current_battery(MAXIMUM_BATTERY)
+	, m_minimum_battery(MINIMUM_BATTERY)
+	, m_maximum_battery(MAXIMUM_BATTERY)
 {}
 
 Guard::~Guard()
@@ -117,152 +120,6 @@ void Guard::updateMemoryTrajectories()
 	m_memory.add(MemoryGuardTrajectory(m_currentTrajectory, m_currentTrajectoryPayoff, m_currentMood));
 	m_memory.computeBestWorstTrajectories();
 }
-
-////////////////////////////////////////////////////////////////////////////
-//std::vector<AgentPosition> Agent::getFeasibleActions( std::shared_ptr<DiscretizedArea> _space, AreaCoordinate _currCoord, int time ) const
-//{
-//	std::vector<AreaCoordinate> l_squares = _space->getStandardApproachableValidSquares(_currCoord);
-//
-//	std::vector<AgentPosition> l_result;
-//	for(size_t i = 0; i < l_squares.size(); ++i )
-//	{
-//		l_result.push_back( AgentPosition(_space->getPosition(l_squares[i]), m_position.m_camera) );
-//	}
-//
-//	return l_result;
-//}
-
-////////////////////////////////////////////////////////////////////////////
-//void Agent::selectRandomFeasibleTrajectory(std::shared_ptr<DiscretizedArea> _space)
-//{
-//	std::vector<AgentPosition> l_feasible = this->getFeasibleTrajectories(_space);
-//	if(l_feasible.empty())
-//		this->setNextTrajectory();
-//	else
-//	{
-//		this->removeBestTrajectoryFromFeasible(l_feasible);
-//
-//		int l_value = getRandomValue( int( l_feasible.size() ) );
-//		this->setNextTrajectory(l_feasible[l_value]);
-//	}
-//	return;
-//}
-
-////////////////////////////////////////////////////////////////////////////
-//std::set<std::shared_ptr<Agent> > Agent::getCommunicableAgents(std::set<std::shared_ptr<Agent> > const& _guards) const
-//{
-//	std::set<std::shared_ptr<Agent> > l_result;
-//	for(std::set<std::shared_ptr<Agent> >::const_iterator it = _guards.begin(); it != _guards.end(); ++it)
-//	{
-//		AgentPtr l_agent = *it;
-//		if( this->equals(l_agent) )
-//			continue;
-//
-//		if( this->m_position.communicable( l_agent ) )
-//		{
-//			l_result.insert(l_agent);
-//		}
-//	}
-//	return l_result;
-//}
-
-////////////////////////////////////////////////////////////////////////////
-//void Agent::receiveMessage( std::set<std::shared_ptr<Square> > const& _visible)
-//{
-//	// Ogni agente deve conoscere il numero di agenti che potenzialmente esaminano un riquadro:
-//	// in questo modo possono determinare la quantità n_q(s) per ogni q feasible
-//	// e quindi calcolare la propria utilità
-//}
-
-////////////////////////////////////////////////////////////////////////////
-//double Agent::computeCosts() const
-//{
-//	return m_position.computeCosts();
-//}
-
-////////////////////////////////////////////////////////////////////////////
-//void Agent::removeBestPositionFromFeasible(std::vector<AgentPosition> & _feasible)
-//{
-//	Point2D l_posBest = m_bestPosition.getPoint2D();
-//
-//	if(l_posBest.isValid())
-//	{
-//		for(size_t j = 0; j < _feasible.size();)
-//		{
-//			Point2D l_posFeas = _feasible[j].getPoint2D();
-//			bool found = false;
-//			if(l_posFeas.distance(l_posBest) < 1.e-1)
-//			{
-//				found = true;
-//				break;
-//			}
-//			if(found)
-//				_feasible.erase(_feasible.begin()+j);
-//			else
-//				++j;
-//		}
-//	}
-//}
-
-////////////////////////////////////////////////////////////////////////////
-//void Agent::setBestPosition(std::vector< MemoryAgentPosition > const& memory, std::vector<AgentPosition> const& _feasibleposition, bool _best)
-//{
-//	std::vector< MemoryAgentPosition > l_memory = memory;
-//	// verifica che le azioni in memory siano feasible!
-//	for(size_t j = 0; j < l_memory.size();)
-//	{
-//		Point2D l_posMem = l_memory[j].m_action.getPoint2D();
-//		bool found = false;
-//		for(size_t i = 0; i < _feasibleposition.size(); ++i)
-//		{
-//			Point2D l_posFeas = _feasibleposition[i].getPoint2D();
-//			if(l_posFeas.distance(l_posMem) < 1.e-1)
-//			{
-//				found = true;
-//				break;
-//			}
-//		}
-//		if(found || m_position.getPoint2D().distance(l_posMem) < 1.e-1)
-//			++j;
-//		else
-//			l_memory.erase(l_memory.begin()+j);
-//	}
-//
-//	if( l_memory.empty() )
-//	{
-//		m_bestPosition = m_position;
-//	}
-//	else
-//	{
-//		double l_bestPayoff = l_memory.at(0).m_payoff;
-//		m_bestPosition = l_memory.at(0).m_action;
-//		for(size_t i= 1; i < l_memory.size(); ++i)
-//		{
-//			bool l_update = false;
-//			if(_best)
-//			{
-//				l_update = l_memory[i].m_payoff > l_bestPayoff;
-//			}
-//			else
-//			{
-//				l_update = l_memory[i].m_payoff < l_bestPayoff;
-//			}
-//
-//			if(l_update)
-//			{
-//				m_bestPosition = l_memory[i].m_action;
-//				l_bestPayoff = l_memory[i].m_payoff;
-//			}
-//		}
-//	}	
-//	return;
-//}
-
-////////////////////////////////////////////////////////////////////////////
-//IDS::BaseGeometry::Shape2D Agent::getVisibleArea(int i) const
-//{
-//	return m_position.getVisibleArea();
-//}
 
 #pragma region PARETO
 
@@ -480,8 +337,44 @@ void Guard::collectVisitedSquare(std::set<SquarePtr>const& _squares)
 }
 
 //////////////////////////////////////////////////////////////////////////
+void Guard::updateBattery(double value)
+{
+	m_current_battery += value;
+
+	if(m_current_battery < 0)
+		m_current_battery = 0;
+
+	if(m_current_battery > m_maximum_battery)
+		m_current_battery = m_maximum_battery;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void Guard::updatePeriod(int value)
+{
+	m_maxTrajectoryLength = value;
+}
+
+//////////////////////////////////////////////////////////////////////////
+int Guard::computePeriod()
+{
+	int l_period = (m_minimum_battery - m_current_battery) / m_minimum_battery * MAXIMUM_PERIOD;
+	if ( l_period < 1 )
+		l_period = 1;
+	
+	return l_period;
+}
+
+//////////////////////////////////////////////////////////////////////////
+double Guard::computeBatteryCosts(std::shared_ptr<DiscretizedArea> _space)
+{
+	const double l_gain = 1.;
+	return l_gain * ( m_maxTrajectoryLength - 1 ) * _space->getDistanceFromNearestSink(m_currentPosition)
+}
+
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
 ///
 AgentPosition MemoryGuardTrajectories::getNextPosition(int _indexBest, int _indexNext)
 {

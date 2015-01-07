@@ -655,7 +655,10 @@ std::set< std::shared_ptr<Square> > DiscretizedArea::getVisibleSquares(AgentPosi
 void DiscretizedArea::resetValue()
 {
 	for(size_t i = 0; i < m_lattice.size(); ++i)
+	{
 		m_lattice[i]->resetThiefValue();
+		m_lattice[i]->resetEnergyValue();
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////// //Monitoring the thief position
@@ -723,7 +726,7 @@ void DiscretizedArea::setSinkPosition(AgentPosition const& _pos)
 {
 	SquarePtr l_square = this->getSquare( _pos.getPoint2D() );
 	if(l_square)
-		l_square->setThiefValue(g_maxValue/g_maxValuePossible);
+		l_square->setEnergyValue(g_maxValue/g_maxValuePossible);
 	else
 		assert(1 == 0);
 
@@ -744,8 +747,8 @@ void DiscretizedArea::setSinkPosition(AgentPosition const& _pos)
 				continue;
 
 			double l_value = g_maxValue/ double( abs(i)+abs(j) );
-			double l_valueEx = m_lattice[row * m_numCol + col]->getThiefValue();
-			m_lattice[row * m_numCol + col]->setThiefValue( (l_value + l_valueEx) / g_maxValuePossible);
+			double l_valueEx = m_lattice[row * m_numCol + col]->getEnergyValue();
+			m_lattice[row * m_numCol + col]->setEnergyValue( (l_value + l_valueEx) / g_maxValuePossible);
 		}
 	}
 }

@@ -10,6 +10,11 @@
 #include "CoverageExport.h"
 #include "Agent.h"
 
+const int MAXIMUM_PERIOD = 5;
+const double MAXIMUM_BATTERY = 100.;
+const double MINIMUM_BATTERY = 30.;
+const double LOSTBATTERY_PERSTEP = .1;
+
 namespace Robotics 
 {
 	namespace GameTheory 
@@ -156,6 +161,13 @@ namespace Robotics
 			mutable std::set< std::shared_ptr<Square> > m_coverage;
 			std::set< std::shared_ptr<Square> > m_oldCoverage;
 
+			// Current level of battery
+			double m_current_battery;
+			// Minimum level of battery
+			double m_minimum_battery;
+			// Maximum level of battery
+			double m_maximum_battery;
+
 		public:
 			Guard( int _teamID, int _id, AgentPosition _position, int _trajectoryLength = 4, int _memorySpace = 2 );
 
@@ -228,6 +240,11 @@ namespace Robotics
 			void collectVisitedSquare(std::set<std::shared_ptr<Square>>const& _squares);
 			std::set<std::shared_ptr<Square> > getVisibleSquares( std::shared_ptr<DiscretizedArea> _space );
 			int getTrajectoryLength() const {return m_maxTrajectoryLength;}
+
+			void updateBattery(double value);
+			void updatePeriod(int value);
+			int computePeriod();
+			double computeBatteryCosts(std::shared_ptr<DiscretizedArea> _space);
 
 		protected:
 			AgentPosition selectNextFeasiblePositionWithoutConstraint(std::shared_ptr<DiscretizedArea> _space);
