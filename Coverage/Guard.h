@@ -133,6 +133,8 @@ namespace Robotics
 			void add(MemoryGuardTrajectory const& _elem);
 
 			AgentPosition getNextPosition(int _indexBest, int _indexNext);
+
+			void reset();
 		};
 
 		///////////////////////////////////////////////////////////

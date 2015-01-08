@@ -381,7 +381,7 @@ double Guard::computeBatteryCosts(std::shared_ptr<DiscretizedArea> _space)
 //////////////////////////////////////////////////////////////////////////
 void Guard::resetMemory()
 {
-	m_memory.clear();
+	m_memory.reset();
 }
 
 
@@ -389,13 +389,13 @@ void Guard::resetMemory()
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-///
+//////////////////////////////////////////////////////////////////////////
 AgentPosition MemoryGuardTrajectories::getNextPosition(int _indexBest, int _indexNext)
 {
 	return m_elems.at(_indexBest).m_memTrajectory.getPosition(_indexNext);
 }
 
-///
+//////////////////////////////////////////////////////////////////////////
 double MemoryGuardTrajectories::getDeltaMemoryBenefit()
 {
 	if(m_elems.size() == 0)
@@ -404,6 +404,12 @@ double MemoryGuardTrajectories::getDeltaMemoryBenefit()
 	//computeBestWorstTrajectories();
 
 	return (m_best > m_worst ? -1. : 1.) * (m_elems[m_best].m_payoff - m_elems[m_worst].m_payoff);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void MemoryGuardTrajectories::reset()
+{
+	m_elems.clear();
 }
 
 #pragma endregion
