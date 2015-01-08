@@ -32,3 +32,4 @@ isver 2.7.2.7
 vdiv .9
 isver 2.7.2.7
 show
+# Detach of RC= 65536

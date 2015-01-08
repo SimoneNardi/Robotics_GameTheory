@@ -246,6 +246,8 @@ namespace Robotics
 			int computePeriod();
 			double computeBatteryCosts(std::shared_ptr<DiscretizedArea> _space);
 
+			void resetMemory();
+
 		protected:
 			AgentPosition selectNextFeasiblePositionWithoutConstraint(std::shared_ptr<DiscretizedArea> _space);
 			AgentPosition selectNextFeasiblePositionWithoutConstraint(std::shared_ptr<DiscretizedArea> _space, std::set<int> & _alreadyTested);

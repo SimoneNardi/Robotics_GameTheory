@@ -520,9 +520,27 @@ void DrawAllPolygons(HDC hdc, int width, int height, int thickness)
 
 	for(size_t i = 0; i < l_squares.size(); ++i)
 	{
-		MyColour Col = l_colorMap.getColor( l_squares[i]->getThiefValue() * Robotics::GameTheory::g_maxValuePossible );
-		if( l_squares[i]->isValid() && (g_drawSquare || l_squares[i]->isChanged()) )
-			DrawSquare(l_squares[i], hdc, width, height, Col.R, Col.G, Col.B, thickness);
+		double l_energyVal = l_squares[i]->getEnergyValue();
+		double l_thiefVal = l_squares[i]->getThiefValue();
+
+		if (l_thiefVal > 0)
+		{
+			MyColour Col = l_colorMap.getColor( l_thiefVal * Robotics::GameTheory::g_maxValuePossible );
+			if( l_squares[i]->isValid() && (g_drawSquare || l_squares[i]->isChanged()) )
+				DrawSquare(l_squares[i], hdc, width, height, Col.R, Col.G, Col.B, thickness);
+		} 
+		else if (l_energyVal > 0)
+		{
+			MyColour Col = l_colorMap.getColor( l_energyVal * Robotics::GameTheory::g_maxValue );
+			if( l_squares[i]->isValid() && (g_drawSquare || l_squares[i]->isChanged()) )
+				DrawSquare(l_squares[i], hdc, width, height, Col.R, Col.G, Col.B, thickness);
+		}
+		else 
+		{
+			MyColour Col = l_colorMap.getColor( 0 );
+			if( l_squares[i]->isValid() && (g_drawSquare || l_squares[i]->isChanged()) )
+				DrawSquare(l_squares[i], hdc, width, height, Col.R, Col.G, Col.B, thickness);
+		}
 	}
 }
 

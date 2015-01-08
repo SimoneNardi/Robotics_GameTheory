@@ -204,6 +204,13 @@ void Guard::selectNextAction(std::shared_ptr<DiscretizedArea> _space)
 void Guard::moveToNextPosition()
 {
 	m_currentPayoff = 0.;
+	
+	updateBattery(-LOSTBATTERY_PERSTEP);
+	int l_period = computePeriod();
+	if(l_period != m_maxTrajectoryLength)
+		resetMemory();
+	updatePeriod(l_period);
+
 	Agent::moveToNextPosition();
 }
 
@@ -368,8 +375,15 @@ int Guard::computePeriod()
 double Guard::computeBatteryCosts(std::shared_ptr<DiscretizedArea> _space)
 {
 	const double l_gain = 1.;
-	return l_gain * ( m_maxTrajectoryLength - 1 ) * _space->getDistanceFromNearestSink(m_currentPosition)
+	return l_gain * ( m_maxTrajectoryLength - 1 ) * _space->getDistanceFromNearestSink(m_currentPosition.getPoint2D());
 }
+
+//////////////////////////////////////////////////////////////////////////
+void Guard::resetMemory()
+{
+	m_memory.clear();
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////

@@ -27,7 +27,9 @@ namespace Robotics
 		class Thief;
 		class AgentPosition;
 		class Square;
+		class Sink;
 		class AgentActionIndex;
+		class DiscretizedArea;
 
 		class COVERAGE_API LearningAlgorithm
 		{
@@ -35,46 +37,57 @@ namespace Robotics
 			int m_time;
 			std::set< std::shared_ptr<Guard> > m_guards;
 
+			std::shared_ptr<DiscretizedArea> m_space;
+
 			double m_experimentalRate;
 
 		public:
-			LearningAlgorithm() : m_time(0), m_guards(),m_experimentalRate(0.) {}
-			LearningAlgorithm(std::set< std::shared_ptr<Guard> > const& _guards) : m_time(0), m_guards(_guards), m_experimentalRate(0.) {}
+			LearningAlgorithm(std::shared_ptr<DiscretizedArea> _space) : m_time(0), m_guards(), m_experimentalRate(0.), m_space(_space) {}
+			LearningAlgorithm(std::set< std::shared_ptr<Guard> > const& _guards, std::shared_ptr<DiscretizedArea> _space) : m_time(0), m_guards(_guards), m_experimentalRate(0.), m_space(_space) {}
 
-			virtual void initialize() = 0;
+			virtual void initialize();
 
-			virtual void computeNextPosition() = 0;
+			virtual void computeNextPosition();
 
-			virtual bool forwardOneStep(std::shared_ptr<Guard> _agent) = 0;
-			virtual bool forwardOneStep() = 0;
+			virtual bool forwardOneStep(std::shared_ptr<Guard> _agent);
+			virtual bool forwardOneStep();
 
 			inline void setGuards(std::set< std::shared_ptr<Guard> > _guards) {m_guards = _guards;}
 
 			virtual void updateTime() {++m_time;}
 			void resetTime() {m_time = 0;}
-			virtual void resetCounter() {};
-			virtual void resetValue() {};
+			virtual void resetCounter();
+			virtual void resetValue();
 
-			//virtual void selectRandomFeasibleAction(std::shared_ptr<Guard> _agent) = 0;
+			virtual void monitoringThieves(std::set<std::shared_ptr<Thief>> const& );
+			virtual void monitoringSinks(std::set<std::shared_ptr<Sink>> const& );
 
-			virtual void monitoringThieves(std::set<std::shared_ptr<Thief>> const& ) = 0;
-
-			virtual void getGuardsPosition(std::vector<AgentPosition> & _pos) = 0;
-			virtual void getGuardsSquare(std::vector< std::pair<std::shared_ptr<Square>, AgentActionIndex> > & _pos) = 0;
-			virtual void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas) = 0;
+			virtual void getGuardsPosition(std::vector<AgentPosition> & _pos);
+			virtual void getGuardsSquare(std::vector< std::pair<std::shared_ptr<Square>, AgentActionIndex> > & _pos);
+			virtual void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas);
 			virtual void setExperimentalRate(double _epsilon) {m_experimentalRate = _epsilon;}
 
 			int getTime() const {return m_time;}
-			virtual double getPotentialValue() = 0;
-			virtual double getBenefitValue() = 0;
-			virtual std::string getExplorationRateStr() =0;
-			virtual double getExplorationRate() =0;
-			virtual int getGlobalTrajectoryCoverage()=0;
+			virtual double getPotentialValue();
+			virtual double getBenefitValue();
+			virtual std::string getExplorationRateStr();
+			virtual double getExplorationRate();
+			virtual int getGlobalTrajectoryCoverage();
 
 			virtual double computeExplorationRate(std::shared_ptr<Guard> _agent = nullptr);
 
 			virtual int getNumberOfSteps(double _stopRate);
 
+			//////////////////////////////////////////////////////////////////////////
+
+			virtual void update(std::shared_ptr<Guard> _agent) = 0;
+
+			virtual void communicate(std::shared_ptr<Guard> _agent);
+
+			virtual void compute(std::shared_ptr<Guard> _agent);
+
+			virtual void updateCounterOfVisibleSquare( );
+			virtual void updateCounterOfVisibleSquare( std::shared_ptr<Guard> _agent );
 		};
 
 		typedef std::shared_ptr<LearningAlgorithm> LearningAlgorithmPtr;

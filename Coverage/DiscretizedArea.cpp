@@ -730,16 +730,16 @@ void DiscretizedArea::setSinkPosition(AgentPosition const& _pos)
 	else
 		assert(1 == 0);
 
-	AreaCoordinate l_coord = this->getCoordinate( _pos.getPoint2D() );
+	m_sinkCoordinate = this->getCoordinate( _pos.getPoint2D() );
 
 	for(int i = -4; i < 5; ++i)
 	{
-		int row = l_coord.row + i;
+		int row = m_sinkCoordinate.row + i;
 		if(row < 0 || row >= m_numRow)
 			continue;
 		for(int j = -4; j < 5; ++j)
 		{
-			int col = l_coord.col + j;
+			int col = m_sinkCoordinate.col + j;
 			if(col < 0 || col >= m_numCol)
 				continue;
 
@@ -748,7 +748,7 @@ void DiscretizedArea::setSinkPosition(AgentPosition const& _pos)
 
 			double l_value = g_maxValue/ double( abs(i)+abs(j) );
 			double l_valueEx = m_lattice[row * m_numCol + col]->getEnergyValue();
-			m_lattice[row * m_numCol + col]->setEnergyValue( (l_value + l_valueEx) / g_maxValuePossible);
+			m_lattice[row * m_numCol + col]->setEnergyValue( (l_value + l_valueEx) / g_maxValue);
 		}
 	}
 }
@@ -827,6 +827,12 @@ void DiscretizedArea::printOnFile(std::ofstream & _stream)
 	}
 
 	return;
+}
+
+//////////////////////////////////////////////////////////////////////////
+int DiscretizedArea::getDistanceFromNearestSink(Point2D const& _agentPosition)
+{
+	return getDistance(this->getCoordinate(_agentPosition), m_sinkCoordinate);
 }
 
 //////////////////////////////////////////////////////////////////////////

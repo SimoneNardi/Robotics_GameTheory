@@ -110,6 +110,7 @@ void Robotics::GameTheory::CoverageAlgorithm::updateMonitor()
 {
 	m_learning->resetValue();
 	m_learning->monitoringThieves(m_world->getThieves());
+	m_learning->monitoringSinks(m_world->getSinks());
 }
 
 //////////////////////////////////////////////////////////////////////////

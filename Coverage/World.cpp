@@ -114,7 +114,7 @@ std::set< std::shared_ptr<Agent> > World::getNeutrals() const
 	for(auto it = m_agent.begin(); it != m_agent.end(); ++it)
 	{
 		AgentPtr l_agent = *it;
-		if(!l_agent->isGuard() && !l_agent->isThief())
+		if(!l_agent->isGuard() && !l_agent->isThief() && !l_agent->isSink())
 			result.insert(l_agent);
 	}
 	return result;
@@ -180,7 +180,7 @@ void World::randomInitializeNeutrals()
 	for(std::set< std::shared_ptr<Agent> >::iterator it = m_agent.begin(); it != m_agent.end(); ++it)
 	{
 		AgentPtr l_agent = *it;
-		if( l_agent->isThief() || l_agent->isGuard() )
+		if( l_agent->isThief() || l_agent->isGuard() || l_agent->isSink() )
 			continue;
 
 		Point2D l_point;
@@ -223,6 +223,7 @@ void World::addThief(std::shared_ptr<Thief> _thief)
 void World::addSink(std::shared_ptr<Sink> _sink)
 {
 	m_agent.insert(_sink);
+	m_space->setSinkPosition(_sink->getCurrentPosition().getPoint2D());
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -252,6 +253,8 @@ void World::saveConfiguration(std::ofstream & _stream)
 			_stream << "G" << '\t';
 		else if (l_agent->isThief())
 			_stream << "T" << '\t';
+		else if (l_agent->isSink())
+			_stream << "S" << '\t';
 		else
 			_stream << "N" << '\t';
 

@@ -30,58 +30,15 @@ namespace Robotics
 		*/
 		class COVERAGE_API PIPIPAlgorithm : public LearningAlgorithm
 		{
-			std::shared_ptr<DiscretizedArea> m_space;
-
-		protected:
-			void update(std::shared_ptr<Guard> _agent);
-
-			void communicate(std::shared_ptr<Guard> _agent);
-
-			void compute(std::shared_ptr<Guard> _agent);
-
-			void computeCurrentUtilities(std::shared_ptr<Guard> _agent);
-
-			void sendInformationToNeighbors(std::shared_ptr<Guard> _agent);
-
-			//virtual void selectRandomFeasibleAction(std::shared_ptr<Guard> _agent);
-
-			void selectBestMemoryAction(std::shared_ptr<Guard> _agent);
-			void selectWorstMemoryAction(std::shared_ptr<Guard> _agent);
-
-			bool forwardOneStep(std::shared_ptr<Guard> _agent);
-			bool forwardOneStep();
-
-			void updateCounterOfVisibleSquare( );
-			void updateCounterOfVisibleSquare( std::shared_ptr<Guard> _agent );
-
-			virtual void monitoringThieves(std::set< std::shared_ptr<Thief> > const& _agents);
-
-			virtual void getGuardsPosition(std::vector<AgentPosition> & _pos);
-			virtual void getGuardsSquare(std::vector<std::pair<std::shared_ptr<Square>, AgentActionIndex>> & _pos);
-			void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas);
-			double getPotentialValue();
-			double getBenefitValue();
-
-			std::string getExplorationRateStr();
-			double getExplorationRate();
-			double computeIrrationalRate();
-			int getGlobalTrajectoryCoverage();
-			
-			double computeDeltaMemoryBenefit(std::shared_ptr<Guard> _agent);
-
-			void monitoringThieves(std::set< std::shared_ptr<Thief> > & _agents);
-
 		public:
 			PIPIPAlgorithm(std::shared_ptr<DiscretizedArea> _space);
 
-			virtual void computeNextPosition();
+		protected:
+			virtual void update(std::shared_ptr<Guard> _agent);
 
-			virtual void initialize();
+			double computeIrrationalRate();
 
-			virtual void resetCounter();
-			virtual void resetValue();
-			
-			//virtual void updateTime(); 
+			double computeDeltaMemoryBenefit(std::shared_ptr<Guard> _agent);
 		};
 	}
 }

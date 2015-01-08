@@ -136,6 +136,8 @@ namespace Robotics
 
 			int m_numberOfValidSquare;
 
+			AreaCoordinate m_sinkCoordinate;
+
 		public:
 			DiscretizedArea(IDS::BaseGeometry::Shape2D const& _external, std::set< IDS::BaseGeometry::Shape2D > const& _obstacles);
 
@@ -172,6 +174,8 @@ namespace Robotics
 				AreaCoordinate _source, 
 				AreaCoordinate _target);
 
+			int getDistanceFromNearestSink(IDS::BaseGeometry::Point2D const& _agentPosition);
+
 			std::vector<SquarePtr> getSquares() const;
 			
 			bool getRandomPosition(IDS::BaseGeometry::Point2D & _point) const;
@@ -206,6 +210,7 @@ namespace Robotics
 		protected:
 			void addEdges();
 
+			friend class COVERAGE_API LearningAlgorithm;
 			friend class COVERAGE_API DISLAlgorithm;
 			friend class COVERAGE_API PIPIPAlgorithm;
 			friend class COVERAGE_API ParetoEfficientAlgorithm;
