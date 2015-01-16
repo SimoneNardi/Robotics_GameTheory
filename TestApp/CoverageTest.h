@@ -169,6 +169,7 @@ public:
 	void printExplorationRate(std::string const& name, bool printOnFile = true);
 
 	std::string getExplorationRateStr();
+	std::string getBatteryValueStr();
 	double getExplorationRate();
 
 	void exportOnFile(std::string const& filename);

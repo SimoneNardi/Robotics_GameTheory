@@ -156,7 +156,8 @@ bool Robotics::GameTheory::CoverageAlgorithm::update(int _nStep, int _monitorUpd
 				m_learning->getBenefitValue(), 
 				this->getMaximumPotentialValue(),
 				this->getSteadyNonCoopertativeBenefitValue(),
-				m_learning->getExplorationRate());
+				m_learning->getExplorationRate(),
+				m_learning->getBatteryValue());
 	}
 	return res;
 }
@@ -488,6 +489,12 @@ std::string CoverageAlgorithm::getExplorationRateStr()
 double CoverageAlgorithm::getExplorationRate()
 {
 	return m_learning->getExplorationRate();
+}
+
+//////////////////////////////////////////////////////////////////////////
+std::string CoverageAlgorithm::getBatteryValueStr()
+{
+	return m_learning->getBatteryValueStr();
 }
 
 //////////////////////////////////////////////////////////////////////////

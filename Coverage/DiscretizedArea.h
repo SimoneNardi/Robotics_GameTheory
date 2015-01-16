@@ -43,6 +43,8 @@ namespace Robotics
 		{
 			int row;
 			int col;
+
+			AreaCoordinate(int _col = -1, int _row = -1) : row(_row), col(_col) {}
 		};
 
 		inline bool operator< (AreaCoordinate const& a, AreaCoordinate const& b)
@@ -206,6 +208,10 @@ namespace Robotics
 			void computeNumberOfValidSquare();
 
 			void printOnFile(std::ofstream & _stream);
+
+			bool isThereASink() const {return !(m_sinkCoordinate.col < 0);}
+			std::vector<int> distanceFromNearestSink(std::vector<AgentPosition> const & _positions);
+			std::vector<int> distanceFromNearestSink(std::vector< std::pair<AgentPosition, int> > const & _positions);
 
 		protected:
 			void addEdges();

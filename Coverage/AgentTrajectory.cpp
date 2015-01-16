@@ -200,8 +200,8 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 	if(!l_sensorArea.isValid())
 		return std::vector<AreaCoordinate>();
 
-	int l_rowDelta = floor(m_farRadius / _area->getYStep()) + 1;
-	int l_colDelta = floor(m_farRadius / _area->getXStep()) + 1;
+	int l_rowDelta = int(floor(m_farRadius / _area->getYStep())) + 1;
+	int l_colDelta = int(floor(m_farRadius / _area->getXStep())) + 1;
 
 	std::vector<AreaCoordinate> result;
 	AreaCoordinate l_elem;

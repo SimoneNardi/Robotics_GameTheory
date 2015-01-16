@@ -148,6 +148,12 @@ std::string CoverageTest::getExplorationRateStr()
 }
 
 //////////////////////////////////////////////////////////////////////////
+std::string CoverageTest::getBatteryValueStr()
+{
+	return m_algorithm->getBatteryValueStr();
+}
+
+//////////////////////////////////////////////////////////////////////////
 double CoverageTest::getExplorationRate()
 {
 	return m_algorithm->getExplorationRate();
@@ -1322,6 +1328,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if(g_coverageTest)
 			{
 				DrawString(hdc, width, height, g_boundary->at(0).coord().v[0], g_boundary->at(0).coord().v[1], 0,255,0, g_coverageTest->getExplorationRateStr() );
+				DrawString(hdc, width, height, g_boundary->at(1).coord().v[0], g_boundary->at(1).coord().v[1], 0,255,0, g_coverageTest->getBatteryValueStr() );
 			}
 
 		EndPaint(hWnd, &ps);

@@ -182,6 +182,7 @@ DiscretizedArea::DiscretizedArea(std::string const& _filename)
 	: m_graph(nullptr)
 	, m_listGraph(nullptr)
 	, m_numberOfValidSquare(-1)
+	, m_sinkCoordinate(-1,-1)
 {
 	std::ifstream iFile(_filename);	// input.txt has integers, one per line
 #ifdef _PRINT
@@ -351,6 +352,7 @@ DiscretizedArea::DiscretizedArea(std::shared_ptr<StructuredArea> _area)
 	: m_graph(nullptr)
 	, m_listGraph(nullptr)
 	, m_numberOfValidSquare(-1)
+	, m_sinkCoordinate(-1,-1)
 {
 	Box2D l_box = _area->getBoundingBox();
 
@@ -423,6 +425,7 @@ DiscretizedArea::DiscretizedArea(std::shared_ptr<UnStructuredArea> _area)
 	: m_graph(nullptr)
 	, m_listGraph(nullptr)
 	, m_numberOfValidSquare(-1)
+	, m_sinkCoordinate(-1, -1)
 {}
 
 //////////////////////////////////////////////////////////////////////////
@@ -430,6 +433,7 @@ DiscretizedArea::DiscretizedArea(IDS::BaseGeometry::Shape2D const& _external, st
 	: m_graph(nullptr)
 	, m_listGraph(nullptr)
 	, m_numberOfValidSquare(-1)
+	, m_sinkCoordinate(-1,-1)
 {
 	Box2D l_box = _external.getBoundingBox();
 
@@ -507,9 +511,7 @@ AreaCoordinate DiscretizedArea::getCoordinate(Point2D const& point) const
 	double l_ydist = l_yLine.parameterAt(l_prjVertical);
 	double l_xdist = l_xLine.parameterAt(l_prjOrizontal);
 
-	AreaCoordinate l_coord;
-	l_coord.col = int( floor(l_xdist / m_xStep) );
-	l_coord.row = int( floor(l_ydist / m_yStep) );
+	AreaCoordinate l_coord(int( floor(l_xdist / m_xStep) ), int( floor(l_ydist / m_yStep) ));
 	return l_coord;
 }
 
@@ -555,33 +557,25 @@ std::vector<AreaCoordinate> DiscretizedArea::getStandardApproachableValidSquares
 	std::vector<AreaCoordinate> result;
 	if(_current.col != 0)
 	{
-		AreaCoordinate pos;
-		pos.col = _current.col-1;
-		pos.row = _current.row;
+		AreaCoordinate pos( _current.col-1, _current.row );
 		if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 			result.push_back(pos);
 	}
 	if(_current.col != DISCRETIZATION_COL)
 	{
-		AreaCoordinate pos;
-		pos.col = _current.col+1;
-		pos.row = _current.row;
+		AreaCoordinate pos(_current.col+1, _current.row);
 		if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 			result.push_back(pos);
 	}
 	if(_current.row != 0)
 	{
-		AreaCoordinate pos;
-		pos.col = _current.col;
-		pos.row = _current.row-1;
+		AreaCoordinate pos(_current.col,_current.row-1);
 		if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 			result.push_back(pos);
 	}
 	if(_current.row != DISCRETIZATION_ROW)
 	{
-		AreaCoordinate pos;
-		pos.col = _current.col;
-		pos.row = _current.row+1;
+		AreaCoordinate pos(_current.col, _current.row+1);
 		if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 			result.push_back(pos);
 	}
@@ -595,18 +589,14 @@ void DiscretizedArea::addSpecialApproachableValidSquares(AreaCoordinate const& _
 	{
 		if(_current.row != 0)
 		{
-			AreaCoordinate pos;
-			pos.col = _current.col-1;
-			pos.row = _current.row-1;
+			AreaCoordinate pos(_current.col-1, _current.row-1);
 			if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 				_loci.push_back(pos);
 		}
 
 		if(_current.row != DISCRETIZATION_ROW)
 		{
-			AreaCoordinate pos;
-			pos.col = _current.col-1;
-			pos.row = _current.row+1;
+			AreaCoordinate pos(_current.col-1, _current.row+1);
 			if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 				_loci.push_back(pos);
 		}
@@ -616,18 +606,14 @@ void DiscretizedArea::addSpecialApproachableValidSquares(AreaCoordinate const& _
 	{
 		if(_current.row != 0)
 		{
-			AreaCoordinate pos;
-			pos.col = _current.col+1;
-			pos.row = _current.row-1;
+			AreaCoordinate pos(_current.col+1, _current.row-1);
 			if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 				_loci.push_back(pos);
 		}
 
 		if(_current.row != DISCRETIZATION_ROW)
 		{
-			AreaCoordinate pos;
-			pos.col = _current.col+1;
-			pos.row = _current.row+1;
+			AreaCoordinate pos(_current.col+1, _current.row+1);
 			if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 				_loci.push_back(pos);
 		}
@@ -748,7 +734,7 @@ void DiscretizedArea::setSinkPosition(AgentPosition const& _pos)
 
 			double l_value = g_maxValue/ double( abs(i)+abs(j) );
 			double l_valueEx = m_lattice[row * m_numCol + col]->getEnergyValue();
-			m_lattice[row * m_numCol + col]->setEnergyValue( (l_value + l_valueEx) / g_maxValue);
+			m_lattice[row * m_numCol + col]->setEnergyValue( (l_value + l_valueEx) /*/ g_maxValue*/);
 		}
 	}
 }
@@ -780,13 +766,13 @@ int DiscretizedArea::getDistance(
 	SquarePtr l_sourcePtr = this->getSquare(_source);
 	SquarePtr l_target = this->getSquare(_target);
 
-	static SquarePtr l_source = nullptr;
-	if(l_source != l_sourcePtr)
+	if (l_target && l_sourcePtr)
 	{
-		l_source = l_sourcePtr;
-		m_graph->run(l_source->m_node, l_target->m_node);
+		m_graph->run(l_sourcePtr->m_node, l_target->m_node);
+		return m_graph->dist(l_target->m_node);
 	}
-	return m_graph->dist(l_target->m_node);
+	else 
+		return 0.;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -834,6 +820,27 @@ int DiscretizedArea::getDistanceFromNearestSink(Point2D const& _agentPosition)
 {
 	return getDistance(this->getCoordinate(_agentPosition), m_sinkCoordinate);
 }
+
+//////////////////////////////////////////////////////////////////////////
+std::vector<int> DiscretizedArea::distanceFromNearestSink(std::vector<AgentPosition> const & _positions)
+{
+	std::vector<int> result (_positions.size(), 0);
+	for(size_t i = 0; i < _positions.size(); ++i)
+		result[i] = this->getDistanceFromNearestSink(_positions[i].getPoint2D());
+
+	return result;
+}
+
+//////////////////////////////////////////////////////////////////////////
+std::vector<int> DiscretizedArea::distanceFromNearestSink(std::vector< std::pair<AgentPosition, int> > const & _positions)
+{
+	std::vector<int> result (_positions.size(), 0);
+	for(size_t i = 0; i < _positions.size(); ++i)
+		result[i] = this->getDistanceFromNearestSink(_positions[i].first.getPoint2D());
+
+	return result;
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////

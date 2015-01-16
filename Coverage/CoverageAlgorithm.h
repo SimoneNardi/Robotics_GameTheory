@@ -160,6 +160,8 @@ namespace Robotics
 			void printNewPerformanceIndexVersusExplorationRate(std::string const& name, bool printOnFile = true);
 
 
+			
+			std::string getBatteryValueStr();
 			std::string getExplorationRateStr();
 			double getExplorationRate();
 

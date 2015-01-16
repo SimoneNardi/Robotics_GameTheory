@@ -42,7 +42,7 @@ namespace Robotics
 			double m_experimentalRate;
 
 		public:
-			LearningAlgorithm(std::shared_ptr<DiscretizedArea> _space) : m_time(0), m_guards(), m_experimentalRate(0.), m_space(_space) {}
+			LearningAlgorithm(std::shared_ptr<DiscretizedArea> _space) : m_time(0), m_guards(), m_experimentalRate(0.1), m_space(_space) {}
 			LearningAlgorithm(std::set< std::shared_ptr<Guard> > const& _guards, std::shared_ptr<DiscretizedArea> _space) : m_time(0), m_guards(_guards), m_experimentalRate(0.), m_space(_space) {}
 
 			virtual void initialize();
@@ -70,9 +70,13 @@ namespace Robotics
 			int getTime() const {return m_time;}
 			virtual double getPotentialValue();
 			virtual double getBenefitValue();
+			
 			virtual std::string getExplorationRateStr();
 			virtual double getExplorationRate();
+
 			virtual int getGlobalTrajectoryCoverage();
+			virtual double getBatteryValue();
+			virtual std::string getBatteryValueStr();
 
 			virtual double computeExplorationRate(std::shared_ptr<Guard> _agent = nullptr);
 

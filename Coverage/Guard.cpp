@@ -1,6 +1,8 @@
 #include "Guard.h"
 #include "DiscretizedArea.h"
 #include "Probability.h"
+#include "CoverageUtility.h"
+
 #include <utility>
 
 using namespace Robotics::GameTheory;
@@ -171,6 +173,14 @@ void Guard::reset(double _explorationRate)
 
 	m_oldCoverage = m_coverage;
 	m_coverage.clear();
+
+	int l_period = computePeriod();
+	if(l_period != m_maxTrajectoryLength)
+	{
+		resetMemory();
+		updatePeriod(l_period);
+	}
+
 }
 
 ///
@@ -204,14 +214,9 @@ void Guard::selectNextAction(std::shared_ptr<DiscretizedArea> _space)
 void Guard::moveToNextPosition()
 {
 	m_currentPayoff = 0.;
-	
-	updateBattery(-LOSTBATTERY_PERSTEP);
-	int l_period = computePeriod();
-	if(l_period != m_maxTrajectoryLength)
-		resetMemory();
-	updatePeriod(l_period);
-
 	Agent::moveToNextPosition();
+
+	updateBattery(-LOSTBATTERY_PERSTEP);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -246,7 +251,7 @@ AgentPosition Guard::selectNextFeasiblePositionWithoutConstraint(std::shared_ptr
 
 		if( m_currentTrajectory.contains(l_feasible[i]) )
 		{
-			//std::cout << "selected an action already visited!" << std::endl;
+			//std::cout << "An action already chosen has been selected!" << std::endl;
 			continue;
 		}
 
@@ -255,6 +260,25 @@ AgentPosition Guard::selectNextFeasiblePositionWithoutConstraint(std::shared_ptr
 
 	if(l_notControlledFeasibleActions.empty())
 		return m_currentPosition;
+	else if(_space->isThereASink())
+	{
+		std::vector<int> l_distanceNearestSink = _space->distanceFromNearestSink(l_notControlledFeasibleActions);
+
+		double l_mindist = IDSMath::Infinity;
+		int l_mindistIndex = -1;
+
+		for(size_t i = 0; i < l_distanceNearestSink.size(); ++i)
+		{
+			if ( l_distanceNearestSink[i] < l_mindist )
+			{
+				l_mindist = l_distanceNearestSink[i]; 
+				l_mindistIndex = i;
+			}
+		}
+
+		_alreadyTested.insert(l_notControlledFeasibleActions[l_mindistIndex].second);
+		return l_notControlledFeasibleActions[l_mindistIndex].first;
+	}
 	else
 	{
 		//this->removeBestTrajectoryFromFeasible(l_feasible);
@@ -361,6 +385,8 @@ void Guard::updatePeriod(int value)
 	m_maxTrajectoryLength = value;
 }
 
+const double MAXIMUM_PERIOD = std::max(double(Robotics::GameTheory::DISCRETIZATION_COL), double(Robotics::GameTheory::DISCRETIZATION_ROW));
+
 //////////////////////////////////////////////////////////////////////////
 int Guard::computePeriod()
 {
@@ -375,12 +401,17 @@ int Guard::computePeriod()
 double Guard::computeBatteryCosts(std::shared_ptr<DiscretizedArea> _space)
 {
 	const double l_gain = 1.;
-	return l_gain * ( m_maxTrajectoryLength - 1 ) * _space->getDistanceFromNearestSink(m_currentPosition.getPoint2D());
+	double l_distance = _space->getDistanceFromNearestSink(m_currentPosition.getPoint2D());
+	
+	double l_param = l_distance / std::max(double(Robotics::GameTheory::DISCRETIZATION_COL), double(Robotics::GameTheory::DISCRETIZATION_ROW));
+
+	return l_gain * ( m_maxTrajectoryLength - 1 ) * l_param;
 }
 
 //////////////////////////////////////////////////////////////////////////
 void Guard::resetMemory()
 {
+	m_exploring=-1;
 	m_memory.reset();
 }
 
@@ -409,6 +440,8 @@ double MemoryGuardTrajectories::getDeltaMemoryBenefit()
 //////////////////////////////////////////////////////////////////////////
 void MemoryGuardTrajectories::reset()
 {
+	m_best = -1;
+	m_worst = -1;
 	m_elems.clear();
 }
 

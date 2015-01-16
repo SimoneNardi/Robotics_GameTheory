@@ -122,7 +122,7 @@ void LearningAlgorithm::compute(std::shared_ptr<Guard> _agent)
 
 	// Battery
 	std::shared_ptr<Square> l_square = m_space->getSquare(_agent->getCurrentPosition().getPoint2D());
-	_agent->updateBattery(l_square->getEnergyValue());
+	_agent->updateBattery(100.*LOSTBATTERY_PERSTEP*l_square->getEnergyValue());
 
 	//	ogni agente guardia identifica le nuove azioni feasible:
 	//this->computeFeasibleActions(_agent);
@@ -322,3 +322,25 @@ double LearningAlgorithm::getPotentialValue()
 	}
 	return l_total;
 }
+
+//////////////////////////////////////////////////////////////////////////
+double LearningAlgorithm::getBatteryValue()
+{
+	double l_total = 0.;
+	for(std::set<GuardPtr>::iterator it = m_guards.begin(); it != m_guards.end(); ++it)
+	{
+		GuardPtr l_agent = *it;
+		l_total += l_agent->getBatteryValue();
+	}
+	return l_total / (double(m_guards.size()) * MAXIMUM_BATTERY);
+}
+
+//////////////////////////////////////////////////////////////////////////
+std::string LearningAlgorithm::getBatteryValueStr()
+{
+	double l_value = this->getBatteryValue();
+	std::ostringstream strs;
+	strs << l_value;
+	return strs.str();
+}
+
