@@ -116,13 +116,14 @@ void LearningAlgorithm::compute(std::shared_ptr<Guard> _agent)
 	}
 	l_benefit -= _agent->computeCurrentCosts();
 
-	l_benefit -= _agent->computeBatteryCosts(m_space);
+	//l_benefit -= _agent->computeBatteryCosts(m_space);
 
 	_agent->setCurrentPayoff(l_benefit);
 
 	// Battery
 	std::shared_ptr<Square> l_square = m_space->getSquare(_agent->getCurrentPosition().getPoint2D());
-	_agent->updateBattery(100.*LOSTBATTERY_PERSTEP*l_square->getEnergyValue());
+	if( m_space->isThereASink() )
+		_agent->updateBattery(100.*LOSTBATTERY_PERSTEP*l_square->getEnergyValue());
 
 	//	ogni agente guardia identifica le nuove azioni feasible:
 	//this->computeFeasibleActions(_agent);

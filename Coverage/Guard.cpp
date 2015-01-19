@@ -180,7 +180,6 @@ void Guard::reset(double _explorationRate)
 		resetMemory();
 		updatePeriod(l_period);
 	}
-
 }
 
 ///

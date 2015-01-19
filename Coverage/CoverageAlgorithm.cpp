@@ -518,7 +518,8 @@ struct AgentDriver
 	{
 		THIEF =-1,
 		NEUTRAL = 0,
-		GUARD = 1
+		GUARD = 1,
+		SINK = 2
 	} type;
 };
 
@@ -561,6 +562,17 @@ void importFromFile(
 			AgentDriver driver;
 			driver.position = makePoint(IDSReal2D(x,y), EucMetric);
 			driver.type = AgentDriver::THIEF;
+			_agents.push_back(driver);
+		}
+		iFile >> numOfXXX; // Sinks
+		for(int i = 0; i < numOfXXX; ++i)
+		{
+			double x, y;
+			iFile >> x;
+			iFile >> y;
+			AgentDriver driver;
+			driver.position = makePoint(IDSReal2D(x,y), EucMetric);
+			driver.type = AgentDriver::SINK;
 			_agents.push_back(driver);
 		}
 		iFile >> numOfXXX; // Neutral
@@ -619,6 +631,18 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 
 		ThiefPtr l_agent = std::make_shared<Thief>(l_algorithm->getNumberOfAgent(), l_pos/*l_agentDriver[i].position*/);
 		l_algorithm->setPositionOfThief(l_pos, l_agent);
+	}
+
+	for(size_t i = 0; i < l_agentDriver.size(); ++i)
+	{
+		if(l_agentDriver[i].type != AgentDriver::SINK)
+			continue;
+
+		AgentPosition l_pos( l_space->randomPosition(), CameraPosition( l_space->getDistance()/15. ) );
+		Sleep(100);
+
+		SinkPtr l_agent = std::make_shared<Sink>(l_algorithm->getNumberOfAgent(), l_pos/*l_agentDriver[i].position*/);
+		l_algorithm->setPositionOfSink(l_pos, l_agent);
 	}
 
 	return l_algorithm;
@@ -716,6 +740,30 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 	}
 #ifdef _PRINT
 	cout << "Placed Thief"<<endl;
+#endif
+	
+#ifdef _PRINT
+	cout << "Placing Sink"<<endl;
+#endif
+	for(size_t i = 0; i < l_agentDriver.size(); ++i)
+	{
+		if(l_agentDriver[i].type != AgentDriver::SINK)
+			continue;
+
+		AgentPosition l_pos( l_agentDriver[i].position, CameraPosition() );
+
+		Point2D l_point;
+		if( l_space->getRandomPosition(l_point) )
+		{
+			l_pos = AgentPosition ( l_point, CameraPosition() );
+			Sleep(50);
+		}
+
+		SinkPtr l_agent = std::make_shared<Sink>(l_algorithm->getNumberOfAgent(), l_pos);
+		l_algorithm->setPositionOfSink(l_agent->getCurrentPosition(), l_agent);
+	}
+#ifdef _PRINT
+	cout << "Placed Sink"<<endl;
 #endif
 
 	return l_algorithm;

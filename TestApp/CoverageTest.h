@@ -119,7 +119,7 @@ public:
 
 	int goForward(int numberOfStep)
 	{
-		m_algorithm->update(numberOfStep,-1);
+		m_algorithm->update(numberOfStep,10);
 		return 1;
 	}
 
