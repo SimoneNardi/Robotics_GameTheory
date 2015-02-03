@@ -117,9 +117,9 @@ public:
 		return 1;//RetrieveTrackMany(obs,track,false);
 	}
 
-	int goForward(int numberOfStep)
+	int goForward(int numberOfStep, int monitorStep = -1)
 	{
-		m_algorithm->update(numberOfStep,10);
+		m_algorithm->update(numberOfStep, monitorStep);
 		return 1;
 	}
 
@@ -184,6 +184,7 @@ int g_window_Ox, g_window_Oy, g_window_rad1, g_window_rad2, g_window_ang1, g_win
 
 int g_numberOfAgents = 3;
 int g_numberOfSteps = 1;
+int g_monitor = -1;
 int g_agentsPeriod = 1;
 bool g_drawSquare = true;
 bool g_drawRealArea = false;

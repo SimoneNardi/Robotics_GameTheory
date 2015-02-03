@@ -42,6 +42,7 @@ INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	Curve(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	SetNumberOfGuards(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	SetNumberOfSteps(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK	SetMonitorStep(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	SetAgentsPeriod(HWND, UINT, WPARAM, LPARAM);
 
 //////////////////////////////////////////////////////////////////////////
@@ -791,7 +792,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 			DispatchMessage(&msg);
 		}
 	}
-	
+
 	g_explorationFile.close();
 
 	return (int) msg.wParam;
@@ -990,6 +991,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case ID_FILE_NUMBER_OF_STEPS:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_STEPS), hWnd, SetNumberOfSteps);
+			break;
+		case ID_FILE_MONITOR_STEP:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_STEPS), hWnd, SetMonitorStep);
 			break;
 		case ID_FILE_AGENTS_PERIOD:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_PERIOD), hWnd, SetAgentsPeriod);
@@ -1319,17 +1323,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			MarkPoint((int)(g_sinkPt.coord().v[0]*width),(int)(g_sinkPt.coord().v[1]*height),hdc,128,0,128,10);
 		}
 
-			DrawAllPolygons(hdc,width,height,1);
-			
-			DrawSink( hdc, width, height, 0,0,0,1 );
+		DrawAllPolygons(hdc,width,height,1);
 
-			DrawGuards( hdc, width, height, 0,0,0,1 );
+		DrawSink( hdc, width, height, 0,0,0,1 );
 
-			if(g_coverageTest)
-			{
-				DrawString(hdc, width, height, g_boundary->at(0).coord().v[0], g_boundary->at(0).coord().v[1], 0,255,0, g_coverageTest->getExplorationRateStr() );
-				DrawString(hdc, width, height, g_boundary->at(1).coord().v[0], g_boundary->at(1).coord().v[1], 0,255,0, g_coverageTest->getBatteryValueStr() );
-			}
+		DrawGuards( hdc, width, height, 0,0,0,1 );
+
+		if(g_coverageTest)
+		{
+			DrawString(hdc, width, height, g_boundary->at(0).coord().v[0], g_boundary->at(0).coord().v[1], 0,255,0, g_coverageTest->getExplorationRateStr() );
+			DrawString(hdc, width, height, g_boundary->at(1).coord().v[0], g_boundary->at(1).coord().v[1], 0,255,0, g_coverageTest->getBatteryValueStr() );
+		}
 
 		EndPaint(hWnd, &ps);
 		break;
@@ -1376,7 +1380,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}
 
 				Point2D l_thief = g_thiefStartingPt;
-				
+
 				if(g_coverageTest)
 				{
 					if( g_coverageTest->areaContains(g_thiefStartingPt) )
@@ -1385,7 +1389,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 						ThiefPtr l_agent = std::make_shared<Thief>(g_coverageTest->getAlgorithm()->getNumberOfAgent(), g_thiefStartingPt);
 						g_coverageTest->setThief(g_thiefStartingPt, l_agent);
-						
+
 						g_coverageTest->exportOnFile("./scenario.dat");
 
 						g_coverageTest->updateMonitor();
@@ -1466,7 +1470,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if(g_coverageTest)
 			{
-				g_coverageTest->goForward(g_numberOfSteps);
+				g_coverageTest->goForward(g_numberOfSteps, g_monitor);
 			}
 		}
 		else if((int)wParam < 0)
@@ -1489,7 +1493,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			//g_coverageTest->moveThief();
 		}
-		
+
 		InvalidateRect(hWnd, NULL, TRUE);
 		UpdateWindow(hWnd);
 
@@ -1648,6 +1652,38 @@ INT_PTR CALLBACK SetNumberOfSteps(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 
 //////////////////////////////////////////////////////////////////////////
 // Message handler for start box.
+INT_PTR CALLBACK SetMonitorStep(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
+
+	case WM_COMMAND:
+		if ( LOWORD(wParam) == IDOK )
+		{
+			setvalue(hDlg, IDC_EDITT, g_monitor);
+			if( g_monitor <= 0 )
+			{
+				g_monitor = -1;
+			}
+
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		else if ( LOWORD(wParam) == IDCANCEL )
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Message handler for start box.
 INT_PTR CALLBACK SetAgentsPeriod(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -1684,7 +1720,7 @@ void CoverageTest::exportOnFile(std::string const& filename)
 	int count;
 	ofstream myfile;
 	myfile.open (filename);
-	
+
 	myfile.precision(16.);
 
 	myfile << g_dim << std::endl;

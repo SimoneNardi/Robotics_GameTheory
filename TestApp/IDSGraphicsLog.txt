@@ -22,11 +22,11 @@ xaxis label 'Time'
 isver 2.7.2.7
 yaxis label 'Benefit'
 isver 2.7.2.7
-curve 0 color 0.5 0 0
+curve 0 color 0.5 0.5 0
 isver 2.7.2.7
 curve 0 filled false
 isver 2.7.2.7
-curve 0 fillcolor 0.5 0 0
+curve 0 fillcolor 0.5 0.5 0
 isver 2.7.2.7
 curve 0 label 'Benefit'
 isver 2.7.2.7
@@ -62,11 +62,11 @@ xaxis label 'Time'
 isver 2.7.2.7
 yaxis label 'Benefit'
 isver 2.7.2.7
-curve 0 color 0.5 0 0
+curve 0 color 0.5 0.5 0
 isver 2.7.2.7
 curve 0 filled false
 isver 2.7.2.7
-curve 0 fillcolor 0.5 0 0
+curve 0 fillcolor 0.5 0.5 0
 isver 2.7.2.7
 curve 0 label 'Benefit'
 isver 2.7.2.7
@@ -102,11 +102,11 @@ xaxis label 'Time'
 isver 2.7.2.7
 yaxis label 'Benefit'
 isver 2.7.2.7
-curve 0 color 0.5 0 0
+curve 0 color 0.5 0.5 0
 isver 2.7.2.7
 curve 0 filled false
 isver 2.7.2.7
-curve 0 fillcolor 0.5 0 0
+curve 0 fillcolor 0.5 0.5 0
 isver 2.7.2.7
 curve 0 label 'Benefit'
 isver 2.7.2.7
@@ -121,164 +121,45 @@ isver 2.7.2.7
 vdiv .9
 isver 2.7.2.7
 show
+isver 2.7.2.7
+new cg
+# Attach 
+# RC= 65537 created and activated.
+# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
+# Setting menu
+addCurve
+addCurve
+setStdColors
+setAxesToCurves
+xAxis save
+yAxis save
+isver 2.7.2.7
+Benefit
+# ERROR: Unable to process macro: 'Benefit'
+isver 2.7.2.7
+xaxis label 'Time'
+isver 2.7.2.7
+yaxis label 'Benefit'
+isver 2.7.2.7
+curve 0 color 0.5 0.5 0
+isver 2.7.2.7
+curve 0 filled false
+isver 2.7.2.7
+curve 0 fillcolor 0.5 0.5 0
+isver 2.7.2.7
+curve 0 label 'Benefit'
+isver 2.7.2.7
+curve 1 color 1 0 0
+isver 2.7.2.7
+curve 1 filled false
+isver 2.7.2.7
+curve 1 fillcolor 1 0 0
+isver 2.7.2.7
+curve 1 label 'Battery'
+isver 2.7.2.7
+vdiv .9
+isver 2.7.2.7
+show
+# Detach of RC= 65537
 # Detach of RC= 196608
-isver 2.7.2.7
-new cg
-# Attach 
-# RC= 262144 created and activated.
-# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
-# Setting menu
-addCurve
-addCurve
-setStdColors
-setAxesToCurves
-xAxis save
-yAxis save
-isver 2.7.2.7
-Benefit
-# ERROR: Unable to process macro: 'Benefit'
-isver 2.7.2.7
-xaxis label 'Time'
-isver 2.7.2.7
-yaxis label 'Benefit'
-isver 2.7.2.7
-curve 0 color 0.5 0 0
-isver 2.7.2.7
-curve 0 filled false
-isver 2.7.2.7
-curve 0 fillcolor 0.5 0 0
-isver 2.7.2.7
-curve 0 label 'Benefit'
-isver 2.7.2.7
-curve 1 color 1 0 0
-isver 2.7.2.7
-curve 1 filled false
-isver 2.7.2.7
-curve 1 fillcolor 1 0 0
-isver 2.7.2.7
-curve 1 label 'Battery'
-isver 2.7.2.7
-vdiv .9
-isver 2.7.2.7
-show
-# Detach of RC= 262144
-isver 2.7.2.7
-new cg
-# Attach 
-# RC= 327680 created and activated.
-# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
-# Setting menu
-addCurve
-addCurve
-setStdColors
-setAxesToCurves
-xAxis save
-yAxis save
-isver 2.7.2.7
-Benefit
-# ERROR: Unable to process macro: 'Benefit'
-isver 2.7.2.7
-xaxis label 'Time'
-isver 2.7.2.7
-yaxis label 'Benefit'
-isver 2.7.2.7
-curve 0 color 0.5 0 0
-isver 2.7.2.7
-curve 0 filled false
-isver 2.7.2.7
-curve 0 fillcolor 0.5 0 0
-isver 2.7.2.7
-curve 0 label 'Benefit'
-isver 2.7.2.7
-curve 1 color 1 0 0
-isver 2.7.2.7
-curve 1 filled false
-isver 2.7.2.7
-curve 1 fillcolor 1 0 0
-isver 2.7.2.7
-curve 1 label 'Battery'
-isver 2.7.2.7
-vdiv .9
-isver 2.7.2.7
-show
-# Detach of RC= 327680
-isver 2.7.2.7
-new cg
-# Attach 
-# RC= 393216 created and activated.
-# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
-# Setting menu
-addCurve
-addCurve
-setStdColors
-setAxesToCurves
-xAxis save
-yAxis save
-isver 2.7.2.7
-Benefit
-# ERROR: Unable to process macro: 'Benefit'
-isver 2.7.2.7
-xaxis label 'Time'
-isver 2.7.2.7
-yaxis label 'Benefit'
-isver 2.7.2.7
-curve 0 color 0.5 0 0
-isver 2.7.2.7
-curve 0 filled false
-isver 2.7.2.7
-curve 0 fillcolor 0.5 0 0
-isver 2.7.2.7
-curve 0 label 'Benefit'
-isver 2.7.2.7
-curve 1 color 1 0 0
-isver 2.7.2.7
-curve 1 filled false
-isver 2.7.2.7
-curve 1 fillcolor 1 0 0
-isver 2.7.2.7
-curve 1 label 'Battery'
-isver 2.7.2.7
-vdiv .9
-isver 2.7.2.7
-show
-# Detach of RC= 393216
-isver 2.7.2.7
-new cg
-# Attach 
-# RC= 458752 created and activated.
-# Warning: Logo 'LogoIDS.bmp' not found in the local directory.
-# Setting menu
-addCurve
-addCurve
-setStdColors
-setAxesToCurves
-xAxis save
-yAxis save
-isver 2.7.2.7
-Benefit
-# ERROR: Unable to process macro: 'Benefit'
-isver 2.7.2.7
-xaxis label 'Time'
-isver 2.7.2.7
-yaxis label 'Benefit'
-isver 2.7.2.7
-curve 0 color 0.5 0 0
-isver 2.7.2.7
-curve 0 filled false
-isver 2.7.2.7
-curve 0 fillcolor 0.5 0 0
-isver 2.7.2.7
-curve 0 label 'Benefit'
-isver 2.7.2.7
-curve 1 color 1 0 0
-isver 2.7.2.7
-curve 1 filled false
-isver 2.7.2.7
-curve 1 fillcolor 1 0 0
-isver 2.7.2.7
-curve 1 label 'Battery'
-isver 2.7.2.7
-vdiv .9
-isver 2.7.2.7
-show
-# Detach of RC= 458752
+# Deactivate of RC failed.

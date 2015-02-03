@@ -50,6 +50,7 @@ BEGIN
         MENUITEM "Number of Guards",				ID_FILE_NUMBER_OF_GUARDS
         MENUITEM "Number of steps",					ID_FILE_NUMBER_OF_STEPS
         MENUITEM "Agents Period",					ID_FILE_AGENTS_PERIOD
+		MENUITEM "Monitor steps",					ID_FILE_MONITOR_STEP
         MENUITEM "&Draw Squares",					ID_FILE_DRAWSQUARES, CHECKED
         MENUITEM "&Print Potential",				ID_FILE_POTENTIAL, CHECKED
         MENUITEM "&Pareto Algorithm",				ID_FILE_PARETO

@@ -192,14 +192,15 @@ namespace Robotics
 			Palette()
 			{
 				double factor = 1;
-				Color black(0,0,0);
-				colors.push_back(black*factor);
-
+				
+				Color green(0,1,0);
+				colors.push_back(green*factor);
+				
 				Color red(1,0,0);
 				colors.push_back(red*factor);
 
-				Color green(0,1,0);
-				colors.push_back(green*factor);
+				Color black(0,0,0);
+				colors.push_back(black*factor);
 
 				Color blue(0,0,1);
 				colors.push_back(blue*factor);
