@@ -694,7 +694,7 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 			CameraPosition( double(l_space->getXStep() + l_space->getYStep())/2. *1.5) );
 
 		Point2D l_point;
-		if( l_space->getRandomPosition(l_point) )
+		if( l_space->getRandomPosition(l_point) && 0)
 		{
 			l_pos = AgentPosition ( l_point, CameraPosition( double(l_space->getXStep() + l_space->getYStep())/2. *1.5) );
 			Sleep(50);

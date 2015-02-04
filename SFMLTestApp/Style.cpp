@@ -36,6 +36,14 @@ std::string getTargetSymbolResourceName()
 }
 
 //////////////////////////////////////////////////////////////////////////
+std::string getSinkSymbolResourceName()
+{
+	std::string filename = g_configFolder;
+	filename += "icons/Sink.png";
+	return filename;
+}
+
+//////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
@@ -170,7 +178,7 @@ void SymbolStyle::resetWinner()
 
 
 //////////////////////////////////////////////////////////////////////////
-void SymbolStyle::bindTexture(PlayerType _pType)
+void SymbolStyle::bindPlayerTexture(PlayerType _pType)
 {
 	std::string l_symbolResourceName = getPlayerSymbolResourceName(_pType);
 	return this->bindTexture(l_symbolResourceName);
@@ -178,11 +186,19 @@ void SymbolStyle::bindTexture(PlayerType _pType)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void SymbolStyle::bindTexture()
+void SymbolStyle::bindTargetTexture()
 {
 	std::string l_symbolResourceName = getTargetSymbolResourceName();
 	return this->bindTexture(l_symbolResourceName);
 }
+
+//////////////////////////////////////////////////////////////////////////
+void SymbolStyle::bindSinkTexture()
+{
+	std::string l_symbolResourceName = getSinkSymbolResourceName();
+	return this->bindTexture(l_symbolResourceName);
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 void SymbolStyle::bindTexture(const std::string &  _symbolResourceName)
@@ -302,6 +318,42 @@ std::shared_ptr<sf::CircleShape> getWinnerSymbol();
 void TargetStyle::print(std::ostream& _stream)
 {
 	_stream << "Target" << "\t";
+	if(m_position)
+	{
+		_stream << m_position->x << "\t" << m_position->y;
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+///
+SinkStyle::SinkStyle(std::shared_ptr<sf::Vector2i> _pos, std::shared_ptr<sf::CircleShape> _symbol, Identifier _owner)
+	: Style(_pos, _owner), SymbolStyle(_symbol) {}
+
+///
+SinkStyle::SinkStyle(std::shared_ptr<sf::Vector2i> _pos, std::string _symbolResourceName, Identifier _owner)
+	: Style(_pos, _owner), SymbolStyle(_symbolResourceName) {}
+
+///
+SinkStyle::SinkStyle(std::shared_ptr<sf::Vector2i> _pos, Identifier _owner)
+	: Style(_pos, _owner), SymbolStyle( getSinkSymbolResourceName() ) {}
+///
+SinkStyle::SinkStyle() : Style(), SymbolStyle() {}
+
+///
+Type SinkStyle::getType() {return Sink;}
+
+///
+std::shared_ptr<sf::CircleShape> SinkStyle::getSymbol() {return m_symbol;}
+
+///
+std::shared_ptr<sf::CircleShape> getWinnerSymbol();
+
+///
+void SinkStyle::print(std::ostream& _stream)
+{
+	_stream << "Sink" << "\t";
 	if(m_position)
 	{
 		_stream << m_position->x << "\t" << m_position->y;

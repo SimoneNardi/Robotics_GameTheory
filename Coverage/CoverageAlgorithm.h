@@ -197,6 +197,13 @@ namespace Robotics
 
 #pragma endregion
 
+#pragma region VIDEO
+
+			std::shared_ptr<World> getWorld() {return m_world;}
+
+#pragma endregion
+
+
 		protected:
 			/// Wake Up agent if the security is too low.
 			void wakeUpAgentIfSecurityIsLow();

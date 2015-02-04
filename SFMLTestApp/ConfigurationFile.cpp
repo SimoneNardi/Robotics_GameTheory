@@ -3,10 +3,18 @@
 #include "Utility.h"
 #include <SFML/System.hpp>
 
+// Coverage
+#include "CoverageAlgorithm.h"
+#include "DiscretizedArea.h"
+#include "World.h"
+#include "Agent.h"
+
 #include <iostream>
 #include <fstream>
 
 #include <memory>
+
+using namespace Robotics::GameTheory;
 
 const std::string g_configFolder = "./Configuration/";
 
@@ -44,6 +52,79 @@ bool ConfigurationFile::areThereWindowStyle()
 			return true;
 	}
 	return false;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void ConfigurationFile::createFromAlgorithm( std::shared_ptr<CoverageAlgorithm> _algorithm)
+{
+	Lock lock(m_mutex); // mutex.lock()
+
+	this->clean();
+
+	std::shared_ptr<Style> l_style = nullptr;
+
+	if( !this->areThereWindowStyle() )
+		// Windows Style
+	{
+		std::shared_ptr<sf::Vector2i> l_position = nullptr;
+		std::shared_ptr<sf::Vector2u> l_size = nullptr;
+		std::string l_name = "";
+		int l_xpos = 118;
+		int l_ypos = 107;
+		l_position = std::make_shared<sf::Vector2i>(l_xpos, l_ypos);
+		int l_xsize = 500;
+		int l_ysize = 437;
+		l_size = std::make_shared<sf::Vector2u>(l_xsize, l_ysize);
+		l_name = "Photo Configuration";
+		l_style  = std::make_shared<WindowStyle>(l_position, l_size, l_name);
+		this->addStyle(l_style);
+	}
+
+	// create area:
+	std::shared_ptr<DiscretizedArea> l_area = _algorithm->getWorld()->getSpace();
+	int l_col = l_area->getNumCol();
+	int l_row = l_area->getNumRow();
+
+	if(l_row == l_col)
+		_WINDOW_DIM = l_row * 10;
+		
+	std::vector<SquarePtr> l_squares = l_area->getLattice();
+	std::vector<bool> l_validation;
+	l_validation.reserve(l_squares.size());
+	for(auto j = 0; j < l_squares.size(); ++j)
+		l_validation.push_back( l_squares[j]->isValid() );
+
+	l_style = std::make_shared<GridStyle>(l_row, l_col, l_validation);
+	this->addStyle(l_style);
+	
+	std::vector<AgentPosition> l_positions;
+	// create Guard:
+	_algorithm->getGuardsPosition(l_positions);
+	for(size_t i = 0; i< l_positions.size(); ++i)
+	{
+		AreaCoordinate l_coord = l_area->getCoordinate(l_positions[i].getPoint2D());
+		PlayerType l_pType = PlayerType::Guard;
+		int l_xpos = l_coord.col;
+		int l_ypos = l_coord.row;
+		std::shared_ptr<sf::Vector2i> l_position = std::make_shared<sf::Vector2i>(l_xpos, l_ypos);
+		l_style = std::make_shared<PlayerStyle>(l_position, l_pType);
+		this->addStyle(l_style);
+	}
+
+	// create Thief:
+	_algorithm->getThievesPosition(l_positions);
+	for(size_t i = 0; i< l_positions.size(); ++i)
+	{
+		AreaCoordinate l_coord = l_area->getCoordinate(l_positions[i].getPoint2D());
+		PlayerType l_pType = PlayerType::Thief;
+		int l_xpos = l_coord.col;
+		int l_ypos = l_coord.row;
+		std::shared_ptr<sf::Vector2i> l_position = std::make_shared<sf::Vector2i>(l_xpos, l_ypos);
+		l_style = std::make_shared<PlayerStyle>(l_position, l_pType);
+		this->addStyle(l_style);
+	}
+
+	this->initSymbols();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -91,7 +172,7 @@ void ConfigurationFile::readFromPhotoFile( std::string &_filename)
 				std::shared_ptr<sf::Vector2i> l_position = nullptr;
 				PlayerType l_pType = UnknownPlayer;
 
-				l_pType = Thief;
+				l_pType = PlayerType::Thief;
 				int l_xpos = atoi(l_token[1].c_str());
 				int l_ypos = atoi(l_token[2].c_str());
 				l_position = std::make_shared<sf::Vector2i>(l_xpos, l_ypos);
@@ -100,9 +181,9 @@ void ConfigurationFile::readFromPhotoFile( std::string &_filename)
 			if(l_token[0] == "G")
 			{
 				std::shared_ptr<sf::Vector2i> l_position = nullptr;
-				PlayerType l_pType = UnknownPlayer;
+				PlayerType l_pType = PlayerType::UnknownPlayer;
 
-				l_pType = Guard;
+				l_pType = PlayerType::Guard;
 				int l_xpos = atoi(l_token[1].c_str());
 				int l_ypos = atoi(l_token[2].c_str());
 				l_position = std::make_shared<sf::Vector2i>(l_xpos, l_ypos);
@@ -210,14 +291,14 @@ void ConfigurationFile::readFromFile( std::string &_filename)
 			else if(l_token[0] == "Player")
 			{
 				std::shared_ptr<sf::Vector2i> l_position = nullptr;
-				PlayerType l_pType = UnknownPlayer;
+				PlayerType l_pType = PlayerType::UnknownPlayer;
 
 				if(l_token.size() > 1)
 				{
 					if(l_token[1] == "G")
-						l_pType = Guard;
+						l_pType = PlayerType::Guard;
 					else if(l_token[1] == "T")
-						l_pType = Thief;
+						l_pType = PlayerType::Thief;
 				}
 
 				if(l_token.size() > 3)

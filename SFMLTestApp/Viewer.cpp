@@ -1,4 +1,4 @@
-#include "Challenge.h"
+#include "Viewer.h"
 #include "WindowEventHandler.h"
 #include "ConfigurationFile.h"
 #include "Player.h"
@@ -17,7 +17,7 @@ const int g_NumberOfPlayer = 2;
 PlayerOrder g_playerOrder;
 
 //////////////////////////////////////////////////////////////////////////
-Challenge::Challenge() : m_players(), m_board(nullptr), m_timer(nullptr), m_report(nullptr), m_absModel(nullptr)
+Viewer::Viewer() : m_players(), m_board(nullptr), m_timer(nullptr), m_report(nullptr), m_absModel(nullptr)
 {
 	/// read player from configuration file:
 	int l_numberOfPlayer = g_configurationFile->getNumberPlayerStyle();
@@ -59,13 +59,13 @@ Challenge::Challenge() : m_players(), m_board(nullptr), m_timer(nullptr), m_repo
 }
 
 //////////////////////////////////////////////////////////////////////////
-void Challenge::print()
+void Viewer::print()
 {
 	m_report->print();
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool Challenge::init()
+bool Viewer::init()
 {
 	m_first_window = std::make_shared<WindowEventHandler>( "NoName_1", Identifier::getNext() );
 #ifdef _SECOND_WINDOW
@@ -76,7 +76,7 @@ bool Challenge::init()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void Challenge::run()
+void Viewer::run()
 {
 	// create a thread with func() as entry point
 	sf::Thread l_thread1( &WindowEventHandler::EventLoop, m_first_window.get() );
@@ -98,9 +98,9 @@ void Challenge::run()
 		)
 		sf::sleep( sf::milliseconds(100) );
 
-	m_first_window->setChallenge(this->shared_from_this());
+	m_first_window->setViewer(this->shared_from_this());
 #ifdef _SECOND_WINDOW
-	m_second_window->setChallenge(this->shared_from_this());
+	m_second_window->setViewer(this->shared_from_this());
 #endif
 	for(size_t i = 0; i < m_players.size(); ++i)
 		m_players[i].player->bindTexture();
@@ -122,7 +122,7 @@ void Challenge::run()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void Challenge::close()
+void Viewer::close()
 {
 	if(m_first_window)
 		m_first_window->close();
@@ -132,7 +132,7 @@ void Challenge::close()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void Challenge::draw(std::shared_ptr<WindowEventHandler> _window)
+void Viewer::draw(std::shared_ptr<WindowEventHandler> _window)
 	/// draw order: board, timer, treasure, players...
 {
 	m_board->draw(_window);
@@ -150,7 +150,7 @@ void Challenge::draw(std::shared_ptr<WindowEventHandler> _window)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void Challenge::initReport()
+void Viewer::initReport()
 {
 	for(size_t i = 0; i < m_players.size(); ++i)
 	{
@@ -159,7 +159,7 @@ void Challenge::initReport()
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool Challenge::isGameFinished()
+bool Viewer::isGameFinished()
 {
 	for(size_t i = 0; i < m_players.size(); ++i)
 	{
@@ -170,7 +170,7 @@ bool Challenge::isGameFinished()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void Challenge::update(Identifier _windows_id, sf::Event _event)
+void Viewer::update(Identifier _windows_id, sf::Event _event)
 {
 	for(size_t i = 0; i < m_players.size(); ++i)
 	{
@@ -193,7 +193,7 @@ void Challenge::update(Identifier _windows_id, sf::Event _event)
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool Challenge::goalAchieved()
+bool Viewer::goalAchieved()
 {
 	bool res = false;
 	for(size_t i = 0; i < m_players.size(); ++i)
@@ -205,7 +205,7 @@ bool Challenge::goalAchieved()
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool Challenge::guardGoalAchieved(std::shared_ptr<Player> _guard)
+bool Viewer::guardGoalAchieved(std::shared_ptr<Player> _guard)
 {
 	for(size_t i = 0; i < m_players.size(); ++i)
 	{
@@ -226,7 +226,7 @@ bool Challenge::guardGoalAchieved(std::shared_ptr<Player> _guard)
 }
 
 //////////////////////////////////////////////////////////////////////////
-bool Challenge::thiefGoalAchieved(std::shared_ptr<Player> _thief)
+bool Viewer::thiefGoalAchieved(std::shared_ptr<Player> _thief)
 {
 	if(m_treasure)
 	{

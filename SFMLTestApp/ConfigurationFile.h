@@ -13,6 +13,14 @@
 extern const std::string g_configFolder;
 extern int _WINDOW_DIM;
 
+namespace Robotics
+{
+	namespace GameTheory
+	{
+		class CoverageAlgorithm;
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////
 class ConfigurationFile
 {
@@ -40,6 +48,9 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	void readFromPhotoFile( std::string &_filename);
 
+	//////////////////////////////////////////////////////////////////////////
+	void createFromAlgorithm( std::shared_ptr<Robotics::GameTheory::CoverageAlgorithm> _algorithm);
+	
 	//////////////////////////////////////////////////////////////////////////
 	ConfigurationFile(std::string const &_filename);
 

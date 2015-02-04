@@ -199,6 +199,7 @@ namespace Robotics
 			double getYStep() const {return m_yStep;}
 			int getNumRow() const {return m_numRow;}
 			int getNumCol() const {return m_numCol;}
+			std::vector< SquarePtr > getLattice() const {return m_lattice;}
 
 			int numberOfSquaresCoveredByGuards() const;
 

@@ -12,7 +12,8 @@ enum Type
 	Window,
 	Gamer,
 	Target,
-	Board
+	Board,
+	Sink
 };
 
 enum PlayerType
@@ -120,10 +121,13 @@ public:
 	void bindTexture( const std::string & _symbolResourceName);
 
 	///
-	void bindTexture(PlayerType _pType);
+	void bindPlayerTexture(PlayerType _pType);
 
 	///
-	void bindTexture();
+	void bindTargetTexture();
+
+	///
+	void bindSinkTexture();
 
 	///
 	void updateSymbol(std::shared_ptr<GridStyle> _grid);
@@ -194,6 +198,32 @@ public:
 	TargetStyle(std::shared_ptr<sf::Vector2i> _pos, Identifier _owner = 0);
 	///
 	TargetStyle();
+
+	///
+	Type getType();
+
+	///
+	std::shared_ptr<sf::CircleShape> getSymbol();
+
+	///
+	virtual void print(std::ostream& _stream);
+};
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+class SinkStyle : public Style, public SymbolStyle
+{
+public:
+	///
+	SinkStyle (std::shared_ptr<sf::Vector2i> _pos, std::shared_ptr<sf::CircleShape> _symbol, Identifier _owner = 0);
+
+	///
+	SinkStyle (std::shared_ptr<sf::Vector2i> _pos, std::string _symbolResourceName, Identifier _owner = 0);
+
+	///
+	SinkStyle (std::shared_ptr<sf::Vector2i> _pos, Identifier _owner = 0);
+	///
+	SinkStyle ();
 
 	///
 	Type getType();

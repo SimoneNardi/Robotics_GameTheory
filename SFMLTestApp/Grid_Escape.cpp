@@ -14,6 +14,8 @@
 #include "WindowEventHandler.h"
 #include "Challenge.h"
 
+#include "CoverageAlgorithm.h"
+
 #include "stdafx.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -24,6 +26,25 @@ int main(int argc, char* argv[])
 		std::string name = argv[1];
 		g_configurationFile->readFromPhotoFile(name);
 	}
+	else
+	{
+		std::string name = argv[0];
+		std::string folder = name.substr(0, name.find_last_of('/\\')+1);
+		folder+="Configuration/";
+		std::string l_AreaFilename = folder + "External.txt";
+		std::string l_AgentFilename = folder + "5G_1T.dat";
+
+		std::shared_ptr<Robotics::GameTheory::CoverageAlgorithm> l_coverage = 
+			Robotics::GameTheory::CoverageAlgorithm::createFromAreaFile(
+			l_AreaFilename, 
+			l_AgentFilename, 
+			0, // type algorithm
+			0, // period
+			0); // epsilon
+		
+		g_configurationFile->createFromAlgorithm(l_coverage);
+	}
+
 
 	/* initialize random seed: */
 	srand (time(NULL));
