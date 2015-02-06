@@ -6,7 +6,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 WindowEventHandler::WindowEventHandler(std::string name, Identifier _index) 
-	: m_window(nullptr), m_challenge(nullptr), m_running(false), m_name(name), m_position(nullptr), m_created(false), m_index(_index), m_size(nullptr)
+	: m_window(nullptr), m_brain(nullptr), m_running(false), m_name(name), m_position(nullptr), m_created(false), m_index(_index), m_size(nullptr)
 {}
 
 //////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ void WindowEventHandler::EventLoop()
 			case sf::Event::KeyReleased:
 			case sf::Event::JoystickMoved:
 			case sf::Event::JoystickButtonReleased:
-				this->m_challenge->update(m_index, event);
+				this->m_brain->update(m_index, event);
 				break;
 			case sf::Event::JoystickConnected:
 			case sf::Event::JoystickDisconnected:
@@ -162,12 +162,12 @@ void WindowEventHandler::Draw()
 #endif
 	}
 
-	if(m_challenge)
-		m_challenge->draw( this->shared_from_this() );
+	if(m_brain)
+		m_brain->draw( this->shared_from_this() );
 }
 
 //////////////////////////////////////////////////////////////////////////
-void WindowEventHandler::setChallenge(std::shared_ptr<Challenge> _challenge)
+void WindowEventHandler::setBrain(std::shared_ptr<Brain> _brain)
 {
-	m_challenge = _challenge;
+	m_brain = _brain;
 }

@@ -78,6 +78,9 @@
     <ClInclude Include="Sink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Brain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbsModel.cpp">
@@ -132,6 +135,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Sink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Brain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

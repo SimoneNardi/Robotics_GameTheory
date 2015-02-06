@@ -15,8 +15,9 @@ using namespace IDS::BaseGeometry;
 using namespace std;
 
 #define D_TEST
-#define _STATIC 
-#define _EPSILON 
+#define D_STATIC
+#define D_EPSILON
+#define _TALGORITHM
 struct Log
 {
 	ofstream m_logFile;
@@ -233,12 +234,13 @@ std::vector<std::string> getAreaNames(std::string const& _folname)
 	return l_result;
 }
 
+//////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
 	Log l_log("log.txt");
 
 	//system("pause");
-	
+
 	std::string l_folname;
 
 	if(argc < 1)
@@ -251,25 +253,43 @@ int main(int argc, char* argv[])
 
 
 #ifdef _EPSILON
+
 #ifndef _TEST
 	std::string l_file("config_EPSILON.dat");
 #else
 	std::string l_file("simple_config_EPSILON.dat");
 #endif
+
 #else
+
+#ifdef _STATIC
+
 #ifndef _TEST
-#ifdef _STATIC
 	std::string l_file("config_STATIC.dat");
-#else
-	std::string l_file("config.dat");
-#endif
-#else
-#ifdef _STATIC
+#else 
 	std::string l_file("simple_config_STATIC.dat");
+#endif
+
 #else
+
+#ifdef _TALGORITHM
+
+#ifndef _TEST
+	std::string l_file("config_T.dat");
+#else 
+	std::string l_file("simple_config_T.dat");
+#endif
+
+#else
+
+#ifndef _TEST
+	std::string l_file("config.dat");
+#else 
 	std::string l_file("simple_config.dat");
 #endif
-#endif	
+
+#endif
+#endif
 #endif
 
 	readSimulationConfigFile(l_log, l_file);
@@ -296,7 +316,7 @@ int main(int argc, char* argv[])
 
 			try
 			{
-				for(int l_algorithmType = 2; l_algorithmType < 3; ++l_algorithmType )
+				for(int l_algorithmType = 0; l_algorithmType < 2; ++l_algorithmType )
 				{
 					std::string l_algName = (l_algorithmType == 0 ? "DISL" : l_algorithmType == 1 ? "PIPIP" : "PARETO");
 					l_log << "---------Algorithm: " << l_algName << endl;
@@ -335,7 +355,7 @@ int main(int argc, char* argv[])
 									//sprintf(buffernameBoxPlotAscissa, "%s_boxplot_ascissa.txt", buffername);
 
 									for(int l_testIndex = 0; l_testIndex < g_config.TestCase; ++l_testIndex)
-									// per g_test volte ripeto lo stesso scenario! con punti di partenza diversi per gli agenti
+										// per g_test volte ripeto lo stesso scenario! con punti di partenza diversi per gli agenti
 									{
 										l_log << "-Case: " << l_testIndex << "..." << endl;
 
@@ -361,12 +381,12 @@ int main(int argc, char* argv[])
 													g_config.TimeEnd[l_TimeEndIndex] - (l_TimeEndIndex==0? 0 : g_config.TimeEnd[l_TimeEndIndex-1]), 
 													g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
 													g_config.ThiefJump[l_thiefJumpIndex]);
-												
+
 												/// print data for BoxPlot:
 												double l_potentialIndex = l_coverage->m_stats.getPotentialIndexMediumValue();
 												double l_benefitIndex = l_coverage->m_stats.getBenefitIndexMediumValue();
 												double l_coverageIndex = l_coverage->getGlobalTrajectoryCoverage();
-											
+
 												l_log << "Potential Index ";
 												l_log << l_potentialIndex; 
 												l_log << endl;

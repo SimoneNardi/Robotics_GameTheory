@@ -1,8 +1,24 @@
-BenefitIndex Steady Index -1 0 0.01 1
-BenefitIndex Steady Index -1 0 0.5 1
-BenefitIndex Steady Value -1 0 0.01 1
-BenefitIndex Steady Value -1 0 0.5 1
-PotentialIndex Steady Index -1 0 0.01 1
-PotentialIndex Steady Index -1 0 0.5 1
-PotentialIndex Steady Value -1 0 0.01 1
-PotentialIndex Steady Value -1 0 0.5 1
+Benefit Index -1 1 0 1
+Benefit Index -1 1 0 1
+Benefit Index -1 1 0 2
+Benefit Index -1 1 0 2
+Benefit Index -1 1 0.1 1
+Benefit Index -1 1 0.1 1
+Benefit Index -1 1 0.1 2
+Benefit Index -1 1 0.1 2
+Coverage Index -1 1 0 1
+Coverage Index -1 1 0 1
+Coverage Index -1 1 0 2
+Coverage Index -1 1 0 2
+Coverage Index -1 1 0.1 1
+Coverage Index -1 1 0.1 1
+Coverage Index -1 1 0.1 2
+Coverage Index -1 1 0.1 2
+Potential Index -1 1 0 1
+Potential Index -1 1 0 1
+Potential Index -1 1 0 2
+Potential Index -1 1 0 2
+Potential Index -1 1 0.1 1
+Potential Index -1 1 0.1 1
+Potential Index -1 1 0.1 2
+Potential Index -1 1 0.1 2

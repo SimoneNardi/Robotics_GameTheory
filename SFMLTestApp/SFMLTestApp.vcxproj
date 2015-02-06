@@ -123,6 +123,7 @@ xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" $(OutDir)</C
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AbsModel.h" />
+    <ClInclude Include="Brain.h" />
     <ClInclude Include="Challenge.h" />
     <ClInclude Include="ConfigurationFile.h" />
     <ClInclude Include="Grid.h" />
@@ -144,6 +145,7 @@ xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" $(OutDir)</C
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbsModel.cpp" />
+    <ClCompile Include="Brain.cpp" />
     <ClCompile Include="Challenge.cpp" />
     <ClCompile Include="ConfigurationFile.cpp" />
     <ClCompile Include="Grid.cpp" />

@@ -1,0 +1,6 @@
+Monitor	-1
+Jump	1
+Epsilon	0	0.1
+Print	1	5000	10000	50000
+Period	1	4	8	12	16	20
+TestCase	50

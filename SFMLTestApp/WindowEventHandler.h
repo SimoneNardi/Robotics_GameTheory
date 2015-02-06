@@ -4,7 +4,7 @@
 #include "Identifier.h"
 #include <memory>
 
-class Challenge;
+class Brain;
 
 //////////////////////////////////////////////////////////////////////////
 class WindowEventHandler : public std::enable_shared_from_this<WindowEventHandler>
@@ -18,8 +18,8 @@ public:
 	bool m_created;
 	Identifier m_index;
 
-	std::shared_ptr<Challenge> m_challenge;
-
+	std::shared_ptr<Brain> m_brain;
+	
 	//////////////////////////////////////////////////////////////////////////
 	WindowEventHandler(std::string name, Identifier _index = Identifier());
 
@@ -42,6 +42,6 @@ public:
 	void Draw();
 
 	//////////////////////////////////////////////////////////////////////////
-	void setChallenge(std::shared_ptr<Challenge> _challenge);
+	void setBrain(std::shared_ptr<Brain> _brain);
 
 };
