@@ -27,14 +27,18 @@ namespace Robotics
 {
 	namespace GameTheory 
 	{
+		COVERAGE_API void setLostBattery(double _lostBattery);
+
 		class DiscretizedArea;
 		class Agent;
 		class Thief;
+		class Sink;
 		class LearningAlgorithm;
 		class Area;
 		class AgentPosition;
 		class Square;
 		class World;
+		class AgentActionIndex;
 
 		class COVERAGE_API CoverageAlgorithm
 		{
@@ -136,9 +140,16 @@ namespace Robotics
 			bool areaContains(const IDS::BaseGeometry::Point2D & _thiefStartingPt) const;
 
 			void getGuardsPosition(std::vector<AgentPosition> & _pos);
-			void getGuardsSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> & _pos);
+			void getGuardsSquare(std::vector<std::pair<std::shared_ptr<Square>, AgentActionIndex>> & _pos);
 			void getGuardsCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas);
 			int numberOfSquaresCoveredByGuards() const;
+
+			void getSinksPosition(std::vector<AgentPosition> & _pos);
+			void getSinksSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> & _pos);
+			void getSinksCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas);
+			void setPositionOfSink(AgentPosition const& pos, std::shared_ptr<Sink> _agent/* = nullptr*/);
+			void removeAllSinks();
+
 			//int getTime() const;
 			void printPotential(std::string const& name, bool printOnFile = true);
 			void printBenefit(std::string const& name, bool printOnFile = true);
@@ -151,6 +162,9 @@ namespace Robotics
 			void printNewPerformanceIndexVersusExplorationRate(std::string const& name, bool printOnFile = true);
 
 
+			
+			std::string getBatteryValueStr();
+			double getBatteryValue();
 			std::string getExplorationRateStr();
 			double getExplorationRate();
 
@@ -186,10 +200,18 @@ namespace Robotics
 
 #pragma endregion
 
+#pragma region VIDEO
+
+			std::shared_ptr<World> getWorld() {return m_world;}
+
+#pragma endregion
+
+
 		protected:
 			/// Wake Up agent if the security is too low.
 			void wakeUpAgentIfSecurityIsLow();
 		};
 	}
 }
+
 #endif

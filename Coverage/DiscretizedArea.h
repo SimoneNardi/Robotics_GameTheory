@@ -43,6 +43,8 @@ namespace Robotics
 		{
 			int row;
 			int col;
+
+			AreaCoordinate(int _col = -1, int _row = -1) : row(_row), col(_col) {}
 		};
 
 		inline bool operator< (AreaCoordinate const& a, AreaCoordinate const& b)
@@ -71,11 +73,11 @@ namespace Robotics
 			int m_counter;
 
 			/// The value associated to the square by the monitor
-			double m_value;
+			std::vector<double> m_values;
 
 			IDS::BaseGeometry::Box2D m_box;
 
-			double m_old_value;
+			std::vector<double> m_old_values;
 		public:
 
 			/// Set the box of the Square
@@ -94,8 +96,11 @@ namespace Robotics
 
 			inline int getTheNumberOfAgent() const {return m_counter;}
 
-			inline double getValue() const {return m_value;}
-			inline void setValue(double _value);
+			inline double getThiefValue() const {return m_values.size() > 0 ? m_values.at(0) : 0;}
+			inline void setThiefValue(double _value);
+
+			inline double getEnergyValue() const {return m_values.size() > 1 ? m_values.at(1) : 0;}
+			inline void setEnergyValue(double _value);
 
 			//Square() : m_valid(true), m_counter(0), m_value(0.), m_old_value(0.) {}
 			Square(std::shared_ptr<lemon::ListGraph> _graph);
@@ -106,7 +111,8 @@ namespace Robotics
 
 			bool isChanged() const;
 			/// Set the value to zero.
-			void resetValue();
+			void resetThiefValue();
+			void resetEnergyValue();
 
 			//bool equals(std::shared_ptr<Square> _other) const;
 
@@ -131,6 +137,8 @@ namespace Robotics
 			double m_yStep;
 
 			int m_numberOfValidSquare;
+
+			AreaCoordinate m_sinkCoordinate;
 
 		public:
 			DiscretizedArea(IDS::BaseGeometry::Shape2D const& _external, std::set< IDS::BaseGeometry::Shape2D > const& _obstacles);
@@ -168,10 +176,13 @@ namespace Robotics
 				AreaCoordinate _source, 
 				AreaCoordinate _target);
 
+			int getDistanceFromNearestSink(IDS::BaseGeometry::Point2D const& _agentPosition);
+
 			std::vector<SquarePtr> getSquares() const;
 			
 			bool getRandomPosition(IDS::BaseGeometry::Point2D & _point) const;
 			void setThiefPosition(AgentPosition const& _pos);
+			void setSinkPosition(AgentPosition const& _pos);
 			double getThiefMaxValue(AgentPosition const& _pos);
 
 			bool isOut(AgentPosition const& pos) const;
@@ -188,6 +199,7 @@ namespace Robotics
 			double getYStep() const {return m_yStep;}
 			int getNumRow() const {return m_numRow;}
 			int getNumCol() const {return m_numCol;}
+			std::vector< SquarePtr > getLattice() const {return m_lattice;}
 
 			int numberOfSquaresCoveredByGuards() const;
 
@@ -198,9 +210,14 @@ namespace Robotics
 
 			void printOnFile(std::ofstream & _stream);
 
+			bool isThereASink() const {return !(m_sinkCoordinate.col < 0);}
+			std::vector<int> distanceFromNearestSink(std::vector<AgentPosition> const & _positions);
+			std::vector<int> distanceFromNearestSink(std::vector< std::pair<AgentPosition, int> > const & _positions);
+
 		protected:
 			void addEdges();
 
+			friend class COVERAGE_API LearningAlgorithm;
 			friend class COVERAGE_API DISLAlgorithm;
 			friend class COVERAGE_API PIPIPAlgorithm;
 			friend class COVERAGE_API ParetoEfficientAlgorithm;

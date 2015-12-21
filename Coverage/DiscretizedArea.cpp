@@ -142,7 +142,7 @@ void tokenize_(const std::string& str, const std::string& separators, std::vecto
 //////////////////////////////////////////////////////////////////////////
 void DiscretizedArea::addEdges()
 {
-	for(auto i = 0; i < m_lattice.size(); ++i)
+	for(size_t i = 0; i < m_lattice.size(); ++i)
 	{
 		int row = i / m_numCol;
 		int col = i % m_numCol;
@@ -182,6 +182,7 @@ DiscretizedArea::DiscretizedArea(std::string const& _filename)
 	: m_graph(nullptr)
 	, m_listGraph(nullptr)
 	, m_numberOfValidSquare(-1)
+	, m_sinkCoordinate(-1,-1)
 {
 	std::ifstream iFile(_filename);	// input.txt has integers, one per line
 #ifdef _PRINT
@@ -351,6 +352,7 @@ DiscretizedArea::DiscretizedArea(std::shared_ptr<StructuredArea> _area)
 	: m_graph(nullptr)
 	, m_listGraph(nullptr)
 	, m_numberOfValidSquare(-1)
+	, m_sinkCoordinate(-1,-1)
 {
 	Box2D l_box = _area->getBoundingBox();
 
@@ -423,6 +425,7 @@ DiscretizedArea::DiscretizedArea(std::shared_ptr<UnStructuredArea> _area)
 	: m_graph(nullptr)
 	, m_listGraph(nullptr)
 	, m_numberOfValidSquare(-1)
+	, m_sinkCoordinate(-1, -1)
 {}
 
 //////////////////////////////////////////////////////////////////////////
@@ -430,6 +433,7 @@ DiscretizedArea::DiscretizedArea(IDS::BaseGeometry::Shape2D const& _external, st
 	: m_graph(nullptr)
 	, m_listGraph(nullptr)
 	, m_numberOfValidSquare(-1)
+	, m_sinkCoordinate(-1,-1)
 {
 	Box2D l_box = _external.getBoundingBox();
 
@@ -507,9 +511,7 @@ AreaCoordinate DiscretizedArea::getCoordinate(Point2D const& point) const
 	double l_ydist = l_yLine.parameterAt(l_prjVertical);
 	double l_xdist = l_xLine.parameterAt(l_prjOrizontal);
 
-	AreaCoordinate l_coord;
-	l_coord.col = int( floor(l_xdist / m_xStep) );
-	l_coord.row = int( floor(l_ydist / m_yStep) );
+	AreaCoordinate l_coord(int( floor(l_xdist / m_xStep) ), int( floor(l_ydist / m_yStep) ));
 	return l_coord;
 }
 
@@ -542,9 +544,9 @@ void DiscretizedArea::setRandomSquareValue()
 	{
 #if 1
 		int l_valueSecret = rand() % 100;
-		m_lattice[i]->setValue(l_valueSecret);
+		m_lattice[i]->setThiefValue(l_valueSecret);
 #else
-		m_lattice[i]->setValue(g_reverse ? 100- i / flag:  i / flag);
+		m_lattice[i]->setThiefValue(g_reverse ? 100- i / flag:  i / flag);
 #endif
 	}
 }
@@ -555,33 +557,25 @@ std::vector<AreaCoordinate> DiscretizedArea::getStandardApproachableValidSquares
 	std::vector<AreaCoordinate> result;
 	if(_current.col != 0)
 	{
-		AreaCoordinate pos;
-		pos.col = _current.col-1;
-		pos.row = _current.row;
+		AreaCoordinate pos( _current.col-1, _current.row );
 		if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 			result.push_back(pos);
 	}
 	if(_current.col != DISCRETIZATION_COL)
 	{
-		AreaCoordinate pos;
-		pos.col = _current.col+1;
-		pos.row = _current.row;
+		AreaCoordinate pos(_current.col+1, _current.row);
 		if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 			result.push_back(pos);
 	}
 	if(_current.row != 0)
 	{
-		AreaCoordinate pos;
-		pos.col = _current.col;
-		pos.row = _current.row-1;
+		AreaCoordinate pos(_current.col,_current.row-1);
 		if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 			result.push_back(pos);
 	}
 	if(_current.row != DISCRETIZATION_ROW)
 	{
-		AreaCoordinate pos;
-		pos.col = _current.col;
-		pos.row = _current.row+1;
+		AreaCoordinate pos(_current.col, _current.row+1);
 		if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 			result.push_back(pos);
 	}
@@ -595,18 +589,14 @@ void DiscretizedArea::addSpecialApproachableValidSquares(AreaCoordinate const& _
 	{
 		if(_current.row != 0)
 		{
-			AreaCoordinate pos;
-			pos.col = _current.col-1;
-			pos.row = _current.row-1;
+			AreaCoordinate pos(_current.col-1, _current.row-1);
 			if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 				_loci.push_back(pos);
 		}
 
 		if(_current.row != DISCRETIZATION_ROW)
 		{
-			AreaCoordinate pos;
-			pos.col = _current.col-1;
-			pos.row = _current.row+1;
+			AreaCoordinate pos(_current.col-1, _current.row+1);
 			if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 				_loci.push_back(pos);
 		}
@@ -616,18 +606,14 @@ void DiscretizedArea::addSpecialApproachableValidSquares(AreaCoordinate const& _
 	{
 		if(_current.row != 0)
 		{
-			AreaCoordinate pos;
-			pos.col = _current.col+1;
-			pos.row = _current.row-1;
+			AreaCoordinate pos(_current.col+1, _current.row-1);
 			if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 				_loci.push_back(pos);
 		}
 
 		if(_current.row != DISCRETIZATION_ROW)
 		{
-			AreaCoordinate pos;
-			pos.col = _current.col+1;
-			pos.row = _current.row+1;
+			AreaCoordinate pos(_current.col+1, _current.row+1);
 			if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 				_loci.push_back(pos);
 		}
@@ -655,7 +641,10 @@ std::set< std::shared_ptr<Square> > DiscretizedArea::getVisibleSquares(AgentPosi
 void DiscretizedArea::resetValue()
 {
 	for(size_t i = 0; i < m_lattice.size(); ++i)
-		m_lattice[i]->resetValue();
+	{
+		m_lattice[i]->resetThiefValue();
+		m_lattice[i]->resetEnergyValue();
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////// //Monitoring the thief position
@@ -663,7 +652,7 @@ void DiscretizedArea::setThiefPosition(AgentPosition const& _pos)
 {
 	SquarePtr l_square = this->getSquare( _pos.getPoint2D() );
 	if(l_square)
-		l_square->setValue(g_maxValue/g_maxValuePossible);
+		l_square->setThiefValue(g_maxValue/g_maxValuePossible);
 	else
 		assert(1 == 0);
 
@@ -684,8 +673,8 @@ void DiscretizedArea::setThiefPosition(AgentPosition const& _pos)
 				continue;
 
 			double l_value = g_maxValue/ double( abs(i)+abs(j) );
-			double l_valueEx = m_lattice[row * m_numCol + col]->getValue();
-			m_lattice[row * m_numCol + col]->setValue( (l_value + l_valueEx) / g_maxValuePossible);
+			double l_valueEx = m_lattice[row * m_numCol + col]->getThiefValue() * g_maxValuePossible;
+			m_lattice[row * m_numCol + col]->setThiefValue( (l_value + l_valueEx) / g_maxValuePossible);
 		}
 	}
 }
@@ -718,6 +707,38 @@ double DiscretizedArea::getThiefMaxValue(AgentPosition const& _pos)
 	return tot;
 }
 
+////////////////////////////////////////////////////////////////////////// //Monitoring the thief position
+void DiscretizedArea::setSinkPosition(AgentPosition const& _pos)
+{
+	SquarePtr l_square = this->getSquare( _pos.getPoint2D() );
+	if(l_square)
+		l_square->setEnergyValue(g_maxValue/g_maxValuePossible);
+	else
+		assert(1 == 0);
+
+	m_sinkCoordinate = this->getCoordinate( _pos.getPoint2D() );
+
+	for(int i = -4; i < 5; ++i)
+	{
+		int row = m_sinkCoordinate.row + i;
+		if(row < 0 || row >= m_numRow)
+			continue;
+		for(int j = -4; j < 5; ++j)
+		{
+			int col = m_sinkCoordinate.col + j;
+			if(col < 0 || col >= m_numCol)
+				continue;
+
+			if(i == 0 && j == 0)
+				continue;
+
+			double l_value = g_maxValue/ double( abs(i)+abs(j) );
+			double l_valueEx = m_lattice[row * m_numCol + col]->getEnergyValue()*g_maxValuePossible;
+			m_lattice[row * m_numCol + col]->setEnergyValue( (l_value + l_valueEx) / g_maxValuePossible );
+		}
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////
 int DiscretizedArea::numberOfSquaresCoveredByGuards() const
 {
@@ -745,13 +766,13 @@ int DiscretizedArea::getDistance(
 	SquarePtr l_sourcePtr = this->getSquare(_source);
 	SquarePtr l_target = this->getSquare(_target);
 
-	static SquarePtr l_source = nullptr;
-	if(l_source != l_sourcePtr)
+	if (l_target && l_sourcePtr)
 	{
-		l_source = l_sourcePtr;
-		m_graph->run(l_source->m_node, l_target->m_node);
+		m_graph->run(l_sourcePtr->m_node, l_target->m_node);
+		return m_graph->dist(l_target->m_node);
 	}
-	return m_graph->dist(l_target->m_node);
+	else 
+		return 0.;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -778,7 +799,7 @@ void DiscretizedArea::printOnFile(std::ofstream & _stream)
 	_stream << "col "<< m_numCol << endl; 
 	_stream << "row "<< m_numRow << endl; 
 
-	for(auto i = 0; i < m_lattice.size(); ++i)
+	for(size_t i = 0; i < m_lattice.size(); ++i)
 	{
 		if ( m_lattice[i]->isValid() )
 			_stream << 1;
@@ -795,20 +816,46 @@ void DiscretizedArea::printOnFile(std::ofstream & _stream)
 }
 
 //////////////////////////////////////////////////////////////////////////
+int DiscretizedArea::getDistanceFromNearestSink(Point2D const& _agentPosition)
+{
+	return getDistance(this->getCoordinate(_agentPosition), m_sinkCoordinate);
+}
+
+//////////////////////////////////////////////////////////////////////////
+std::vector<int> DiscretizedArea::distanceFromNearestSink(std::vector<AgentPosition> const & _positions)
+{
+	std::vector<int> result (_positions.size(), 0);
+	for(size_t i = 0; i < _positions.size(); ++i)
+		result[i] = this->getDistanceFromNearestSink(_positions[i].getPoint2D());
+
+	return result;
+}
+
+//////////////////////////////////////////////////////////////////////////
+std::vector<int> DiscretizedArea::distanceFromNearestSink(std::vector< std::pair<AgentPosition, int> > const & _positions)
+{
+	std::vector<int> result (_positions.size(), 0);
+	for(size_t i = 0; i < _positions.size(); ++i)
+		result[i] = this->getDistanceFromNearestSink(_positions[i].first.getPoint2D());
+
+	return result;
+}
+
+
+//////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 ///////////////////////		SQUARE		//////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
-Square::Square(std::shared_ptr<lemon::ListGraph> _graph) : m_valid(true), m_counter(0), m_value(0.), m_old_value(0.), m_node(_graph->addNode())
+Square::Square(std::shared_ptr<lemon::ListGraph> _graph) 
+	: m_valid(true)
+	, m_counter(0)
+	, m_values(1,0.)
+	, m_old_values(1,0.)
+	, m_node(_graph->addNode())
 {}
-
-//////////////////////////////////////////////////////////////////////////
-//bool Square::equals(std::shared_ptr<Square> _other) const
-//{
-//	return this->getBoundingBox().center().equals(_other->getBoundingBox().center());
-//}
 
 //////////////////////////////////////////////////////////////////////////
 IDS::BaseGeometry::Point2D Square::vertex(int i) const
@@ -844,13 +891,21 @@ void Square::setBoundingBox(IDS::BaseGeometry::Box2D const& _box)
 //////////////////////////////////////////////////////////////////////////
 bool Square::isChanged() const
 {
-	return fabs(m_value - m_old_value) > IDSMath::TOLERANCE;
+	return fabs(m_values.at(1) - m_old_values.at(1)) > IDSMath::TOLERANCE;
 }
 
 //////////////////////////////////////////////////////////////////////////
-void Square::resetValue()
+void Square::resetThiefValue()
 {
-	m_value = 0.;
+	if(m_values.size() > 0)
+		m_values[0] = 0.;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void Square::resetEnergyValue()
+{
+	if(m_values.size() > 1)
+		m_values[1] = 0.;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -860,8 +915,38 @@ void Square::setValid(bool valid)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void Square::setValue(double _value) 
+void Square::setThiefValue(double _value) 
 {
-	m_old_value = m_value;
-	m_value = _value;
+	if(m_values.size() > 0)
+	{
+		m_old_values[0] = m_values[0];
+		m_values[0] = _value;
+	}
+	else
+	{
+		m_old_values.push_back(0.);
+		m_values.push_back(_value);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+void Square::setEnergyValue(double _value) 
+{
+	if(m_values.size() > 1)
+	{
+		m_old_values[1] = m_values[1];
+		m_values[1] = _value;
+	}
+	else if(m_values.size() > 0)
+	{
+		m_old_values.push_back(0.);
+		m_values.push_back(_value);
+	}
+	else
+	{
+		m_old_values.push_back(0.);
+		m_old_values.push_back(0.);
+		m_values.push_back(0.);
+		m_values.push_back(_value);
+	}
 }

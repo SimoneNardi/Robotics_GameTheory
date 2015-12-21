@@ -12,6 +12,7 @@
 #include "Guard.h"
 #include "Neutral.h"
 #include "Thief.h"
+#include "Sink.h"
 #include "World.h"
 
 #include "BaseGeometry/MakePoint2D.h"
@@ -29,6 +30,12 @@ using namespace std;
 using namespace IDS::BaseGeometry;
 
 const double g_CameraRadius = 7.;
+
+//////////////////////////////////////////////////////////////////////////
+void Robotics::GameTheory::setLostBattery(double _lostBattery)
+{
+	LOSTBATTERY_PERSTEP = _lostBattery;
+}
 
 //////////////////////////////////////////////////////////////////////////
 Robotics::GameTheory::CoverageAlgorithm::CoverageAlgorithm(
@@ -109,6 +116,7 @@ void Robotics::GameTheory::CoverageAlgorithm::updateMonitor()
 {
 	m_learning->resetValue();
 	m_learning->monitoringThieves(m_world->getThieves());
+	m_learning->monitoringSinks(m_world->getSinks());
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -154,7 +162,8 @@ bool Robotics::GameTheory::CoverageAlgorithm::update(int _nStep, int _monitorUpd
 				m_learning->getBenefitValue(), 
 				this->getMaximumPotentialValue(),
 				this->getSteadyNonCoopertativeBenefitValue(),
-				m_learning->getExplorationRate());
+				m_learning->getExplorationRate(),
+				m_learning->getBatteryValue());
 	}
 	return res;
 }
@@ -288,6 +297,39 @@ void CoverageAlgorithm::removeAllThieves()
 }
 
 //////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::removeAllSinks()
+{
+	return m_world->removeAllSinks();
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::setPositionOfSink(AgentPosition const& pos, SinkPtr _agent)
+{
+	bool found = false;
+	/// Put agent in the space
+	std::set< SinkPtr > l_agents = m_world->getSinks();
+	for(auto it = l_agents.begin(); it != l_agents.end(); ++it)
+	{
+		SinkPtr l_agent = *it;
+		if(_agent != l_agent)
+			continue;
+
+		found = true;
+
+		// set position of the agent:
+		l_agent->setCurrentPosition(pos);
+	}
+
+	if(!found)
+	{
+		if(!_agent)
+			_agent = std::make_shared<Sink>(m_world->getNumberOfAgent(), pos);
+
+		m_world->addSink( _agent );
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
 void CoverageAlgorithm::setPositionOfThief(AgentPosition const& pos, ThiefPtr _agent)
 {
 	bool found = false;
@@ -354,7 +396,7 @@ int CoverageAlgorithm::getGlobalTrajectoryCoverage()
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CoverageAlgorithm::getGuardsSquare(std::vector<std::pair<SquarePtr,int>> & _pos)
+void CoverageAlgorithm::getGuardsSquare(std::vector<std::pair<SquarePtr, AgentActionIndex>> & _pos)
 {
 	return m_learning->getGuardsSquare(_pos);
 }
@@ -363,6 +405,24 @@ void CoverageAlgorithm::getGuardsSquare(std::vector<std::pair<SquarePtr,int>> & 
 int CoverageAlgorithm::numberOfSquaresCoveredByGuards() const
 {
 	return m_world->getSpace()->numberOfSquaresCoveredByGuards();
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::getSinksPosition(std::vector<AgentPosition> & _pos)
+{
+	return m_world->getSinksPosition(_pos);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::getSinksSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> & _pos)
+{
+	return m_world->getSinksSquare(_pos);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageAlgorithm::getSinksCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas)
+{
+	return m_world->getSinksCoverage(_areas);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -438,6 +498,18 @@ double CoverageAlgorithm::getExplorationRate()
 }
 
 //////////////////////////////////////////////////////////////////////////
+std::string CoverageAlgorithm::getBatteryValueStr()
+{
+	return m_learning->getBatteryValueStr();
+}
+
+//////////////////////////////////////////////////////////////////////////
+double CoverageAlgorithm::getBatteryValue()
+{
+	return m_learning->getBatteryValue();
+}
+
+//////////////////////////////////////////////////////////////////////////
 void CoverageAlgorithm::getThievesPosition(std::vector<AgentPosition> & _pos)
 {
 	_pos.clear();
@@ -458,7 +530,8 @@ struct AgentDriver
 	{
 		THIEF =-1,
 		NEUTRAL = 0,
-		GUARD = 1
+		GUARD = 1,
+		SINK = 2
 	} type;
 };
 
@@ -501,6 +574,17 @@ void importFromFile(
 			AgentDriver driver;
 			driver.position = makePoint(IDSReal2D(x,y), EucMetric);
 			driver.type = AgentDriver::THIEF;
+			_agents.push_back(driver);
+		}
+		iFile >> numOfXXX; // Sinks
+		for(int i = 0; i < numOfXXX; ++i)
+		{
+			double x, y;
+			iFile >> x;
+			iFile >> y;
+			AgentDriver driver;
+			driver.position = makePoint(IDSReal2D(x,y), EucMetric);
+			driver.type = AgentDriver::SINK;
 			_agents.push_back(driver);
 		}
 		iFile >> numOfXXX; // Neutral
@@ -561,6 +645,18 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 		l_algorithm->setPositionOfThief(l_pos, l_agent);
 	}
 
+	for(size_t i = 0; i < l_agentDriver.size(); ++i)
+	{
+		if(l_agentDriver[i].type != AgentDriver::SINK)
+			continue;
+
+		AgentPosition l_pos( l_space->randomPosition(), CameraPosition( l_space->getDistance()/15. ) );
+		Sleep(100);
+
+		SinkPtr l_agent = std::make_shared<Sink>(l_algorithm->getNumberOfAgent(), l_pos/*l_agentDriver[i].position*/);
+		l_algorithm->setPositionOfSink(l_pos, l_agent);
+	}
+
 	return l_algorithm;
 }
 
@@ -610,7 +706,7 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 			CameraPosition( double(l_space->getXStep() + l_space->getYStep())/2. *1.5) );
 
 		Point2D l_point;
-		if( l_space->getRandomPosition(l_point) )
+		if( l_space->getRandomPosition(l_point) && 0)
 		{
 			l_pos = AgentPosition ( l_point, CameraPosition( double(l_space->getXStep() + l_space->getYStep())/2. *1.5) );
 			Sleep(50);
@@ -656,6 +752,30 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 	}
 #ifdef _PRINT
 	cout << "Placed Thief"<<endl;
+#endif
+	
+#ifdef _PRINT
+	cout << "Placing Sink"<<endl;
+#endif
+	for(size_t i = 0; i < l_agentDriver.size(); ++i)
+	{
+		if(l_agentDriver[i].type != AgentDriver::SINK)
+			continue;
+
+		AgentPosition l_pos( l_agentDriver[i].position, CameraPosition() );
+
+		Point2D l_point;
+		if( l_space->getRandomPosition(l_point) )
+		{
+			l_pos = AgentPosition ( l_point, CameraPosition() );
+			Sleep(50);
+		}
+
+		SinkPtr l_agent = std::make_shared<Sink>(l_algorithm->getNumberOfAgent(), l_pos);
+		l_algorithm->setPositionOfSink(l_agent->getCurrentPosition(), l_agent);
+	}
+#ifdef _PRINT
+	cout << "Placed Sink"<<endl;
 #endif
 
 	return l_algorithm;

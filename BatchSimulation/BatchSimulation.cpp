@@ -15,8 +15,10 @@ using namespace IDS::BaseGeometry;
 using namespace std;
 
 #define D_TEST
-#define _STATIC 
-#define _EPSILON 
+#define D_STATIC
+#define D_EPSILON
+#define D_TALGORITHM
+#define _SINK
 struct Log
 {
 	ofstream m_logFile;
@@ -208,12 +210,25 @@ void readSimulationConfigFile(Log & _log, std::string const& _filename)
 std::vector<std::string> getAgentNames(std::string const& _folname)
 {
 	std::vector<std::string> l_result;
+
+#ifdef _SINK
+
+	l_result.push_back("Scenario_5G_1T_1S.dat");
+
+#ifndef _TEST
+	l_result.push_back("Scenario_10G_1T_1S.dat");
+	l_result.push_back("Scenario_15G_1T_1S.dat");
+	l_result.push_back("Scenario_20G_1T_1S.dat");
+#endif
+
+#else
 	l_result.push_back("Scenario_5G_1T_multiAgent.dat");
 
 #ifndef _TEST
 	l_result.push_back("Scenario_10G_1T_multiAgent.dat");
 	l_result.push_back("Scenario_15G_1T_multiAgent.dat");
 	l_result.push_back("Scenario_20G_1T_multiAgent.dat");
+#endif
 #endif
 	return l_result;
 }
@@ -233,12 +248,13 @@ std::vector<std::string> getAreaNames(std::string const& _folname)
 	return l_result;
 }
 
+//////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
 	Log l_log("log.txt");
 
 	//system("pause");
-	
+
 	std::string l_folname;
 
 	if(argc < 1)
@@ -250,26 +266,46 @@ int main(int argc, char* argv[])
 	std::vector<std::string> l_AreaFilenames = getAreaNames(l_folname);
 
 
-#ifdef _EPSILON
+#if defined(_EPSILON)
+
 #ifndef _TEST
 	std::string l_file("config_EPSILON.dat");
 #else
 	std::string l_file("simple_config_EPSILON.dat");
 #endif
-#else
+
+#elif defined(_STATIC)
+
 #ifndef _TEST
-#ifdef _STATIC
 	std::string l_file("config_STATIC.dat");
-#else
-	std::string l_file("config.dat");
-#endif
-#else
-#ifdef _STATIC
+#else 
 	std::string l_file("simple_config_STATIC.dat");
+#endif
+
+#elif defined(_TALGORITHM)
+
+#ifndef _TEST
+	std::string l_file("config_T.dat");
+#else 
+	std::string l_file("simple_config_T.dat");
+#endif
+
+#elif defined(_SINK)
+
+#ifndef _TEST
+	std::string l_file("config_sink.dat");
+#else 
+	std::string l_file("simple_config_sink.dat");
+#endif
+
 #else
+
+#ifndef _TEST
+	std::string l_file("config.dat");
+#else 
 	std::string l_file("simple_config.dat");
 #endif
-#endif	
+
 #endif
 
 	readSimulationConfigFile(l_log, l_file);
@@ -296,7 +332,7 @@ int main(int argc, char* argv[])
 
 			try
 			{
-				for(int l_algorithmType = 2; l_algorithmType < 3; ++l_algorithmType )
+				for(int l_algorithmType = 0; l_algorithmType < 2; ++l_algorithmType )
 				{
 					std::string l_algName = (l_algorithmType == 0 ? "DISL" : l_algorithmType == 1 ? "PIPIP" : "PARETO");
 					l_log << "---------Algorithm: " << l_algName << endl;
@@ -335,9 +371,11 @@ int main(int argc, char* argv[])
 									//sprintf(buffernameBoxPlotAscissa, "%s_boxplot_ascissa.txt", buffername);
 
 									for(int l_testIndex = 0; l_testIndex < g_config.TestCase; ++l_testIndex)
-									// per g_test volte ripeto lo stesso scenario! con punti di partenza diversi per gli agenti
+										// per g_test volte ripeto lo stesso scenario! con punti di partenza diversi per gli agenti
 									{
 										l_log << "-Case: " << l_testIndex << "..." << endl;
+
+										setLostBattery(g_config.Epsilon[l_epsilonIndex]);
 
 										std::shared_ptr<Robotics::GameTheory::CoverageAlgorithm> l_coverage = 
 											Robotics::GameTheory::CoverageAlgorithm::createFromAreaFile(
@@ -345,8 +383,8 @@ int main(int argc, char* argv[])
 											l_AgentFilename, 
 											l_algorithmType, 
 											g_config.Period[l_periodIndex],
-											l_epsilon);
-
+											0.1);
+										
 										if(g_config.TimeEnd.size() > 0)
 											// Stop algorithm when number of steps reach a given value
 										{
@@ -354,57 +392,144 @@ int main(int argc, char* argv[])
 											{
 												if(g_config.TimeEnd[l_TimeEndIndex] == 0)
 													continue;
+														
+												if (l_TimeEndIndex < 1)
+												{
+													l_log << "End Time " << g_config.TimeEnd[l_TimeEndIndex] << endl;
+																								
+													l_coverage->update(
+														g_config.TimeEnd[l_TimeEndIndex] - (l_TimeEndIndex==0? 0 : g_config.TimeEnd[l_TimeEndIndex-1]), 
+														g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex],
+														g_config.ThiefJump[l_thiefJumpIndex]);
 
-												l_log << "End Time " << g_config.TimeEnd[l_TimeEndIndex] << endl;
+													/// print data for BoxPlot:
+													double l_potentialIndex = l_coverage->m_stats.getPotentialIndexMediumValue();
+													double l_benefitIndex = l_coverage->m_stats.getBenefitIndexMediumValue();
+													double l_coverageIndex = l_coverage->getGlobalTrajectoryCoverage();
+													double l_battery = l_coverage->getBatteryValue();
 
-												l_coverage->update(
-													g_config.TimeEnd[l_TimeEndIndex] - (l_TimeEndIndex==0? 0 : g_config.TimeEnd[l_TimeEndIndex-1]), 
-													g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
-													g_config.ThiefJump[l_thiefJumpIndex]);
-												
-												/// print data for BoxPlot:
-												double l_potentialIndex = l_coverage->m_stats.getPotentialIndexMediumValue();
-												double l_benefitIndex = l_coverage->m_stats.getBenefitIndexMediumValue();
-												double l_coverageIndex = l_coverage->getGlobalTrajectoryCoverage();
-											
-												l_log << "Potential Index ";
-												l_log << l_potentialIndex; 
-												l_log << endl;
+													l_log << "Potential Index ";
+													l_log << l_potentialIndex; 
+													l_log << endl;
 
-												l_boxPlot.add(
-													"Potential Index",
-													g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
-													g_config.ThiefJump[l_thiefJumpIndex],
-													g_config.Epsilon[l_epsilonIndex],
-													g_config.Period[l_periodIndex],
-													g_config.TimeEnd[l_TimeEndIndex],
-													l_potentialIndex);
+													l_boxPlot.add(
+														"Potential Index",
+														g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
+														g_config.ThiefJump[l_thiefJumpIndex],
+														g_config.Epsilon[l_epsilonIndex],
+														g_config.Period[l_periodIndex],
+														g_config.TimeEnd[l_TimeEndIndex],
+														l_potentialIndex);
 
-												l_log << "Benefit Index ";
-												l_log << l_benefitIndex;
-												l_log << endl;
+													l_log << "Benefit Index ";
+													l_log << l_benefitIndex;
+													l_log << endl;
 
-												l_boxPlot.add(
-													"Benefit Index",
-													g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
-													g_config.ThiefJump[l_thiefJumpIndex],
-													g_config.Epsilon[l_epsilonIndex],
-													g_config.Period[l_periodIndex],
-													g_config.TimeEnd[l_TimeEndIndex],
-													l_benefitIndex);
+													l_boxPlot.add(
+														"Benefit Index",
+														g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
+														g_config.ThiefJump[l_thiefJumpIndex],
+														g_config.Epsilon[l_epsilonIndex],
+														g_config.Period[l_periodIndex],
+														g_config.TimeEnd[l_TimeEndIndex],
+														l_benefitIndex);
 
-												l_log << "Coverage Index ";
-												l_log << l_coverageIndex;
-												l_log << endl;
+													l_log << "Coverage Index ";
+													l_log << l_coverageIndex;
+													l_log << endl;
 
-												l_boxPlot.add(
-													"Coverage Index",
-													g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
-													g_config.ThiefJump[l_thiefJumpIndex],
-													g_config.Epsilon[l_epsilonIndex],
-													g_config.Period[l_periodIndex],
-													g_config.TimeEnd[l_TimeEndIndex],
-													l_coverageIndex);
+													l_boxPlot.add(
+														"Coverage Index",
+														g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
+														g_config.ThiefJump[l_thiefJumpIndex],
+														g_config.Epsilon[l_epsilonIndex],
+														g_config.Period[l_periodIndex],
+														g_config.TimeEnd[l_TimeEndIndex],
+														l_coverageIndex);
+
+													l_log << "Battery ";
+													l_log << l_battery;
+													l_log << endl;
+
+													l_boxPlot.add(
+														"Battery",
+														g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
+														g_config.ThiefJump[l_thiefJumpIndex],
+														g_config.Epsilon[l_epsilonIndex],
+														g_config.Period[l_periodIndex],
+														g_config.TimeEnd[l_TimeEndIndex],
+														l_battery);
+												}
+												else
+												{
+													
+													for(int j = (l_TimeEndIndex==0? 0 : g_config.TimeEnd[l_TimeEndIndex-1]), l_count = 0; j < g_config.TimeEnd[l_TimeEndIndex]; j+=10, ++l_count)
+													{
+														l_coverage->update(
+															10, 
+															g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex],
+															g_config.ThiefJump[l_thiefJumpIndex]);
+
+
+														/// print data for BoxPlot:
+														double l_potentialIndex = l_coverage->m_stats.getPotentialIndexMediumValue();
+														double l_benefitIndex = l_coverage->m_stats.getBenefitIndexMediumValue();
+														double l_coverageIndex = l_coverage->getGlobalTrajectoryCoverage();
+														double l_battery = l_coverage->getBatteryValue();
+
+														//l_log << "Potential Index ";
+														//l_log << l_potentialIndex; 
+														//l_log << endl;
+
+														l_boxPlot.add(
+															"Potential Index",
+															g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
+															g_config.ThiefJump[l_thiefJumpIndex],
+															g_config.Epsilon[l_epsilonIndex],
+															g_config.Period[l_periodIndex],
+															g_config.TimeEnd[l_TimeEndIndex]+l_count*10,
+															l_potentialIndex);
+
+														//l_log << "Benefit Index ";
+														//l_log << l_benefitIndex;
+														//l_log << endl;
+
+														l_boxPlot.add(
+															"Benefit Index",
+															g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
+															g_config.ThiefJump[l_thiefJumpIndex],
+															g_config.Epsilon[l_epsilonIndex],
+															g_config.Period[l_periodIndex],
+															g_config.TimeEnd[l_TimeEndIndex]+l_count*10,
+															l_benefitIndex);
+
+														//l_log << "Coverage Index ";
+														//l_log << l_coverageIndex;
+														//l_log << endl;
+
+														l_boxPlot.add(
+															"Coverage Index",
+															g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
+															g_config.ThiefJump[l_thiefJumpIndex],
+															g_config.Epsilon[l_epsilonIndex],
+															g_config.Period[l_periodIndex],
+															g_config.TimeEnd[l_TimeEndIndex]+l_count*10,
+															l_coverageIndex);
+
+														//l_log << "Battery ";
+														//l_log << l_battery;
+														//l_log << endl;
+
+														l_boxPlot.add(
+															"Battery",
+															g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
+															g_config.ThiefJump[l_thiefJumpIndex],
+															g_config.Epsilon[l_epsilonIndex],
+															g_config.Period[l_periodIndex],
+															g_config.TimeEnd[l_TimeEndIndex]+l_count*10,
+															l_battery);
+													}
+												}
 											}
 										}
 										else if(g_config.StopRate.size() > 0)

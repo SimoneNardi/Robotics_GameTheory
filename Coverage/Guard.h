@@ -7,9 +7,13 @@
 #define GUARD_H
 #pragma once
 
-//	DTMManager
 #include "CoverageExport.h"
 #include "Agent.h"
+
+extern const double MAXIMUM_PERIOD;
+const double MAXIMUM_BATTERY = 100.;
+const double MINIMUM_BATTERY = 60.;
+extern double LOSTBATTERY_PERSTEP;
 
 namespace Robotics 
 {
@@ -31,8 +35,10 @@ namespace Robotics
 
 		enum Mood
 		{
-			C,	//	Content
-			D	//	Discontent
+			Content,	//	Content
+			Hopeful,
+			Watchful,
+			Discontent	//	Discontent
 		};
 
 		//////////////////////////////////////////////////////////////////////////
@@ -84,9 +90,9 @@ namespace Robotics
 			Mood m_mood;
 			
 			/// Constructor for reference trajectory
-			MemoryGuardTrajectory() : m_memTrajectory(), m_payoff(0.), m_mood(Mood::C) {}
+			MemoryGuardTrajectory() : m_memTrajectory(), m_payoff(0.), m_mood(Content) {}
 
-			MemoryGuardTrajectory(GuardTrajectory const& _action, double _payoff, Mood _state = C)
+			MemoryGuardTrajectory(GuardTrajectory const& _action, double _payoff, Mood _state = Content)
 				: m_memTrajectory(_action), m_payoff(_payoff), m_mood(_state) {}
 			
 			/// Check if the two trajectory are equals until now.
@@ -127,6 +133,8 @@ namespace Robotics
 			void add(MemoryGuardTrajectory const& _elem);
 
 			AgentPosition getNextPosition(int _indexBest, int _indexNext);
+
+			void reset();
 		};
 
 		///////////////////////////////////////////////////////////
@@ -154,6 +162,15 @@ namespace Robotics
 
 			mutable std::set< std::shared_ptr<Square> > m_coverage;
 			std::set< std::shared_ptr<Square> > m_oldCoverage;
+
+			// Current level of battery
+			double m_current_battery;
+			// Minimum level of battery
+			double m_minimum_battery;
+			// Maximum level of battery
+			double m_maximum_battery;
+
+			bool m_change_period;
 
 		public:
 			Guard( int _teamID, int _id, AgentPosition _position, int _trajectoryLength = 4, int _memorySpace = 2 );
@@ -227,6 +244,14 @@ namespace Robotics
 			void collectVisitedSquare(std::set<std::shared_ptr<Square>>const& _squares);
 			std::set<std::shared_ptr<Square> > getVisibleSquares( std::shared_ptr<DiscretizedArea> _space );
 			int getTrajectoryLength() const {return m_maxTrajectoryLength;}
+			double getBatteryValue() const {return m_current_battery;}
+
+			void updateBattery(double value);
+			void updatePeriod(int value);
+			int computePeriod();
+			double computeBatteryCosts(std::shared_ptr<DiscretizedArea> _space);
+
+			void resetMemory();
 
 		protected:
 			AgentPosition selectNextFeasiblePositionWithoutConstraint(std::shared_ptr<DiscretizedArea> _space);
@@ -234,7 +259,6 @@ namespace Robotics
 		};
 
 		typedef std::shared_ptr<Guard> GuardPtr;
-
 	}
 }
 #endif

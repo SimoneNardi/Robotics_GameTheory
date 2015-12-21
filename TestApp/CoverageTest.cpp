@@ -1,17 +1,18 @@
 // corridor.cpp : Defines the entry point for the application.
 //
-
 #include "stdafx.h"
 #include "Resource.h"
+#include "CoverageTest.h"
+
 #include "BaseGeometry/PointEuclidean2D.h"
 #include "BaseGeometry/PointEllipsoidic2D.h"
 #include "BaseGeometry/Point2D.h"
-#include "CoverageTest.h"
-#include "Agent.h"
-#include "Thief.h"
 
 #include "Coverage/Agent.h"
+#include "Coverage/Thief.h"
 #include "Coverage/Guard.h"
+#include "Coverage/Sink.h"
+
 #include "Coverage/StructuredArea.h"
 
 #include <iostream>
@@ -41,6 +42,7 @@ INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	Curve(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	SetNumberOfGuards(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	SetNumberOfSteps(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK	SetMonitorStep(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	SetAgentsPeriod(HWND, UINT, WPARAM, LPARAM);
 
 //////////////////////////////////////////////////////////////////////////
@@ -66,7 +68,6 @@ CoverageTest::CoverageTest(const vector<Point2D>& bound, bool counterclockwise)
 	}
 
 	m_algorithm = std::make_shared<CoverageAlgorithm>(l_agents, l_space, g_correlated? 3 : g_pareto? 2: g_DISL? 0 : 1);
-	//m_algorithm->Initialize();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -76,7 +77,7 @@ void CoverageTest::getGuardsPosition(std::vector<AgentPosition> & _pos)
 }
 
 //////////////////////////////////////////////////////////////////////////
-void CoverageTest::getGuardsSquare(std::vector< std::pair<SquarePtr,int> > & _pos)
+void CoverageTest::getGuardsSquare(std::vector< std::pair<SquarePtr, AgentActionIndex> > & _pos)
 {
 	return m_algorithm->getGuardsSquare(_pos);
 }
@@ -88,17 +89,22 @@ void CoverageTest::getGuardsCoverage(std::vector<LineString2D>& _areas)
 }
 
 //////////////////////////////////////////////////////////////////////////
+void CoverageTest::getSinksCoverage(std::vector<LineString2D>& _areas)
+{
+	return m_algorithm->getSinksCoverage(_areas); // CONTROLLARE
+}
+
+//////////////////////////////////////////////////////////////////////////
+void CoverageTest::getSinksSquare(std::vector< std::pair<SquarePtr,int> > & _pos)
+{
+	return m_algorithm->getSinksSquare(_pos); // CONTROLLARE
+}
+
+//////////////////////////////////////////////////////////////////////////
 int CoverageTest::numberOfSquaresCoveredByGuards()
 {
 	return m_algorithm->numberOfSquaresCoveredByGuards();
-
 }
-
-////////////////////////////////////////////////////////////////////////////
-//int CoverageTest::getTime()
-//{
-//	return m_algorithm->getTime();
-//}
 
 //////////////////////////////////////////////////////////////////////////
 void CoverageTest::printPotential(std::string const& name, bool _printOnFile)
@@ -143,9 +149,51 @@ std::string CoverageTest::getExplorationRateStr()
 }
 
 //////////////////////////////////////////////////////////////////////////
+std::string CoverageTest::getBatteryValueStr()
+{
+	return m_algorithm->getBatteryValueStr();
+}
+
+//////////////////////////////////////////////////////////////////////////
 double CoverageTest::getExplorationRate()
 {
 	return m_algorithm->getExplorationRate();
+}
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
+std::wstring s2ws(const std::string& s)
+{
+	int len;
+	int slength = (int)s.length() + 1;
+	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0); 
+	wchar_t* buf = new wchar_t[len];
+	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+	std::wstring r(buf);
+	delete[] buf;
+	return r;
+}
+
+//////////////////////////////////////////////////////////////////////////
+void DrawString(HDC hdc, int width, int height, double pt_x, double pt_y,
+	int R, int G, int B, std::string const& text)
+{
+	std::wstring stemp = s2ws(text);
+	LPCWSTR result = stemp.c_str();
+
+	int x = (int) (pt_x/kk*(double)width);
+	int y = (int) (pt_y/kk*(double)height);
+
+	TextOut(hdc, x,y, result, wcslen(result));
+
+	g_explorationFile << text << std::endl;
+	g_explorationFile.flush();
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -193,29 +241,36 @@ void DrawPath(LineString2D *path, HDC hdc, int width, int height,
 }
 
 //////////////////////////////////////////////////////////////////////////
-//void DrawTriangle(Triangolo *tri, HDC hdc, int width, int height,
-//										 int R, int G, int B, int thickness)
-//{
-//	HPEN myPen=CreatePen(PS_SOLID, thickness, RGB(0,0,0));
-//	HBRUSH myBrush=CreateSolidBrush(RGB(R,G,B));
-//	HGDIOBJ oldPen=SelectObject(hdc,myPen);
-//	HGDIOBJ oldBrush=SelectObject(hdc,myBrush);
-//
-//	POINT points[3];
-//	points[0].x=tri->principal->v[0]/kk*(double)width;
-//	points[0].y=tri->principal->v[1]/kk*(double)height;
-//	points[1].x=tri->v1.coord().v[0]/kk*(double)width;
-//	points[1].y=tri->v1.coord().v[1]/kk*(double)height;
-//	points[2].x=tri->v2.coord().v[0]/kk*(double)width;
-//	points[2].y=tri->v2.coord().v[1]/kk*(double)height;
-//
-//	Polygon(hdc,points,3);
-//
-//	SelectObject(hdc,oldPen);
-//	SelectObject(hdc,oldBrush);
-//	DeleteObject(myPen);
-//	DeleteObject(myBrush);
-//}
+void DrawTriangle(SquarePtr rect, HDC hdc, int width, int height,
+	int R, int G, int B, int thickness)
+{
+	HPEN myPen=CreatePen(PS_SOLID, thickness, RGB(0,0,0));
+	HBRUSH myBrush=CreateSolidBrush(RGB(R,G,B));
+	HGDIOBJ oldPen=SelectObject(hdc,myPen);
+	HGDIOBJ oldBrush=SelectObject(hdc,myBrush);
+
+	POINT l_points[4];
+	for(int i=0; i!=4; i++)
+	{
+		l_points[i].x=rect->agentVertex(i).coord().v[0]/kk*(double)width;
+		l_points[i].y=rect->agentVertex(i).coord().v[1]/kk*(double)height;
+	}
+
+	POINT points[3];
+	points[0].x=l_points[0].x;
+	points[0].y=l_points[0].y;
+	points[1].x=l_points[1].x;
+	points[1].y=l_points[1].y;
+	points[2].x=(l_points[2].x + l_points[3].x) / 2.;
+	points[2].y=(l_points[2].y + l_points[3].y) / 2.;
+
+	Polygon(hdc,points,3);
+
+	SelectObject(hdc,oldPen);
+	SelectObject(hdc,oldBrush);
+	DeleteObject(myPen);
+	DeleteObject(myBrush);
+}
 
 //////////////////////////////////////////////////////////////////////////
 void DrawSquare(
@@ -267,6 +322,34 @@ void DrawGuard(
 	DeleteObject(myBrush);
 }
 
+//////////////////////////////////////////////////////////////////////////
+void DrawSink(
+	HDC hdc, int width, int height,
+	int R, int G, int B, int thickness )
+{
+	std::vector<LineString2D> l_coverageArea;
+	g_coverageTest->getSinksCoverage(l_coverageArea);
+	for(size_t i = 0; i < l_coverageArea.size(); ++i)
+		DrawPath(&l_coverageArea[i], hdc, width, height, 255,0,255, 1);
+
+	std::vector< std::pair<SquarePtr,int> > l_pos;
+	g_coverageTest->getSinksSquare(l_pos);
+	for(size_t i = 0; i < l_pos.size(); ++i)
+	{
+		DrawTriangle(l_pos[i].first, hdc, width, height, 255,0,255, thickness);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////
+template <typename T>
+string NumberToString ( T Number )
+{
+	ostringstream ss;
+	ss << Number;
+	return ss.str();
+}
+
+//////////////////////////////////////////////////////////////////////////
 void DrawGuards(
 	HDC hdc, int width, int height,
 	int R, int G, int B, int thickness )
@@ -274,52 +357,30 @@ void DrawGuards(
 	std::vector<LineString2D> l_coverageArea;
 	g_coverageTest->getGuardsCoverage(l_coverageArea);
 	for(size_t i = 0; i < l_coverageArea.size(); ++i)
-		DrawPath(&l_coverageArea[i], hdc, width, height, 0,255,255, 1);
+		DrawPath(&l_coverageArea[i], hdc, width, height, 255,0,0, 1);
 
-	std::vector< std::pair<SquarePtr,int> > l_pos;
+	std::vector< std::pair<SquarePtr, AgentActionIndex> > l_pos;
 	g_coverageTest->getGuardsSquare(l_pos);
 	for(size_t i = 0; i < l_pos.size(); ++i)
 	{
-		DrawGuard(l_pos[i].first, hdc, width, height, (R + i*50 + l_pos[i].second) % 255, (G + i*50) % 255, (B + i*50) % 255, thickness);
+		DrawGuard(l_pos[i].first, 
+			hdc, 
+			width, height, 
+			255,255,255, 
+			thickness);
+		string name = NumberToString(i+1);
+		string name_complete = name;
+		if (l_pos[i].second.m_total > 1 || 1)
+		{
+			string actionElem = NumberToString(l_pos[i].second.m_elem);
+			string actionTotal = NumberToString(l_pos[i].second.m_total);
+			name_complete +=  ": " + actionElem + "/" + actionTotal;
+		}
+		DrawString(hdc, width, height, 
+			l_pos[i].first->agentVertex(3).coord().v[0],
+			l_pos[i].first->agentVertex(3).coord().v[1],
+			0, 0, 0, name_complete);
 	}
-}
-
-std::wstring s2ws(const std::string& s)
-{
-	int len;
-	int slength = (int)s.length() + 1;
-	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0); 
-	wchar_t* buf = new wchar_t[len];
-	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
-	std::wstring r(buf);
-	delete[] buf;
-	return r;
-}
-
-void DrawString(HDC hdc, int width, int height,
-	int R, int G, int B, std::string const& text)
-{
-	LPRECT rec = new tagRECT();
-	rec->left = width/2.;
-	rec->right = width/2. + text.size()*2;
-
-	rec->bottom = -height/2.;
-	rec->top = -height/2. + text.size()*2;
-
-	std::wstring stemp = s2ws(text);
-	LPCWSTR result = stemp.c_str();
-
-	DrawText(
-		hdc,
-		result,
-		text.size(),
-		rec,
-		DT_CENTER
-		);
-
-	g_explorationFile << text << std::endl;
-	g_explorationFile.flush();
-
 }
 class ColorMap;
 
@@ -466,9 +527,27 @@ void DrawAllPolygons(HDC hdc, int width, int height, int thickness)
 
 	for(size_t i = 0; i < l_squares.size(); ++i)
 	{
-		MyColour Col = l_colorMap.getColor( l_squares[i]->getValue() * Robotics::GameTheory::g_maxValuePossible );
-		if( l_squares[i]->isValid() && (g_drawSquare || l_squares[i]->isChanged()) )
-			DrawSquare(l_squares[i], hdc, width, height, Col.R, Col.G, Col.B, thickness);
+		double l_energyVal = l_squares[i]->getEnergyValue();
+		double l_thiefVal = l_squares[i]->getThiefValue();
+
+		if (l_thiefVal > 0)
+		{
+			MyColour Col = l_colorMap.getColor( l_thiefVal * Robotics::GameTheory::g_maxValuePossible );
+			if( l_squares[i]->isValid() && (g_drawSquare || l_squares[i]->isChanged()) )
+				DrawSquare(l_squares[i], hdc, width, height, Col.R, Col.G, Col.B, thickness);
+		} 
+		else if (l_energyVal > 0)
+		{
+			MyColour Col = l_colorMap.getColor( l_energyVal * Robotics::GameTheory::g_maxValue );
+			if( l_squares[i]->isValid() && (g_drawSquare || l_squares[i]->isChanged()) )
+				DrawSquare(l_squares[i], hdc, width, height, Col.R, Col.G, Col.B, thickness);
+		}
+		else 
+		{
+			MyColour Col = l_colorMap.getColor( 0 );
+			if( l_squares[i]->isValid() && (g_drawSquare || l_squares[i]->isChanged()) )
+				DrawSquare(l_squares[i], hdc, width, height, Col.R, Col.G, Col.B, thickness);
+		}
 	}
 }
 
@@ -510,7 +589,6 @@ void MakeCurve()
 		g_boundary2D[g_window_camp+1+i]=
 			makePoint( IDSReal2D( g_window_Ox + g_window_rad2*cos((double)(l_angg2-i*l_ang)),
 			g_window_Oy + g_window_rad2*sin((double)(l_angg2-i*l_ang))), g_metric);
-
 	}
 	if( l_ang > 0 )
 		ReverseBoundary();
@@ -625,9 +703,9 @@ bool LoadBoundary(bool inverti = false, int index = -1)
 void SetStandardBoundary()
 {
 	int count = 0;
-	g_dim = g_LeftBoundary->size();
+	g_dim = g_boundary->size();
 	g_boundary2D.resize(g_dim);
-	for( LineString2DIterator it = g_LeftBoundary->begin() ; it != g_LeftBoundary->end() ; it++ )
+	for( LineString2DIterator it = g_boundary->begin() ; it != g_boundary->end() ; it++ )
 	{
 		g_boundary2D[count]= *it;
 		count++;
@@ -657,7 +735,7 @@ bool SetBoundary2D(int mode = 0)
 			return false;
 	}
 
-	g_LeftBoundary->clear();
+	g_boundary->clear();
 	if(g_coverageTest)
 	{
 		delete g_coverageTest;
@@ -665,13 +743,15 @@ bool SetBoundary2D(int mode = 0)
 	}
 
 	// Copy boundary
-	g_LeftBoundary->insert(g_LeftBoundary->begin(), g_boundary2D.begin(), g_boundary2D.end());
+	g_boundary->insert(g_boundary->begin(), g_boundary2D.begin(), g_boundary2D.end());
 
 	return true;
 }
 
-
-
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////WINDOW CONTROL//////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 int APIENTRY _tWinMain(HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
@@ -712,13 +792,11 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 			DispatchMessage(&msg);
 		}
 	}
-	
+
 	g_explorationFile.close();
 
 	return (int) msg.wParam;
 }
-
-
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -813,11 +891,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 
-		g_LeftBoundary = new LineString2D;
-		g_drawing_a=false; 
-		g_drawing_b=false;
+		g_boundary = new LineString2D;
+
 		g_drawing_externalBoundary=true;
-		g_drawing_r=false;
 		g_drawing_thiefPosition=false; 
 		g_drawing_sink=false;
 
@@ -839,79 +915,71 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case ID_MODE_DRAWPATH:
 			g_drawing_mode = 0;
 			g_drawing_loadCounter = 0;
-			g_drawing_a=false; 
-			g_drawing_b=false;
-			g_LeftBoundary->clear();
+
+			g_boundary->clear();
+
 			if(g_coverageTest)
 			{
 				delete g_coverageTest;
 				g_coverageTest = NULL;
 			}
 			g_drawing_externalBoundary=true;
-			g_drawing_r=false;
 			g_drawing_thiefPosition=false;
 			g_drawing_sink=false;
-			g_drawing_mybool = true;
+
 			break;
 		case ID_MODE_LOADPATH:
 			g_drawing_mode = 1;
 			g_drawing_loadCounter = 0;
-			g_LeftBoundary->clear();
+			g_boundary->clear();
 			if(g_coverageTest)
 			{
 				delete g_coverageTest;
 				g_coverageTest = NULL;
 			}
-			g_drawing_a = false;
 			g_drawing_externalBoundary = false;
 			g_drawing_thiefPosition = true;
 			g_drawing_sink=false;
-			g_drawing_mybool = true;
+
 			break;
 		case ID_MODE_DRAWCURVE:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_CURVE), hWnd, Curve);
 			g_drawing_loadCounter = 0;
-			g_LeftBoundary->clear();
+			g_boundary->clear();
 			if(g_coverageTest)
 			{
 				delete g_coverageTest;
 				g_coverageTest = NULL;
 			}
-			g_drawing_a = false;
 			g_drawing_externalBoundary = false;
 			g_drawing_thiefPosition = true;
 			g_drawing_sink=false;
-			g_drawing_mybool = true;
 			break;
 		case ID_MODE_TESTALLPAT:
 			g_drawing_mode = -1;
 			g_drawing_loadCounter = 0;
-			g_LeftBoundary->clear();
+			g_boundary->clear();
 			if(g_coverageTest)
 			{
 				delete g_coverageTest;
 				g_coverageTest = NULL;
 			}
-			g_drawing_a = false;
 			g_drawing_externalBoundary = false;
 			g_drawing_thiefPosition = true;
 			g_drawing_sink=false;
-			g_drawing_mybool = true;
 			break;
 		case ID_MODE_TESTMULTISTARTPATHS:
 			g_drawing_mode = -3;
 			g_drawing_loadCounter = 0;
-			g_LeftBoundary->clear();
+			g_boundary->clear();
 			if(g_coverageTest)
 			{
 				delete g_coverageTest;
 				g_coverageTest = NULL;
 			}
-			g_drawing_a = false;
 			g_drawing_externalBoundary = false;
 			g_drawing_thiefPosition = true;
 			g_drawing_sink=false;
-			g_drawing_mybool = true;
 			break;
 		case ID_FILE_NUMBER_OF_GUARDS:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_GUARDS), hWnd, SetNumberOfGuards);
@@ -923,30 +991,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case ID_FILE_NUMBER_OF_STEPS:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_STEPS), hWnd, SetNumberOfSteps);
-			//if(g_coverageTest)
-			//{
-			//	delete g_coverageTest;
-			//	g_coverageTest = NULL;
-			//}
 			break;
-			/*case ID_FILE_STARTSEGMENTINSIDE:
-			g_derIsInside = !derIsInside;
-			{HMENU hmenu = GetMenu(hWnd);
-			if(derIsInside)
-			CheckMenuItem(hmenu,ID_FILE_STARTSEGMENTINSIDE,MF_CHECKED);
-			else
-			CheckMenuItem(hmenu,ID_FILE_STARTSEGMENTINSIDE,MF_UNCHECKED);
-			EndMenu();}
-			InvalidateRect(hWnd, NULL, TRUE);
-			UpdateWindow(hWnd);
-			break;*/
+		case ID_FILE_MONITOR_STEP:
+			DialogBox(hInst, MAKEINTRESOURCE(IDD_STEPS), hWnd, SetMonitorStep);
+			break;
 		case ID_FILE_AGENTS_PERIOD:
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_PERIOD), hWnd, SetAgentsPeriod);
-			//if(g_coverageTest)
-			//{
-			//	delete g_coverageTest;
-			//	g_coverageTest = NULL;
-			//}
 			break;
 		case ID_FILE_DRAWSQUARES:
 			g_drawSquare = !g_drawSquare;
@@ -980,10 +1030,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			else
 				CheckMenuItem(hmenu,ID_FILE_POTENTIAL,MF_UNCHECKED);
 			EndMenu();}
-			if( g_drawing_mode < 0 && g_drawing_mybool )
+			if( g_drawing_mode < 0 )
 				g_drawing_loadCounter--;
 
 			break;
+			//////////////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////////////////////
 		case ID_FILE_PARETO:
 			g_pareto = !g_pareto;
 			{HMENU hmenu = GetMenu(hWnd);
@@ -1043,10 +1096,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				g_DISL=true;
 			}
 			EndMenu();}
-			if( g_drawing_mode < 0 && g_drawing_mybool )
-				g_drawing_loadCounter--;
 
 			break;
+			//////////////////////////////////////////////////////////////////////////
 		case ID_FILE_CORRELATED:
 			g_correlated = !g_correlated;
 			{HMENU hmenu = GetMenu(hWnd);
@@ -1106,10 +1158,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				g_DISL=true;
 			}
 			EndMenu();}
-			if( g_drawing_mode < 0 && g_drawing_mybool )
-				g_drawing_loadCounter--;
-
 			break;
+			//////////////////////////////////////////////////////////////////////////
 		case ID_FILE_DISL:
 			g_DISL = !g_DISL;
 			{HMENU hmenu = GetMenu(hWnd);
@@ -1169,10 +1219,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				g_DISL=true;
 			}
 			EndMenu();}
-			if( g_drawing_mode < 0 && g_drawing_mybool )
-				g_drawing_loadCounter--;
-
 			break;
+			//////////////////////////////////////////////////////////////////////////
 		case ID_FILE_PIPIP:
 			g_PIPIP = !g_PIPIP;
 			{HMENU hmenu = GetMenu(hWnd);
@@ -1232,10 +1280,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				g_DISL=true;
 			}
 			EndMenu();}
-			if( g_drawing_mode < 0 && g_drawing_mybool )
-				g_drawing_loadCounter--;
-
 			break;
+			//////////////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////////////////////
+
 		case ID_FILE_DRAWREALPARTITION:
 			g_drawRealArea = !g_drawRealArea;
 			{HMENU hmenu = GetMenu(hWnd);
@@ -1245,14 +1294,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				CheckMenuItem(hmenu,ID_FILE_DRAWREALPARTITION,MF_UNCHECKED);
 			EndMenu();}
 			break;
+
 		case ID_FILE_UNDO:
 			if( g_drawing_externalBoundary )
 			{
-				g_LeftBoundary->pop_back();
+				g_boundary->pop_back();
 				InvalidateRect(hWnd, NULL, TRUE);
 				UpdateWindow(hWnd);
 			}
 			break;
+
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
@@ -1264,39 +1315,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		width=winrect.right-winrect.left;
 		height=winrect.top-winrect.bottom;
 
-		if(g_drawing_externalBoundary | g_drawing_r | g_drawing_thiefPosition)
-			DrawPath(g_LeftBoundary,hdc,width,height,255,0,0,1);
-
-		if(g_drawing_a)
-			MarkPoint((int)(g_thiefStartingPt.coord().v[0]*width),(int)(g_thiefStartingPt.coord().v[1]*height),hdc,128,0,128,10);
-
-		if(!g_drawing_mybool)
+		if(g_drawing_externalBoundary | g_drawing_thiefPosition | g_drawing_sink)
+			DrawPath(g_boundary,hdc,width,height,255,0,0,1);
+		else
 		{
-			if( g_drawRealArea )
-				int hh;//DrawZones(hdc,width,height,1);
-			else
-				DrawAllPolygons(hdc,width,height,1);
-
-			DrawPath(g_path1,hdc,width,height,0,0,0,5);
-			if( g_path2 )
-				DrawPath(g_path2,hdc,width,height,0,0,255,5);
-
-			DrawGuards( hdc, width, height, 0,0,0,1 );
-
-			if(g_coverageTest)
-			{
-				DrawString(hdc, width, height, 0,0,0, g_coverageTest->getExplorationRateStr() );
-			}
-			else
-				DrawString(hdc, width, height, 0,0,0, "Ciao");
+			MarkPoint((int)(g_thiefStartingPt.coord().v[0]*width),(int)(g_thiefStartingPt.coord().v[1]*height),hdc,128,0,128,10);
+			MarkPoint((int)(g_sinkPt.coord().v[0]*width),(int)(g_sinkPt.coord().v[1]*height),hdc,128,0,128,10);
 		}
 
+		DrawAllPolygons(hdc,width,height,1);
+
+		DrawSink( hdc, width, height, 0,0,0,1 );
+
+		DrawGuards( hdc, width, height, 0,0,0,1 );
+
+		if(g_coverageTest)
+		{
+			DrawString(hdc, width, height, g_boundary->at(0).coord().v[0], g_boundary->at(0).coord().v[1], 0,255,0, g_coverageTest->getExplorationRateStr() );
+			DrawString(hdc, width, height, g_boundary->at(1).coord().v[0], g_boundary->at(1).coord().v[1], 0,255,0, g_coverageTest->getBatteryValueStr() );
+		}
 
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
 		//deallocate list
-		delete g_LeftBoundary;
+		delete g_boundary;
 		PostQuitMessage(0);
 		break;
 		///////User Interface
@@ -1311,169 +1354,33 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				((double)HIWORD(lParam)/(winrect.top-winrect.bottom)*kk)), 
 				g_metric );
 
-			g_LeftBoundary->insert(g_LeftBoundary->end(),VB);
+			g_boundary->insert(g_boundary->end(),VB);
 		}
 		else if(g_drawing_thiefPosition)
 		{
-			if(!g_drawing_a)
+			g_thiefStartingPt = makePoint( 
+				IDSReal2D( ((double)LOWORD(lParam)/(winrect.right-winrect.left)*kk), 
+				((double)HIWORD(lParam)/(winrect.top-winrect.bottom)*kk)), 
+				g_metric );
+
+			if(!g_coverageTest)
 			{
-				g_thiefStartingPt = makePoint( 
-					IDSReal2D( ((double)LOWORD(lParam)/(winrect.right-winrect.left)*kk), 
-					((double)HIWORD(lParam)/(winrect.top-winrect.bottom)*kk)), 
-					g_metric );
-				g_drawing_b=true;
-				if( g_path1 );
-					delete g_path1;
-				g_path1 = new LineString2D;
-
-				if(!g_coverageTest)
+				try
 				{
-					if( g_drawing_mode < 0 && g_drawing_mybool && g_drawing_loadCounter != g_drawing_numToLoad )
+					vector<Point2D> v;
+					for(int i = 0; i != g_dim; i++)
 					{
-						FILE* f;
-						if( g_drawing_mode == -3 )
-							f = fopen("..\\TestM\\Test.txt","r");
-						else
-							f = fopen("..\\Test\\Test.txt","r");
-						fscanf(f,"%d",&g_drawing_numToLoad);
-						fclose(f);
-
-						bool loaded;
-						if( g_drawing_mode == -3 )
-							loaded = LoadBoundary(false,g_drawing_loadCounter);
-						else
-							loaded = LoadBoundary(g_drawing_mode+1,g_drawing_loadCounter);
-
-						if(!loaded)
-						{
-							MessageBox(hWnd,L"Error: Corridor not loaded!",L"Error",MB_OK | MB_ICONERROR);
-							g_drawing_mode = 0;
-							g_drawing_mybool = true;
-						}
-						else
-						{
-							g_LeftBoundary->clear();
-							if(g_coverageTest)
-							{
-								delete g_coverageTest;
-								g_coverageTest = NULL;
-							}
-							for( int i = 0; i != g_dim; i++ )
-							{
-								g_LeftBoundary->push_back(g_boundary2D[i]);
-							}
-							if( g_PrintPotential )
-							{
-								try
-								{
-									if( g_numberOfAgents < 0 )
-									{
-										vector<IDSReal2D> bb;
-										vector<IDSReal2D> ss;
-										for(int i = 0; i != g_dim + g_numberOfAgents - 1; i++)
-										{
-											bb.push_back(g_boundary2D[i].coord());
-										}
-										if( g_path2 )
-											delete g_path2;
-										g_path2 = new LineString2D;
-										for(int i = g_dim + g_numberOfAgents - 1; i != g_dim; i++)
-										{
-											ss.push_back(g_boundary2D[i].coord());
-											g_path2->push_back(g_boundary2D[i]);
-										}
-
-										///Create Point From Vertex:
-										std::vector<Point2D> bb_2D;
-										for(size_t i = 0; i != bb.size(); i++)
-										{
-											bb_2D.push_back(makePoint(bb[i], g_metric));
-										}
-
-										std::vector<Point2D> ss_2D;
-										for(size_t i = 0; i != ss.size(); i++)
-										{
-											ss_2D.push_back(makePoint(ss[i], g_metric));
-										}
-
-										//g_coverageTest= new CoverageTest(bb_2D,ss_2D);
-									}
-									//else if(!g_derIsInside)
-									//{
-									//	if( g_path2 )
-									//	{
-									//		delete g_path2;
-									//		g_path2 = 0;
-									//	}
-									//	g_coverageTest= new CoverageTest(g_dim,g_boundary2D,g_numberOfAgents,counterclockwise);
-									//}
-									else
-									{
-										vector<Point2D> v;
-										vector<Point2D> st;
-										int i;
-
-										//Separato start da corridoio!
-										for(i = 0; i != g_dim - g_numberOfAgents - 1; i++)
-										{
-											v.push_back(g_boundary2D[i]);
-										}
-										if( g_path2 )
-											delete g_path2;
-										g_path2 = new LineString2D;
-										for(i = g_dim - g_numberOfAgents - 1; i != g_dim; i++)
-										{
-											st.push_back(g_boundary2D[i]);
-											g_path2->push_back( g_boundary2D[i] );
-										}
-										g_coverageTest= new CoverageTest(v,g_counterclockwise);
-									}
-								}catch(...) {MessageBox(hWnd,L"Error: bad Corridor!",L"Error",MB_OK | MB_ICONERROR);}
-
-								/*if( __GetError() == 2 )
-								MessageBox(hWnd,L"Error: bad Corridor!",L"Error",MB_OK | MB_ICONERROR);*/
-								g_drawing_mybool = false;
-							}
-							g_drawing_loadCounter++;
-							if( g_drawing_loadCounter == g_drawing_numToLoad )
-							{
-								g_drawing_loadCounter = 0;
-								g_drawing_mode = 0;
-							}
-						}
+						v.push_back(g_boundary2D[i]);
 					}
-					else if( g_drawing_mybool )
-					{
-						// 0 if you want to set boundary with mouse
-						// 1 if you want to load saved boundary
-						// 2 if you want to load saved boundary and invert it
-						// 3 if you want to write boundary
-						if(!SetBoundary2D( g_drawing_mode ))
-						{
-							MessageBox(hWnd,L"Error: Corridor not loaded!",L"Error",MB_OK | MB_ICONERROR);
-							g_drawing_mode = 0;
-							g_drawing_mybool = true;
-						}
-						else
-						{
-							try
-							{
-								g_coverageTest= new CoverageTest(g_boundary2D,g_counterclockwise);
-							
-							}
-							catch(...) 
-							{
-								MessageBox(hWnd,L"Error: bad Area!",L"Error",MB_OK | MB_ICONERROR);
-							}
-							/*if( __GetError() == 2 )
-							MessageBox(hWnd,L"Error: bad Corridor!",L"Error",MB_OK | MB_ICONERROR);*/
-							g_drawing_mybool = false;
-						}
-					}
+					g_coverageTest= new CoverageTest(v,g_counterclockwise);
+				}
+				catch(...) 
+				{
+					MessageBox(hWnd,L"Error: bad Corridor!",L"Error",MB_OK | MB_ICONERROR);
 				}
 
 				Point2D l_thief = g_thiefStartingPt;
-				
+
 				if(g_coverageTest)
 				{
 					if( g_coverageTest->areaContains(g_thiefStartingPt) )
@@ -1482,29 +1389,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 						ThiefPtr l_agent = std::make_shared<Thief>(g_coverageTest->getAlgorithm()->getNumberOfAgent(), g_thiefStartingPt);
 						g_coverageTest->setThief(g_thiefStartingPt, l_agent);
-						
-						//AgentPtr l_agent2 = std::make_shared<Thief>(g_coverageTest->getAlgorithm()->getNumberOfAgent(), g_thiefStartingPt);
-						//g_coverageTest->setThief(g_thiefStartingPt, l_agent2);
-						//g_coverageTest->addThief(l_thief);
 
-						g_coverageTest->exportOnFile("scenario.dat");
+						g_coverageTest->exportOnFile("./scenario.dat");
 
 						g_coverageTest->updateMonitor();
-
-
 					}
 				}
 				if(g_coverageTest)
 					g_coverageTest->FindSquare(l_thief, RR);
-			}
-			else
-			{
-				g_drawing_a=false; 
-				g_drawing_b=false;
-				delete g_path1;
-				g_path1 = 0;
-				delete g_path2;
-				g_path2 = 0;
 			}
 
 			g_drawing_thiefPosition = false;
@@ -1516,10 +1408,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				IDSReal2D( ((double)LOWORD(lParam)/(winrect.right-winrect.left)*kk), 
 				((double)HIWORD(lParam)/(winrect.top-winrect.bottom)*kk)), 
 				g_metric );
-			g_drawing_c=true;
-		
-			if(!g_coverageTest)
+
+			if(g_coverageTest)
 			{
+				g_coverageTest->removeAllSinks();
+
+				SinkPtr l_agent = std::make_shared<Sink>(g_coverageTest->getAlgorithm()->getNumberOfAgent(), g_sinkPt);
+				g_coverageTest->setSink(g_sinkPt, l_agent);
 			}
 		}
 		InvalidateRect(hWnd, NULL, TRUE);
@@ -1532,34 +1427,35 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			g_drawing_externalBoundary = false;
 			g_drawing_thiefPosition = true;
+			SetStandardBoundary();
 		}
 		else if(g_drawing_thiefPosition)
 		{
-			if( g_drawing_mode == 0 )
+			g_boundary->clear();
+
+			if(g_coverageTest)
 			{
-				g_drawing_a=false; g_drawing_b=false;
-				g_LeftBoundary->clear();
-				if(g_coverageTest)
-				{
-					delete g_coverageTest;
-					g_coverageTest = NULL;
-				}
-				g_drawing_externalBoundary=true;
-				g_drawing_r=false;
-				g_drawing_thiefPosition=false;
-				g_drawing_mybool = true;
+				delete g_coverageTest;
+				g_coverageTest = NULL;
 			}
-			else if( g_drawing_mode < 0 )
+
+			g_drawing_externalBoundary = true;
+			g_drawing_thiefPosition = false;
+			g_drawing_sink = false;
+		}
+		else if(g_drawing_sink)
+		{
+			g_boundary->clear();
+
+			if(g_coverageTest)
 			{
-				g_drawing_a=false;
-				g_LeftBoundary->clear();
-				if(g_coverageTest)
-				{
-					delete g_coverageTest;
-					g_coverageTest = NULL;
-				}
-				g_drawing_mybool = true;
+				delete g_coverageTest;
+				g_coverageTest = NULL;
 			}
+
+			g_drawing_externalBoundary = true;
+			g_drawing_thiefPosition = false;
+			g_drawing_sink = false;
 		}
 		InvalidateRect(hWnd, NULL, TRUE);
 		UpdateWindow(hWnd);
@@ -1574,7 +1470,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if(g_coverageTest)
 			{
-				g_coverageTest->goForward(g_numberOfSteps);
+				g_coverageTest->goForward(g_numberOfSteps, g_monitor);
 			}
 		}
 		else if((int)wParam < 0)
@@ -1591,12 +1487,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			//g_coverageTest->printPotentialIndex("../performance_index.txt", false);
 			//g_coverageTest->printNewPerformanceIndex("../performance_index.txt", false);
-			g_coverageTest->printBenefit("../Prova.txt", false);
+			if(g_coverageTest)
+				g_coverageTest->printBenefit("../Prova.txt", false);
 			//g_coverageTest->printExplorationRate("../performance_index.txt", false);
 
 			//g_coverageTest->moveThief();
 		}
-		
+
 		InvalidateRect(hWnd, NULL, TRUE);
 		UpdateWindow(hWnd);
 
@@ -1755,6 +1652,38 @@ INT_PTR CALLBACK SetNumberOfSteps(HWND hDlg, UINT message, WPARAM wParam, LPARAM
 
 //////////////////////////////////////////////////////////////////////////
 // Message handler for start box.
+INT_PTR CALLBACK SetMonitorStep(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	UNREFERENCED_PARAMETER(lParam);
+	switch (message)
+	{
+	case WM_INITDIALOG:
+		return (INT_PTR)TRUE;
+
+	case WM_COMMAND:
+		if ( LOWORD(wParam) == IDOK )
+		{
+			setvalue(hDlg, IDC_EDITT, g_monitor);
+			if( g_monitor <= 0 )
+			{
+				g_monitor = -1;
+			}
+
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		else if ( LOWORD(wParam) == IDCANCEL )
+		{
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
+}
+
+//////////////////////////////////////////////////////////////////////////
+// Message handler for start box.
 INT_PTR CALLBACK SetAgentsPeriod(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -1791,7 +1720,7 @@ void CoverageTest::exportOnFile(std::string const& filename)
 	int count;
 	ofstream myfile;
 	myfile.open (filename);
-	
+
 	myfile.precision(16.);
 
 	myfile << g_dim << std::endl;

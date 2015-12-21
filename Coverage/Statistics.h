@@ -31,8 +31,17 @@ namespace Robotics
 			std::vector<double> m_potentialIndex;
 			std::vector<double> m_benefitIndex;
 			std::vector<double> m_explorationRate;
+			std::vector<double> m_batteryValue;
 
-			void addValues(int time, int square, double potValue, double benefitValue, double maxBenefitValue, double NonCooperativeSteadyValue, double _explorationRate);
+			void addValues(
+				int time, 
+				int square, 
+				double potValue, 
+				double benefitValue, 
+				double maxBenefitValue, 
+				double NonCooperativeSteadyValue, 
+				double _explorationRate,
+				double _batteryValue);
 
 			void reset();
 

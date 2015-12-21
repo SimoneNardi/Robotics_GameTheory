@@ -7,7 +7,6 @@
 #define THIEF_H
 #pragma once
 
-//	DTMManager
 #include "CoverageExport.h"
 #include "Agent.h"
 
@@ -24,7 +23,6 @@ namespace Robotics
 			~Thief() {}
 
 			virtual bool isThief() const {return true;}
-
 		};
 		
 		typedef std::shared_ptr<Thief> ThiefPtr;

@@ -11,7 +11,16 @@
 #include "CoverageExport.h"
 
 #include <memory>
+#include <vector>
 #include <set>
+
+namespace IDS
+{
+	namespace BaseGeometry
+	{
+		class Point2D;
+	}
+}
 
 namespace Robotics
 {
@@ -21,8 +30,11 @@ namespace Robotics
 		class Agent;
 		class Guard;
 		class Thief;
+		class Sink;
 		class LearningAlgorithm;
 		class Area;
+		class AgentPosition;
+		class Square;
 
 		class COVERAGE_API World
 		{
@@ -46,6 +58,9 @@ namespace Robotics
 			/// Neutrals
 			std::set< std::shared_ptr<Agent> > getNeutrals() const;
 
+			/// Sink
+			std::set< std::shared_ptr<Sink> > getSinks() const;
+
 			// Move Thieves in the world
 			void moveThieves(int _thiefJump);
 
@@ -63,11 +78,21 @@ namespace Robotics
 
 			void addThief(std::shared_ptr<Thief> _thief);
 
+			void addSink(std::shared_ptr<Sink> _sink);
+
 			double getMaximumValue();
 
 			void removeAllThieves();
 
+			void removeAllSinks();
+
 			void saveConfiguration(std::ofstream & _stream);
+
+			void getSinksPosition(std::vector<AgentPosition> & _pos);
+
+			void getSinksSquare(std::vector<std::pair<std::shared_ptr<Square>,int>> & _pos);
+
+			void getSinksCoverage( std::vector< std::vector<IDS::BaseGeometry::Point2D> > & _areas);
 		};
 	}
 }

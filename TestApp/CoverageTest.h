@@ -26,26 +26,24 @@ typedef std::vector<Point2D> LineString2D;
 typedef std::vector<Point2D>::iterator LineString2DIterator;
 
 Point2D g_thiefStartingPt;
+Point2D g_sinkPt;
 
-LineString2D *g_LeftBoundary;
-LineString2D *g_path1 = NULL;
-LineString2D *g_path2 = NULL;
+LineString2D *g_boundary;
+std::vector<Point2D> g_boundary2D;
 
 ////////for drawing purposes
 POINT g_drawing_VerticesL[5];
 POINT g_drawing_VerticesR[5];
-bool	g_drawing_a=false,
-		g_drawing_b=false,
-		g_drawing_externalBoundary=true,
-		g_drawing_r=false,
+bool	g_drawing_externalBoundary=true,
 		g_drawing_thiefPosition=false,
 		g_drawing_sink = false;
-bool g_drawing_mybool = true;
+
 int g_drawing_mode = 0;
+
 int g_drawing_numToLoad = 1;
+
 int g_drawing_loadCounter = 0;
 
-std::vector<Point2D> g_boundary2D;
 int g_dim;
 bool g_counterclockwise = true;
 
@@ -95,6 +93,7 @@ public:
 	{
 		if(m_algorithm)
 			R = m_algorithm->findSquare(V);
+		
 		if(R)
 			return true;
 		else
@@ -106,88 +105,6 @@ public:
 	{
 		Point2D V = makePoint( IDSReal2D(x,y), g_metric );
 		return this->FindSquare(V, R);
-
-		//if( numStart == 1 )
-		//{
-		//	std::list<Rettangolo>::iterator it1;
-		//	for( it1 = Rectangles.begin(); it1 != Rectangles.end(); it1++ )
-		//	{
-		//		if( V.belongsToRectangle(*it1) )
-		//		{
-		//			R = *it1;
-		//			tri = -1;
-		//			return true;
-		//		}
-		//	}
-		//}
-		//else
-		//{
-		//	std::list<Rettangolo>::iterator it1;		
-		//	for( it1 = Rectangles.begin(); it1 != Rectangles.end(); it1++ )
-		//	{
-		//		if( V.belongsToRectangle(*it1) )
-		//		{
-		//			Vertex W;
-		//			int n = it1->DerNum;
-		//			if( n == -1 )
-		//			{
-		//				int i;
-		//				for( i = 0; i != numStart; i++ )
-		//				{
-		//					W = projectOnSegment(*MultiDer[i],*MultiDer[i+1],V);
-		//					double d = (V-W).mod();
-		//					if( d < min )
-		//					{
-		//						min = d;
-		//						tri = -1;
-		//						R = *it1;
-		//					}
-		//				}
-		//			}
-		//			else
-		//				W = projectOnSegment(*MultiDer[n],*MultiDer[n+1],V);
-
-		//			double d = (V-W).mod();
-		//			if( d < min )
-		//			{
-		//				min = d;
-		//				tri = -1;
-		//				R = *it1;
-		//			}
-		//		}
-		//	}
-		//}
-
-		//// If the corridor is non-autointersecting the first triangle that contains V is the best one
-		//if( !autointersecting && numStart == 1 )
-		//{
-		//	std::list<Triangolo>::iterator it;
-		//	for( it = Triangles.begin(); it != Triangles.end(); it++ )
-		//	{
-		//		if( V.belongsToTriangle(*it) )
-		//		{
-		//			T = *it;
-		//			tri = 1;
-		//			return true;
-		//		}
-		//	}
-		//}
-		//// If the corridor is autointersecting we have to find the nearest Triangle
-		//else
-		//{
-		//	std::list<Triangolo>::iterator it;
-		//	std::list<Triangolo>::iterator best;
-		//	for( it = Triangles.begin(); it != Triangles.end(); it++ )
-		//	{
-		//		double dist = it->principal->D() + (V-*(it->principal)).mod();
-		//		if( dist < min && V.belongsToTriangle(*it) )
-		//		{
-		//			min = dist;
-		//			T = *it;
-		//			tri = 1;
-		//		}
-		//	}
-		//}
 	}
 
 	int CalcMinTrack(const Point2D *obs)
@@ -200,9 +117,9 @@ public:
 		return 1;//RetrieveTrackMany(obs,track,false);
 	}
 
-	int goForward(int numberOfStep)
+	int goForward(int numberOfStep, int monitorStep = -1)
 	{
-		m_algorithm->update(numberOfStep,-1);
+		m_algorithm->update(numberOfStep, monitorStep);
 		return 1;
 	}
 
@@ -214,9 +131,20 @@ public:
 		return 1;
 	}
 
+	inline int setSink(const BaseGeometry::Point2D & _sinkStartingPt, std::shared_ptr<Sink> _agent)
+	{
+		m_algorithm->setPositionOfSink(_sinkStartingPt, _agent);
+		return 1;
+	}
+
 	inline void removeAllThieves()
 	{
 		return m_algorithm->removeAllThieves();
+	}
+
+	inline void removeAllSinks()
+	{
+		return m_algorithm->removeAllSinks();
 	}
 
 	bool areaContains(const BaseGeometry::Point2D & _thiefStartingPt)
@@ -225,8 +153,11 @@ public:
 	}
 
 	void getGuardsPosition(std::vector< AgentPosition > & _pos);
-	void getGuardsSquare(std::vector< std::pair<std::shared_ptr<Square>,int> > & _pos);
+	void getGuardsSquare(std::vector< std::pair<std::shared_ptr<Square>, AgentActionIndex> > & _pos);
 	void getGuardsCoverage(std::vector<LineString2D>& _areas);
+
+	void getSinksSquare(std::vector< std::pair<std::shared_ptr<Square>,int> > & _pos);
+	void getSinksCoverage(std::vector<LineString2D>& _areas);
 
 	int numberOfSquaresCoveredByGuards();
 	//int getTime();
@@ -238,6 +169,7 @@ public:
 	void printExplorationRate(std::string const& name, bool printOnFile = true);
 
 	std::string getExplorationRateStr();
+	std::string getBatteryValueStr();
 	double getExplorationRate();
 
 	void exportOnFile(std::string const& filename);
@@ -250,8 +182,9 @@ CoverageTest *g_coverageTest= NULL;
 // For the window application
 int g_window_Ox, g_window_Oy, g_window_rad1, g_window_rad2, g_window_ang1, g_window_ang2, g_window_camp;
 
-int g_numberOfAgents = 7;
+int g_numberOfAgents = 3;
 int g_numberOfSteps = 1;
+int g_monitor = -1;
 int g_agentsPeriod = 1;
 bool g_drawSquare = true;
 bool g_drawRealArea = false;

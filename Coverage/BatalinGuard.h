@@ -8,7 +8,6 @@
 #define BATALIN_GUARD_H
 #pragma once
 
-//	DTMManager
 #include "CoverageExport.h"
 #include "Guard.h"
 

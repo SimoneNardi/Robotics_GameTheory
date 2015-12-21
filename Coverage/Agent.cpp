@@ -3,6 +3,7 @@
 #include "DiscretizedArea.h"
 #include "Guard.h"
 #include "Thief.h"
+#include "Sink.h"
 #include "Probability.h"
 
 #include <memory>
@@ -100,6 +101,7 @@ std::vector<AgentPosition> Agent::getFeasibleActions( std::shared_ptr<Discretize
 	return l_result;
 }
 
+//////////////////////////////////////////////////////////////////////////
 AgentPosition Agent::selectRandomFeasibleAction(std::shared_ptr<DiscretizedArea> _space)
 {
 	std::vector<AgentPosition> l_feasible = this->getFeasibleActions(_space);
@@ -130,6 +132,12 @@ std::shared_ptr<Thief> Agent::toThief()
 std::shared_ptr<Guard> Agent::toGuard()
 {
 	return dynamic_pointer_cast<Guard>(this->shared_from_this());
+}
+
+//////////////////////////////////////////////////////////////////////////
+std::shared_ptr<Sink> Agent::toSink()
+{
+	return dynamic_pointer_cast<Sink>(this->shared_from_this());
 }
 
 //////////////////////////////////////////////////////////////////////////
