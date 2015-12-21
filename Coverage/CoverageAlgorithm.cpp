@@ -504,12 +504,15 @@ std::string CoverageAlgorithm::getBatteryValueStr()
 }
 
 //////////////////////////////////////////////////////////////////////////
+<<<<<<< HEAD
 double CoverageAlgorithm::getBatteryValue()
 {
 	return m_learning->getBatteryValue();
 }
 
 //////////////////////////////////////////////////////////////////////////
+=======
+>>>>>>> origin/Pareto_Efficient
 void CoverageAlgorithm::getThievesPosition(std::vector<AgentPosition> & _pos)
 {
 	_pos.clear();

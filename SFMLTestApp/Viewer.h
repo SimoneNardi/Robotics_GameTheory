@@ -21,6 +21,7 @@ class Viewer : public Brain
 public:
 	///
 	Viewer();
+<<<<<<< HEAD
 
 	///
 	virtual void update(Identifier _windows_id, sf::Event _event);
@@ -36,4 +37,6 @@ public:
 	
 	///
 	virtual bool isGameFinished();
+=======
+>>>>>>> origin/Pareto_Efficient
 };

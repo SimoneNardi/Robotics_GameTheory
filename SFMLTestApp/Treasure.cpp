@@ -21,7 +21,11 @@ Treasure::Treasure( std::shared_ptr<TargetStyle> _style ) : m_style(_style), m_s
 //////////////////////////////////////////////////////////////////////////
 void Treasure::bindTexture()
 {
+<<<<<<< HEAD
 	m_style->bindTargetTexture();
+=======
+	m_style->bindTexture();
+>>>>>>> origin/Pareto_Efficient
 	m_symbol = m_style->getSymbol();
 }
 

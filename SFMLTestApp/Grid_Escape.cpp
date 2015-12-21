@@ -13,7 +13,10 @@
 #include "ConfigurationFile.h"
 #include "WindowEventHandler.h"
 #include "Challenge.h"
+<<<<<<< HEAD
 #include "Viewer.h"
+=======
+>>>>>>> origin/Pareto_Efficient
 
 #include "CoverageAlgorithm.h"
 
@@ -22,15 +25,21 @@
 //////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[])
 {
+<<<<<<< HEAD
 	/* initialize random seed: */
 	srand (time(NULL));
 
 	std::shared_ptr<Brain> l_brain = nullptr;
+=======
+>>>>>>> origin/Pareto_Efficient
 	if(argc > 1)
 	{
 		std::string name = argv[1];
 		g_configurationFile->readFromPhotoFile(name);
+<<<<<<< HEAD
 		l_brain = std::make_shared<Challenge>();
+=======
+>>>>>>> origin/Pareto_Efficient
 	}
 	else
 	{
@@ -49,6 +58,7 @@ int main(int argc, char* argv[])
 			0); // epsilon
 		
 		g_configurationFile->createFromAlgorithm(l_coverage);
+<<<<<<< HEAD
 		l_brain = std::make_shared<Viewer>();
 	}
 	
@@ -62,6 +72,27 @@ int main(int argc, char* argv[])
 	}
 
 	std::cout << std::endl << "Game is finished!" <<std::endl;
+=======
+	}
+
+
+	/* initialize random seed: */
+	srand (time(NULL));
+
+	std::shared_ptr<Challenge> l_challenge = std::make_shared<Challenge>();
+	
+	std::cout << "Start the Game!" <<std::endl;
+
+	l_challenge->run();
+
+	if(argc == 1)
+	{
+		l_challenge->print();
+	}
+
+	std::cout << std::endl << "Game is finished!" <<std::endl;
+	//system("pause"); l_challenge->close();
+>>>>>>> origin/Pareto_Efficient
 
 	return 0;
 }

@@ -12,8 +12,17 @@
 
 #include <SFML/System.hpp>
 
+<<<<<<< HEAD
 //////////////////////////////////////////////////////////////////////////
 Challenge::Challenge() : Brain()
+=======
+const int g_NumberOfPlayer = 2;
+
+PlayerOrder g_playerOrder;
+
+//////////////////////////////////////////////////////////////////////////
+Challenge::Challenge() : m_players(), m_board(nullptr), m_timer(nullptr), m_report(nullptr), m_absModel(nullptr)
+>>>>>>> origin/Pareto_Efficient
 {
 	/// read player from configuration file:
 	int l_numberOfPlayer = g_configurationFile->getNumberPlayerStyle();

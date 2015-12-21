@@ -347,6 +347,7 @@ void ConfigurationFile::initSymbols()
 		{
 			switch(m_style[i]->getType())
 			{
+<<<<<<< HEAD
 			case Type::Gamer:
 				m_style[i]->toPlayerStyle()->updateSymbol(l_grid);
 				break;
@@ -356,6 +357,14 @@ void ConfigurationFile::initSymbols()
 			case Type::Sink:
 				m_style[i]->toSinkStyle()->updateSymbol(l_grid);
 				break;
+=======
+			case Gamer:
+				m_style[i]->toPlayerStyle()->updateSymbol(l_grid);
+				break;
+			case Target:
+				m_style[i]->toTargetStyle()->updateSymbol(l_grid);
+				break;
+>>>>>>> origin/Pareto_Efficient
 			default:
 				break;
 			}

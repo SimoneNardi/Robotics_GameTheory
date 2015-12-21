@@ -27,7 +27,10 @@ class WindowStyle;
 class PlayerStyle;
 class TargetStyle;
 class GridStyle;
+<<<<<<< HEAD
 class SinkStyle;
+=======
+>>>>>>> origin/Pareto_Efficient
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -64,8 +67,12 @@ public:
 	std::shared_ptr<PlayerStyle> toPlayerStyle();
 	std::shared_ptr<TargetStyle> toTargetStyle();
 	std::shared_ptr<GridStyle> toGridStyle();
+<<<<<<< HEAD
 	std::shared_ptr<SinkStyle> toSinkStyle();
 	
+=======
+
+>>>>>>> origin/Pareto_Efficient
 	virtual void print(std::ostream& _stream) = 0;
 };
 

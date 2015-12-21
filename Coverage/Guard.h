@@ -13,7 +13,11 @@
 extern const double MAXIMUM_PERIOD;
 const double MAXIMUM_BATTERY = 100.;
 const double MINIMUM_BATTERY = 60.;
+<<<<<<< HEAD
 extern double LOSTBATTERY_PERSTEP;
+=======
+const double LOSTBATTERY_PERSTEP = .01;
+>>>>>>> origin/Pareto_Efficient
 
 namespace Robotics 
 {

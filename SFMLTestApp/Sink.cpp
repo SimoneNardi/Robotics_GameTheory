@@ -21,7 +21,11 @@ Sink::Sink( std::shared_ptr<TargetStyle> _style ) : m_style(_style), m_symbol(nu
 //////////////////////////////////////////////////////////////////////////
 void Sink::bindTexture()
 {
+<<<<<<< HEAD
 	m_style->bindSinkTexture();
+=======
+	m_style->bindTexture();
+>>>>>>> origin/Pareto_Efficient
 	m_symbol = m_style->getSymbol();
 }
 

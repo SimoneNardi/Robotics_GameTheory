@@ -6,7 +6,11 @@
 #include "Challenge.h"
  
 //////////////////////////////////////////////////////////////////////////
+<<<<<<< HEAD
 Player::Player(std::shared_ptr<PlayerStyle> _style)
+=======
+Player::Player(std::shared_ptr<PlayerStyle> _style) 
+>>>>>>> origin/Pareto_Efficient
 	: m_style(_style), m_symbol(nullptr), m_currentPos(), m_oldPos(), m_winner(false), m_id( Identifier::getNext() ), m_available(true)
 {
 	if(!m_style)
@@ -32,7 +36,11 @@ Player::Player(std::shared_ptr<PlayerStyle> _style)
 //////////////////////////////////////////////////////////////////////////
 void Player::bindTexture()
 {
+<<<<<<< HEAD
 	m_style->bindPlayerTexture( m_style->getPlayerType() );
+=======
+	m_style->bindTexture( m_style->getPlayerType() );
+>>>>>>> origin/Pareto_Efficient
 	m_symbol = m_style->getSymbol();
 
 	this->updatePosition();
@@ -112,7 +120,11 @@ bool Player::checkThief(std::shared_ptr<Player> _target)
 }
 
 //////////////////////////////////////////////////////////////////////////
+<<<<<<< HEAD
 bool Player::goalAchieved(std::shared_ptr<Brain> _game)
+=======
+bool Player::goalAchieved(std::shared_ptr<Challenge> _game)
+>>>>>>> origin/Pareto_Efficient
 {
 	switch(m_style->getPlayerType())
 	{

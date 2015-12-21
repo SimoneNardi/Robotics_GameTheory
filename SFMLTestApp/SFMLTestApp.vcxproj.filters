@@ -81,9 +81,12 @@
     <ClInclude Include="Brain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Ghost.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+=======
+>>>>>>> origin/Pareto_Efficient
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AbsModel.cpp">
@@ -143,8 +146,11 @@
     <ClCompile Include="Brain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Ghost.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+=======
+>>>>>>> origin/Pareto_Efficient
   </ItemGroup>
 </Project>

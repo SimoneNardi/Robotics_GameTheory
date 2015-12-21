@@ -126,7 +126,10 @@ xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" $(OutDir)</C
     <ClInclude Include="Brain.h" />
     <ClInclude Include="Challenge.h" />
     <ClInclude Include="ConfigurationFile.h" />
+<<<<<<< HEAD
     <ClInclude Include="Ghost.h" />
+=======
+>>>>>>> origin/Pareto_Efficient
     <ClInclude Include="Grid.h" />
     <ClInclude Include="Identifier.h" />
     <ClInclude Include="InputControl.h" />
@@ -149,7 +152,10 @@ xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" $(OutDir)</C
     <ClCompile Include="Brain.cpp" />
     <ClCompile Include="Challenge.cpp" />
     <ClCompile Include="ConfigurationFile.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="Ghost.cpp" />
+=======
+>>>>>>> origin/Pareto_Efficient
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Grid_Escape.cpp" />
     <ClCompile Include="InputControl.cpp" />

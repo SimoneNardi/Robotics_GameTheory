@@ -64,6 +64,7 @@ public:
 	void run();
 
 	///
+<<<<<<< HEAD
 	void print();
 
 	///
@@ -91,3 +92,23 @@ public:
 
 bool Equals(sf::Vector2f & first, sf::Vector2f & second);
 bool Equals(sf::Vector2i & first, sf::Vector2i & second);
+=======
+	void update(Identifier _windows_id, sf::Event _event);
+
+	///
+	bool guardGoalAchieved(std::shared_ptr<Player> _guard);
+
+	///
+	bool thiefGoalAchieved(std::shared_ptr<Player> _thief);
+
+	///
+	bool goalAchieved();
+	void print();
+	void initReport();
+	bool isGameFinished();
+	void close();
+};
+
+bool Equals(sf::Vector2f & first, sf::Vector2f & second);
+bool Equals(sf::Vector2i & first, sf::Vector2i & second);
+>>>>>>> origin/Pareto_Efficient

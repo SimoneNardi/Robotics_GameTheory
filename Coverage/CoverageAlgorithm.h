@@ -164,7 +164,10 @@ namespace Robotics
 
 			
 			std::string getBatteryValueStr();
+<<<<<<< HEAD
 			double getBatteryValue();
+=======
+>>>>>>> origin/Pareto_Efficient
 			std::string getExplorationRateStr();
 			double getExplorationRate();
 

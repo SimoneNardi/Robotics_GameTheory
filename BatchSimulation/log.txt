@@ -1,17 +1,15 @@
 Monitor
--1	1	2	4	5	6	7	8	9	10	
+-1	
 Jump
 1	
 Epsilon
 0	0.1	
 EndTime
-1	500	2000	5000	10000	
+1	10	
 Period
-1	2	3	4	5	6	7	8	9	10	
+1	2	
 TestCase
-50
-StopRate
-1e-005
+3
 ******************************************
 Agent File: Scenario_5G_1T_multiAgent
 -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
@@ -23,53 +21,116 @@ Area File: External
 -Epsilon: 0
 -Case: 0...
 End Time 1
-Potential Index 10.4402
-Benefit Index 0.469697
+Potential Index 0.869869
+Benefit Index 0.941282
 Coverage Index 0
-End Time 500
-Potential Index 7.70789
-Benefit Index 0.345673
-Coverage Index 42
-End Time 2000
-Potential Index 5.272
-Benefit Index 0.53851
-Coverage Index 42
-End Time 5000
-Potential Index 4.32994
-Benefit Index 0.61759
-Coverage Index 42
-End Time 10000
-Potential Index 3.88178
-Benefit Index 0.655897
+End Time 10
+Potential Index 0.987923
+Benefit Index 0.933313
 Coverage Index 42
 -Case: 1...
 End Time 1
-Potential Index 10.6386
-Benefit Index 0.514248
+Potential Index 0.58657
+Benefit Index 0.960405
 Coverage Index 0
-End Time 500
-Potential Index 5.84668
-Benefit Index 0.579677
-Coverage Index 35
-End Time 2000
-Potential Index 4.18876
-Benefit Index 0.688152
-Coverage Index 39
-End Time 5000
-Potential Index 3.52708
-Benefit Index 0.73288
+End Time 10
+Potential Index 0.451577
+Benefit Index 0.969518
 Coverage Index 42
-End Time 10000
-Potential Index 3.48443
-Benefit Index 0.734125
-Coverage Index 44
 -Case: 2...
 End Time 1
-Potential Index 10.5092
-Benefit Index 0.555781
+Potential Index 0
+Benefit Index 1
 Coverage Index 0
-End Time 500
-Potential Index 8.62416
-Benefit Index 0.420915
-Coverage Index 39
-End Time 2000
+End Time 10
+Potential Index 0.324278
+Benefit Index 0.976621
+Coverage Index 41
+-Epsilon: 0.1
+-Case: 0...
+End Time 1
+Potential Index 0
+Benefit Index 1
+Coverage Index 0
+End Time 10
+Potential Index 0
+Benefit Index 1
+Coverage Index 42
+-Case: 1...
+End Time 1
+Potential Index 0
+Benefit Index 1
+Coverage Index 0
+End Time 10
+Potential Index 0
+Benefit Index 1
+Coverage Index 42
+-Case: 2...
+End Time 1
+Potential Index 1.18645
+Benefit Index 0.859802
+Coverage Index 0
+End Time 10
+Potential Index 2.04123
+Benefit Index 0.758797
+Coverage Index 45
+-------Period: 2
+-----Monitor Update: -1
+---Thief Jump: 1
+-Epsilon: 0
+-Case: 0...
+End Time 1
+Potential Index 0.383157
+Benefit Index 0.972376
+Coverage Index 0
+End Time 10
+Potential Index 0.108216
+Benefit Index 0.992198
+Coverage Index 42
+-Case: 1...
+End Time 1
+Potential Index 2.29894
+Benefit Index 0.81926
+Coverage Index 0
+End Time 10
+Potential Index 3.10253
+Benefit Index 0.756083
+Coverage Index 43
+-Case: 2...
+End Time 1
+Potential Index 1.54298
+Benefit Index 0.878693
+Coverage Index 0
+End Time 10
+Potential Index 0.98378
+Benefit Index 0.922656
+Coverage Index 45
+-Epsilon: 0.1
+-Case: 0...
+End Time 1
+Potential Index 0
+Benefit Index 1
+Coverage Index 0
+End Time 10
+Potential Index 0
+Benefit Index 1
+Coverage Index 42
+-Case: 1...
+End Time 1
+Potential Index 1.18645
+Benefit Index 0.919912
+Coverage Index 0
+End Time 10
+Potential Index 0.990511
+Benefit Index 0.933663
+Coverage Index 45
+-Case: 2...
+End Time 1
+Potential Index 0.269985
+Benefit Index 0.981776
+Coverage Index 0
+End Time 10
+Potential Index 0.423691
+Benefit Index 0.9714
+Coverage Index 42
+Print BoxPlot Data _External_Scenario_5G_1T_multiAgent_PARETO

@@ -69,7 +69,10 @@ std::shared_ptr<WindowStyle> Style::toWindowStyle() { return std::dynamic_pointe
 std::shared_ptr<PlayerStyle> Style::toPlayerStyle() { return std::dynamic_pointer_cast<PlayerStyle>( this->shared_from_this() ); }
 std::shared_ptr<TargetStyle> Style::toTargetStyle() { return std::dynamic_pointer_cast<TargetStyle>( this->shared_from_this() ); }
 std::shared_ptr<GridStyle> Style::toGridStyle() { return std::dynamic_pointer_cast<GridStyle>( this->shared_from_this() ); }
+<<<<<<< HEAD
 std::shared_ptr<SinkStyle> Style::toSinkStyle() { return std::dynamic_pointer_cast<SinkStyle>( this->shared_from_this() ); }
+=======
+>>>>>>> origin/Pareto_Efficient
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -183,6 +186,10 @@ void SymbolStyle::bindPlayerTexture(PlayerType _pType)
 {
 	std::string l_symbolResourceName = getPlayerSymbolResourceName(_pType);
 	return this->bindTexture(l_symbolResourceName);
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/Pareto_Efficient
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -199,6 +206,10 @@ void SymbolStyle::bindSinkTexture()
 	return this->bindTexture(l_symbolResourceName);
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/Pareto_Efficient
 //////////////////////////////////////////////////////////////////////////
 void SymbolStyle::bindTexture(const std::string &  _symbolResourceName)
 {

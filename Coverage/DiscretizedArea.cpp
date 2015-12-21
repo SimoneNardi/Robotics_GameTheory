@@ -673,7 +673,11 @@ void DiscretizedArea::setThiefPosition(AgentPosition const& _pos)
 				continue;
 
 			double l_value = g_maxValue/ double( abs(i)+abs(j) );
+<<<<<<< HEAD
 			double l_valueEx = m_lattice[row * m_numCol + col]->getThiefValue() * g_maxValuePossible;
+=======
+			double l_valueEx = m_lattice[row * m_numCol + col]->getThiefValue();
+>>>>>>> origin/Pareto_Efficient
 			m_lattice[row * m_numCol + col]->setThiefValue( (l_value + l_valueEx) / g_maxValuePossible);
 		}
 	}
@@ -733,8 +737,13 @@ void DiscretizedArea::setSinkPosition(AgentPosition const& _pos)
 				continue;
 
 			double l_value = g_maxValue/ double( abs(i)+abs(j) );
+<<<<<<< HEAD
 			double l_valueEx = m_lattice[row * m_numCol + col]->getEnergyValue()*g_maxValuePossible;
 			m_lattice[row * m_numCol + col]->setEnergyValue( (l_value + l_valueEx) / g_maxValuePossible );
+=======
+			double l_valueEx = m_lattice[row * m_numCol + col]->getEnergyValue();
+			m_lattice[row * m_numCol + col]->setEnergyValue( (l_value + l_valueEx) /*/ g_maxValue*/);
+>>>>>>> origin/Pareto_Efficient
 		}
 	}
 }

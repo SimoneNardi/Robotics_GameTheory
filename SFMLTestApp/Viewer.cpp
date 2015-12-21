@@ -12,6 +12,13 @@
 
 #include <SFML/System.hpp>
 
+<<<<<<< HEAD
+=======
+const int g_NumberOfPlayer = 2;
+
+PlayerOrder g_playerOrder;
+
+>>>>>>> origin/Pareto_Efficient
 //////////////////////////////////////////////////////////////////////////
 Viewer::Viewer() : Brain()
 {

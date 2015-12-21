@@ -7,6 +7,18 @@
 #include <memory>
 #include "Identifier.h"
 
+<<<<<<< HEAD
+=======
+class Grid;
+class Player;
+class Timer;
+class Treasure;
+class WindowEventHandler;
+class Report;
+class AbsModel;
+
+
+>>>>>>> origin/Pareto_Efficient
 //////////////////////////////////////////////////////////////////////////
 class Challenge : public Brain
 {
@@ -14,6 +26,7 @@ class Challenge : public Brain
 public:
 	///
 	Challenge();
+<<<<<<< HEAD
 
 	///
 	virtual void update(Identifier _windows_id, sf::Event _event);
@@ -29,4 +42,6 @@ public:
 
 	///
 	virtual bool isGameFinished();
+=======
+>>>>>>> origin/Pareto_Efficient
 };

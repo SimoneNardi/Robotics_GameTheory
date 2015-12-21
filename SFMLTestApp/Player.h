@@ -9,7 +9,11 @@
 class PlayerStyle;
 class WindowEventHandler;
 class Treasure;
+<<<<<<< HEAD
 class Brain;
+=======
+class Challenge;
+>>>>>>> origin/Pareto_Efficient
 
 class Player : public std::enable_shared_from_this<Player>
 {
@@ -60,7 +64,11 @@ public:
 	InputControlStyle getControl();
 
 	///
+<<<<<<< HEAD
 	bool goalAchieved(std::shared_ptr<Brain> _game);
+=======
+	bool goalAchieved(std::shared_ptr<Challenge> _game);
+>>>>>>> origin/Pareto_Efficient
 
 	///
 	void setWinner(bool _winner);
