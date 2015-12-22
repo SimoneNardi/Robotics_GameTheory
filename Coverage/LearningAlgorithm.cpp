@@ -123,11 +123,7 @@ void LearningAlgorithm::compute(std::shared_ptr<Guard> _agent)
 	// Battery
 	std::shared_ptr<Square> l_square = m_space->getSquare(_agent->getCurrentPosition().getPoint2D());
 	if( m_space->isThereASink() )
-<<<<<<< HEAD
-		_agent->updateBattery(MAXIMUM_BATTERY*l_square->getEnergyValue());
-=======
 		_agent->updateBattery(MAXIMUM_BATTERY*LOSTBATTERY_PERSTEP*l_square->getEnergyValue());
->>>>>>> origin/Pareto_Efficient
 	else
 		_agent->updateBattery(MAXIMUM_BATTERY);
 

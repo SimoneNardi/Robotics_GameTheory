@@ -41,24 +41,26 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IntDir>.\Obj\$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>.\Bin\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>.\Obj\$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\;..\;..\..\SDK\;..\..\SDK\IDSBaseMath\;..\..\SDK\BaseGeometry\;..\..\SDK\IDSGraphics\;..\..\SDK\lemon-1.3\build\;..\..\SDK\lemon-1.3\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;..\SDK\;..\SDK\IDSBaseMath\;..\SDK\BaseGeometry\;..\SDK\IDSGraphics\;..\SDK\lemon-1.3\build\;..\SDK\lemon-1.3\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>COVERAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\SDK\IDSBaseMath\Bin\$(Configuration);..\..\SDK\BaseGeometry\Bin\$(Configuration);..\..\SDK\Common\Bin\$(Configuration);..\..\SDK\Log4cxx\Bin\$(Configuration);..\..\SDK\IDSGraphics\$(Platform)\$(Configuration);..\..\SDK\lemon-1.3\build\lemon\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\SDK\IDSBaseMath\Bin\$(Configuration);..\SDK\BaseGeometry\Bin\$(Configuration);..\SDK\Common\Bin\$(Configuration);..\SDK\Log4cxx\Bin\$(Configuration);..\SDK\IDSGraphics\$(Platform)\$(Configuration);..\SDK\lemon-1.3\build\lemon\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>BaseGeometry.lib;Common.lib;IDSlog4cxx.lib;IDSBaseMath.lib;IDSGraphicsC.lib;lemon.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -68,14 +70,14 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>.\;..\;..\..\SDK\;..\..\SDK\IDSBaseMath\;..\..\SDK\BaseGeometry\;..\..\SDK\IDSGraphics\;..\..\SDK\lemon-1.3\build\;..\..\SDK\lemon-1.3\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;..\SDK\;..\SDK\IDSBaseMath\;..\SDK\BaseGeometry\;..\SDK\IDSGraphics\;..\SDK\lemon-1.3\build\;..\SDK\lemon-1.3\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>COVERAGE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\SDK\IDSBaseMath\Bin\$(Configuration);..\..\SDK\BaseGeometry\Bin\$(Configuration);..\..\SDK\Common\Bin\$(Configuration);..\..\SDK\Log4cxx\Bin\$(Configuration);..\..\SDK\IDSGraphics\$(Platform)\$(Configuration);..\..\SDK\lemon-1.3\build\lemon\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\SDK\IDSBaseMath\Bin\$(Configuration);..\SDK\BaseGeometry\Bin\$(Configuration);..\SDK\Common\Bin\$(Configuration);..\SDK\Log4cxx\Bin\$(Configuration);..\SDK\IDSGraphics\$(Platform)\$(Configuration);..\SDK\lemon-1.3\build\lemon\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>BaseGeometry.lib;Common.lib;IDSlog4cxx.lib;IDSBaseMath.lib;IDSGraphicsC.lib;lemon.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

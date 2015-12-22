@@ -101,7 +101,7 @@
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>.\;..\;..\Coverage\;..\..\SDK\;..\..\SDK\IDSBaseMath\;..\..\SDK\IDSCGUtility\;..\..\SDK\Stxxl\Include\;..\..\SDK\Boost\;..\..\SDK\Log4cxx\;..\..\SDK\lemon-1.3\build\;..\..\SDK\lemon-1.3\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;..\Coverage\;..\SDK\;..\SDK\IDSBaseMath\;..\SDK\IDSCGUtility\;..\SDK\Stxxl\Include\;..\SDK\Boost\;..\SDK\Log4cxx\;..\SDK\lemon-1.3\build\;..\SDK\lemon-1.3\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -114,7 +114,7 @@
     <Link>
       <AdditionalDependencies>IDSBaseMath.lib;IDSCGUtility.lib;BaseGeometry.lib;Common.lib;IDSlog4cxx.lib;Stxxl.lib;Coverage.lib;lemon.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ShowProgress>NotSet</ShowProgress>
-      <AdditionalLibraryDirectories>..\Coverage\Bin\$(Configuration);..\..\SDK\IDSBaseMath\Bin\$(Configuration);..\..\SDK\IDSCGUtility\Bin\$(Configuration);..\..\SDK\BaseGeometry\Bin\$(Configuration);..\..\SDK\Common\Bin\$(Configuration);..\..\SDK\Stxxl\Bin\$(Configuration);..\..\SDK\Log4cxx\Bin\$(Configuration);..\..\SDK\boost\Bin\;..\..\SDK\lemon-1.3\build\lemon\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\Coverage\Bin\$(Configuration);..\SDK\IDSBaseMath\Bin\$(Configuration);..\SDK\IDSCGUtility\Bin\$(Configuration);..\SDK\BaseGeometry\Bin\$(Configuration);..\SDK\Common\Bin\$(Configuration);..\SDK\Stxxl\Bin\$(Configuration);..\SDK\Log4cxx\Bin\$(Configuration);..\SDK\boost\Bin\;..\SDK\lemon-1.3\build\lemon\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -124,22 +124,22 @@
     </Link>
     <PreLinkEvent>
       <Command>echo BaseGeometry
-xcopy /Y "..\..\SDK\BaseGeometry\Bin\$(Configuration)\*.dll" $(OutDir)
-xcopy /Y "..\..\SDK\BaseGeometry\Bin\$(Configuration)\*.pdb" $(OutDir)
+xcopy /Y "..\SDK\BaseGeometry\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\BaseGeometry\Bin\$(Configuration)\*.pdb" $(OutDir)
 echo Common
-xcopy /Y "..\..\SDK\Common\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\Common\Bin\$(Configuration)\*.dll" $(OutDir)
 echo Log4cxx
-xcopy /Y "..\..\SDK\Log4cxx\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\Log4cxx\Bin\$(Configuration)\*.dll" $(OutDir)
 echo Stxxl
-xcopy /Y "..\..\SDK\Stxxl\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\Stxxl\Bin\$(Configuration)\*.dll" $(OutDir)
 echo Boost
-xcopy /Y "..\..\SDK\Boost\Bin\*.dll" $(OutDir)
+xcopy /Y "..\SDK\Boost\Bin\*.dll" $(OutDir)
 echo Coverage
 xcopy /Y "..\Coverage\Bin\$(Configuration)\*.dll" $(OutDir)
 xcopy /Y "..\Coverage\Bin\$(Configuration)\*.pdb" $(OutDir)
 echo IDSGraphics
-xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.dll" $(OutDir)
-xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" $(OutDir)</Command>
+xcopy /Y "..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" $(OutDir)</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -180,7 +180,7 @@ xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" $(OutDir)</C
       </Command>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>.\;..\;..\Coverage\;..\..\SDK\;..\..\SDK\IDSBaseMath\;..\..\SDK\IDSCGUtility\;..\..\SDK\Stxxl\Include\;..\..\SDK\Boost\;..\..\SDK\Log4cxx\;..\..\SDK\lemon-1.3\build\;..\..\SDK\lemon-1.3\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\;..\;..\Coverage\;..\SDK\;..\SDK\IDSBaseMath\;..\SDK\IDSCGUtility\;..\SDK\Stxxl\Include\;..\SDK\Boost\;..\SDK\Log4cxx\;..\SDK\lemon-1.3\build\;..\SDK\lemon-1.3\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -189,7 +189,7 @@ xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" $(OutDir)</C
     </ClCompile>
     <Link>
       <AdditionalDependencies>IDSBaseMath.lib;IDSCGUtility.lib;BaseGeometry.lib;Common.lib;IDSlog4cxx.lib;Stxxl.lib;Coverage.lib;lemon.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\Coverage\Bin\$(Configuration);..\..\SDK\IDSBaseMath\Bin\$(Configuration);..\..\SDK\IDSCGUtility\Bin\$(Configuration);..\..\SDK\BaseGeometry\Bin\$(Configuration);..\..\SDK\Common\Bin\$(Configuration);..\..\SDK\Stxxl\Bin\$(Configuration);..\..\SDK\Log4cxx\Bin\$(Configuration);..\..\SDK\boost\Bin\;..\..\SDK\lemon-1.3\build\lemon\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\Coverage\Bin\$(Configuration);..\SDK\IDSBaseMath\Bin\$(Configuration);..\SDK\IDSCGUtility\Bin\$(Configuration);..\SDK\BaseGeometry\Bin\$(Configuration);..\SDK\Common\Bin\$(Configuration);..\SDK\Stxxl\Bin\$(Configuration);..\SDK\Log4cxx\Bin\$(Configuration);..\SDK\boost\Bin\;..\SDK\lemon-1.3\build\lemon\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -205,22 +205,22 @@ xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" $(OutDir)</C
     </PostBuildEvent>
     <PreLinkEvent>
       <Command>echo BaseGeometry
-xcopy /Y "..\..\SDK\BaseGeometry\Bin\$(Configuration)\*.dll" $(OutDir)
-xcopy /Y "..\..\SDK\BaseGeometry\Bin\$(Configuration)\*.pdb" $(OutDir)
+xcopy /Y "..\SDK\BaseGeometry\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\BaseGeometry\Bin\$(Configuration)\*.pdb" $(OutDir)
 echo Common
-xcopy /Y "..\..\SDK\Common\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\Common\Bin\$(Configuration)\*.dll" $(OutDir)
 echo Log4cxx
-xcopy /Y "..\..\SDK\Log4cxx\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\Log4cxx\Bin\$(Configuration)\*.dll" $(OutDir)
 echo Stxxl
-xcopy /Y "..\..\SDK\Stxxl\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\Stxxl\Bin\$(Configuration)\*.dll" $(OutDir)
 echo Boost
-xcopy /Y "..\..\SDK\Boost\Bin\*.dll" $(OutDir)
+xcopy /Y "..\SDK\Boost\Bin\*.dll" $(OutDir)
 echo Coverage
 xcopy /Y "..\Coverage\Bin\$(Configuration)\*.dll" $(OutDir)
 xcopy /Y "..\Coverage\Bin\$(Configuration)\*.pdb" $(OutDir)
 echo IDSGraphics
-xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.dll" $(OutDir)
-xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" $(OutDir)</Command>
+xcopy /Y "..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" $(OutDir)</Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

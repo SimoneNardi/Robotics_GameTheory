@@ -160,14 +160,8 @@ namespace Robotics
 			
 			void printNewPerformanceIndex(std::string const& name, bool printOnFile = true);
 			void printNewPerformanceIndexVersusExplorationRate(std::string const& name, bool printOnFile = true);
-
-
-			
+						
 			std::string getBatteryValueStr();
-<<<<<<< HEAD
-			double getBatteryValue();
-=======
->>>>>>> origin/Pareto_Efficient
 			std::string getExplorationRateStr();
 			double getExplorationRate();
 

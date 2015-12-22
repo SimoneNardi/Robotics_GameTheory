@@ -64,22 +64,22 @@
     </Link>
     <PreLinkEvent>
       <Command>echo BaseGeometry
-xcopy /Y "..\..\SDK\BaseGeometry\Bin\$(Configuration)\*.dll" $(OutDir)
-xcopy /Y "..\..\SDK\BaseGeometry\Bin\$(Configuration)\*.pdb" $(OutDir)
+xcopy /Y "..\SDK\BaseGeometry\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\BaseGeometry\Bin\$(Configuration)\*.pdb" $(OutDir)
 echo Common
-xcopy /Y "..\..\SDK\Common\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\Common\Bin\$(Configuration)\*.dll" $(OutDir)
 echo Log4cxx
-xcopy /Y "..\..\SDK\Log4cxx\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\Log4cxx\Bin\$(Configuration)\*.dll" $(OutDir)
 echo Stxxl
-xcopy /Y "..\..\SDK\Stxxl\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\Stxxl\Bin\$(Configuration)\*.dll" $(OutDir)
 echo Boost
 xcopy /Y "..\..\SDK\Boost\Bin\*.dll" $(OutDir)
 echo Coverage
 xcopy /Y "..\Coverage\Bin\$(Configuration)\*.dll" $(OutDir)
 xcopy /Y "..\Coverage\Bin\$(Configuration)\*.pdb" $(OutDir)
 echo IDSGraphics
-xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.dll" $(OutDir)
-xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" </Command>
+xcopy /Y "..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" </Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -103,22 +103,22 @@ xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" </Command>
     </Link>
     <PreLinkEvent>
       <Command>echo BaseGeometry
-xcopy /Y "..\..\SDK\BaseGeometry\Bin\$(Configuration)\*.dll" $(OutDir)
-xcopy /Y "..\..\SDK\BaseGeometry\Bin\$(Configuration)\*.pdb" $(OutDir)
+xcopy /Y "..\SDK\BaseGeometry\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\BaseGeometry\Bin\$(Configuration)\*.pdb" $(OutDir)
 echo Common
-xcopy /Y "..\..\SDK\Common\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\Common\Bin\$(Configuration)\*.dll" $(OutDir)
 echo Log4cxx
-xcopy /Y "..\..\SDK\Log4cxx\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\Log4cxx\Bin\$(Configuration)\*.dll" $(OutDir)
 echo Stxxl
-xcopy /Y "..\..\SDK\Stxxl\Bin\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\Stxxl\Bin\$(Configuration)\*.dll" $(OutDir)
 echo Boost
 xcopy /Y "..\..\SDK\Boost\Bin\*.dll" $(OutDir)
 echo Coverage
 xcopy /Y "..\Coverage\Bin\$(Configuration)\*.dll" $(OutDir)
 xcopy /Y "..\Coverage\Bin\$(Configuration)\*.pdb" $(OutDir)
 echo IDSGraphics
-xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.dll" $(OutDir)
-xcopy /Y "..\..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" </Command>
+xcopy /Y "..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.dll" $(OutDir)
+xcopy /Y "..\SDK\IDSGraphics\$(Platform)\$(Configuration)\*.pdb" </Command>
     </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
