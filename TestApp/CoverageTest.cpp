@@ -328,12 +328,14 @@ void DrawSink(
 	int R, int G, int B, int thickness )
 {
 	std::vector<LineString2D> l_coverageArea;
-	g_coverageTest->getSinksCoverage(l_coverageArea);
+	if(g_coverageTest)
+		g_coverageTest->getSinksCoverage(l_coverageArea);
 	for(size_t i = 0; i < l_coverageArea.size(); ++i)
 		DrawPath(&l_coverageArea[i], hdc, width, height, 255,0,255, 1);
 
 	std::vector< std::pair<SquarePtr,int> > l_pos;
-	g_coverageTest->getSinksSquare(l_pos);
+	if(g_coverageTest)
+		g_coverageTest->getSinksSquare(l_pos);
 	for(size_t i = 0; i < l_pos.size(); ++i)
 	{
 		DrawTriangle(l_pos[i].first, hdc, width, height, 255,0,255, thickness);
@@ -355,12 +357,14 @@ void DrawGuards(
 	int R, int G, int B, int thickness )
 {
 	std::vector<LineString2D> l_coverageArea;
-	g_coverageTest->getGuardsCoverage(l_coverageArea);
+	if(g_coverageTest)
+		g_coverageTest->getGuardsCoverage(l_coverageArea);
 	for(size_t i = 0; i < l_coverageArea.size(); ++i)
 		DrawPath(&l_coverageArea[i], hdc, width, height, 255,0,0, 1);
 
 	std::vector< std::pair<SquarePtr, AgentActionIndex> > l_pos;
-	g_coverageTest->getGuardsSquare(l_pos);
+	if(g_coverageTest)
+		g_coverageTest->getGuardsSquare(l_pos);
 	for(size_t i = 0; i < l_pos.size(); ++i)
 	{
 		DrawGuard(l_pos[i].first, 
