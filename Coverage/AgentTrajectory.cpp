@@ -269,7 +269,7 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 	}
 
 	//auto p = AgentPosition::ProbabilityOfDetection(_area, _center, c);
-
+	/*
 	std::cout << " m_farRadius: " << m_farRadius << std::endl;
 	std::cout << " l_rowDelta: " << l_rowDelta << std::endl;
 	std::cout << " l_colDelta: " << l_colDelta << std::endl;
@@ -281,8 +281,8 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 	std::cout << " size of Lattice: " << _area->getLattice().size() << endl;
 	std::cout << " centro ROW: " << _center.row << " COL: " << _center.col << std::endl;
 	std::cout << "dimensione di result: " << result.size() << std::endl;
-	printArray(result);
-
+	//printArray(result);
+	*/
 	return result;
 }
 

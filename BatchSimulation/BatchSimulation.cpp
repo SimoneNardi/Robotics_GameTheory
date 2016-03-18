@@ -122,7 +122,7 @@ void readSimulationConfigFile(Log & _log, std::string const& _filename)
 {
 	std::ifstream file(_filename);
 
-	std::string l_sep("\t");
+	std::string l_sep(" ");
 
 	if( file.is_open() )
 	{
@@ -338,28 +338,28 @@ int main(int argc, char* argv[])
 				for(int l_algorithmType = 0; l_algorithmType < 2; ++l_algorithmType )
 				{
 					std::string l_algName = (l_algorithmType == 0 ? "DISL" : l_algorithmType == 1 ? "PIPIP" : "PARETO");
-					l_log << "---------Algorithm: " << l_algName << endl;
+					l_log << "\tAlgorithm: " << l_algName << endl;
 					l_name += "_";
 					l_name += l_algName;
 
 					BoxPlotFile l_boxPlot;
 					for(size_t l_periodIndex = 0; l_periodIndex < g_config.Period.size(); ++l_periodIndex)
 					{
-						l_log << "-------Period: " << g_config.Period[l_periodIndex] << endl;
+						l_log << "\t\tPeriod: " << g_config.Period[l_periodIndex] << endl;
 
 						for(size_t l_monitorUpdateTimeIndex = 0; l_monitorUpdateTimeIndex < g_config.MonitorUpdateTime.size(); ++l_monitorUpdateTimeIndex)
 						{
-							l_log << "-----Monitor Update: " << g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex] << endl;
+							l_log << "\t\t\tMonitor Update: " << g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex] << endl;
 
 							for(size_t l_thiefJumpIndex = 0; l_thiefJumpIndex < g_config.ThiefJump.size(); ++l_thiefJumpIndex)
 							{
-								l_log << "---Thief Jump: " << g_config.ThiefJump[l_thiefJumpIndex] << endl;	
+								l_log << "\t\t\t\tThief Jump: " << g_config.ThiefJump[l_thiefJumpIndex] << endl;	
 
 								for(int l_epsilonIndex = 0; l_epsilonIndex < g_config.Epsilon.size(); ++l_epsilonIndex)
 								{
 									double l_epsilon = g_config.Epsilon[l_epsilonIndex];
 
-									l_log << "-Epsilon: " << g_config.Epsilon[l_epsilonIndex] << endl;	
+									l_log << "\t\t\t\t\tEpsilon: " << g_config.Epsilon[l_epsilonIndex] << endl;	
 
 									// preparo i nomi dei file:
 									char buffername[1024], buffernameBoxplot[1024], buffernameBoxPlotAscissa[1024];
@@ -373,11 +373,9 @@ int main(int argc, char* argv[])
 									sprintf(buffernameBoxplot, "%s_boxplot.txt", buffername);
 									//sprintf(buffernameBoxPlotAscissa, "%s_boxplot_ascissa.txt", buffername);
 
-									for(int l_testIndex = 0; l_testIndex < g_config.TestCase; ++l_testIndex)
-										// per g_test volte ripeto lo stesso scenario! con punti di partenza diversi per gli agenti
-									{
-										l_log << "-Case: " << l_testIndex << "..." << endl;
-
+									for(int l_testIndex = 0; l_testIndex < g_config.TestCase; ++l_testIndex) { // Numero di simulazioni della simulazione batch
+									// per g_test volte ripeto lo stesso scenario! con punti di partenza diversi per gli agenti
+										l_log << "\t\t\t\t\t\tCase: " << l_testIndex << "..." << endl;
 										setLostBattery(g_config.Epsilon[l_epsilonIndex]);
 
 										std::shared_ptr<Robotics::GameTheory::CoverageAlgorithm> l_coverage = 
@@ -388,27 +386,28 @@ int main(int argc, char* argv[])
 											g_config.Period[l_periodIndex],
 											0.1);
 										
-										if(g_config.TimeEnd.size() > 0)
-											// Stop algorithm when number of steps reach a given value
-										{
-											for(size_t l_TimeEndIndex = 0; l_TimeEndIndex < g_config.TimeEnd.size(); ++l_TimeEndIndex)
-											{
+										if(g_config.TimeEnd.size() > 0) { // Stop algorithm when number of steps reach a given value
+											for(size_t l_TimeEndIndex = 0; l_TimeEndIndex < g_config.TimeEnd.size(); ++l_TimeEndIndex) {
 												if(g_config.TimeEnd[l_TimeEndIndex] == 0)
 													continue;
-
-												l_log << "End Time " << g_config.TimeEnd[l_TimeEndIndex] << endl;
+												l_log << "\t\t\t\t\t\t\tEnd Time " << g_config.TimeEnd[l_TimeEndIndex] << endl;
 
 												l_coverage->update(
 													g_config.TimeEnd[l_TimeEndIndex] - (l_TimeEndIndex==0? 0 : g_config.TimeEnd[l_TimeEndIndex-1]), 
 													g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], 
 													g_config.ThiefJump[l_thiefJumpIndex]);
 
+												//l_coverage->printArea()
+												// printBenefitIndex("prova.txt", false);
+												// printBenefit();
+
+
 												/// print data for BoxPlot:
 												double l_potentialIndex = l_coverage->m_stats.getPotentialIndexMediumValue();
 												double l_benefitIndex = l_coverage->m_stats.getBenefitIndexMediumValue();
 												double l_coverageIndex = l_coverage->getGlobalTrajectoryCoverage();
 
-												l_log << "Potential Index ";
+												l_log << "\t\t\t\t\t\t\tPotential Index ";
 												l_log << l_potentialIndex; 
 												l_log << endl;
 
@@ -421,7 +420,7 @@ int main(int argc, char* argv[])
 													g_config.TimeEnd[l_TimeEndIndex],
 													l_potentialIndex);
 
-												l_log << "Benefit Index ";
+												l_log << "\t\t\t\t\t\t\tBenefit Index ";
 												l_log << l_benefitIndex;
 												l_log << endl;
 
@@ -434,7 +433,7 @@ int main(int argc, char* argv[])
 													g_config.TimeEnd[l_TimeEndIndex],
 													l_benefitIndex);
 
-												l_log << "Coverage Index ";
+												l_log << "\t\t\t\t\t\t\tCoverage Index ";
 												l_log << l_coverageIndex;
 												l_log << endl;
 
@@ -448,16 +447,14 @@ int main(int argc, char* argv[])
 													l_coverageIndex);
 											}
 										}
-										else if(g_config.StopRate.size() > 0)
-											// Stop algorithm when epsilon reach a given value
-										{
+										else if(g_config.StopRate.size() > 0) { // Stop algorithm when epsilon reach a given value
 											double l_rate= 2;
 											int k = 0;
 											l_coverage->updateMonitor();
 											for(auto l_stoprate_index = 0; l_stoprate_index < g_config.StopRate.size(); ++ l_stoprate_index)
 											{
 												int l_numberOfSteps = l_coverage->getNumberOfSteps(g_config.StopRate[l_stoprate_index]);
-
+												l_log << "number of steps:" << l_numberOfSteps << endl;
 												l_coverage->update(	l_numberOfSteps , g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], g_config.ThiefJump[l_thiefJumpIndex] );
 
 												double l_steadyValue;
@@ -502,13 +499,11 @@ int main(int argc, char* argv[])
 
 											}
 										}
-										else
-											// Stop algorithm at the steady configuration
-										{
+										else { 	// Stop algorithm at the steady configuration
+											l_log << "SIAMO QUI??";
 											int l_numberOfSteps = l_coverage->getNumberOfSteps(-1);
 
 											l_coverage->update(	l_numberOfSteps , g_config.MonitorUpdateTime[l_monitorUpdateTimeIndex], g_config.ThiefJump[l_thiefJumpIndex] );
-
 											double l_steadyValue;
 											int l_steadyIndex;
 											computeSteadyValue(l_coverage->m_stats.m_benefitIndex, l_steadyValue , l_steadyIndex);

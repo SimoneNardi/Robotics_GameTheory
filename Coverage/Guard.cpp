@@ -201,6 +201,7 @@ void Guard::followBestTrajectory(double _explorationRate, bool best)
 ///
 void Guard::selectNextAction(std::shared_ptr<DiscretizedArea> _space)
 {
+	// Seleziona la nuova posizione sulla base se Experiments o No
 	switch(m_exploring)
 	{
 	case -1:

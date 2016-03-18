@@ -33,6 +33,7 @@ void DISLAlgorithm::update(std::shared_ptr<Guard> _agent)
 
 		//	ogni agente guardia estrae se sperimentare nuove azioni o no
 		bool l_agentHasToExperiments = agentHasToExperiments(l_explorationRate);
+
 		if(l_agentHasToExperiments)
 		{
 			_agent->startExperiment(l_explorationRate);
