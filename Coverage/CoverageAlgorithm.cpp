@@ -329,13 +329,15 @@ void CoverageAlgorithm::setPositionOfSink(AgentPosition const& pos, SinkPtr _age
 	}
 }
 
+
 //////////////////////////////////////////////////////////////////////////
+// cerca l'intruso
 void CoverageAlgorithm::setPositionOfThief(AgentPosition const& pos, ThiefPtr _agent)
 {
 	bool found = false;
 	/// Put agent in the space
 	std::set< ThiefPtr > l_agents = m_world->getThieves();
-	for(auto it = l_agents.begin(); it != l_agents.end(); ++it)
+	for(auto it = l_agents.begin(); it != l_agents.end(); ++it) //
 	{
 		ThiefPtr l_agent = *it;
 		//if(!l_agent->isThief())
@@ -350,14 +352,18 @@ void CoverageAlgorithm::setPositionOfThief(AgentPosition const& pos, ThiefPtr _a
 		l_agent->setCurrentPosition(pos);
 	}
 
-	if(!found)
+	if(!found) // se non trova l'intruso
 	{
 		if(!_agent)
 			_agent = std::make_shared<Thief>(m_world->getNumberOfAgent(), pos);
 			
 		m_world->addThief( _agent );
+
+		//AgentPosition posiz_thief = _agent->getCurrentPosition();
 	}
 }
+
+
 
 //////////////////////////////////////////////////////////////////////////
 std::vector< std::shared_ptr<Square> > CoverageAlgorithm::getSquares() const
@@ -544,7 +550,7 @@ void importFromFile(
 		for(int i = 0; i < numOfXXX; ++i)
 		{
 			double x, y;
-			iFile >> x;
+			iFile >> x; //leggo da file e metto in x e y
 			iFile >> y;
 			_boundary.push_back( makePoint(IDSReal2D(x,y), EucMetric) );
 		}
@@ -566,9 +572,12 @@ void importFromFile(
 			iFile >> x;
 			iFile >> y;
 			AgentDriver driver;
+			AgentDriver thief;
 			driver.position = makePoint(IDSReal2D(x,y), EucMetric);
+			thief.position = makePoint(IDSReal2D(x, y), EucMetric);
 			driver.type = AgentDriver::THIEF;
 			_agents.push_back(driver);
+
 		}
 		iFile >> numOfXXX; // Sinks
 		for(int i = 0; i < numOfXXX; ++i)
@@ -581,7 +590,7 @@ void importFromFile(
 			driver.type = AgentDriver::SINK;
 			_agents.push_back(driver);
 		}
-		iFile >> numOfXXX; // Neutral
+		iFile >> numOfXXX; // Neutral (agenti neutri che dovrebbero essere 0)
 		for(int i = 0; i < numOfXXX; ++i)
 		{
 			double x, y;
@@ -618,7 +627,7 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 		AgentPosition l_pos( 
 			l_agentDriver[i].position 
 			/*l_space->randomPosition()*/, 
-			CameraPosition( l_space->getDistance()/15. ) );
+			CameraPosition(l_space->getDistance() / 15.) );
 
 		std::shared_ptr<Agent> l_agent = std::make_shared<Guard>(1, l_id, l_pos, _period, _type == 2? 1 : 2);
 
@@ -632,7 +641,7 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 		if(l_agentDriver[i].type != AgentDriver::THIEF)
 			continue;
 
-		AgentPosition l_pos( l_space->randomPosition(), CameraPosition( l_space->getDistance()/15. ) );
+		AgentPosition l_pos(l_space->randomPosition(), CameraPosition(l_space->getDistance() /15. ) );
 		Sleep(100);
 
 		ThiefPtr l_agent = std::make_shared<Thief>(l_algorithm->getNumberOfAgent(), l_pos/*l_agentDriver[i].position*/);
@@ -644,7 +653,7 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 		if(l_agentDriver[i].type != AgentDriver::SINK)
 			continue;
 
-		AgentPosition l_pos( l_space->randomPosition(), CameraPosition( l_space->getDistance()/15. ) );
+		AgentPosition l_pos( l_space->randomPosition(), CameraPosition(l_space->getDistance() / 15.) );
 		Sleep(100);
 
 		SinkPtr l_agent = std::make_shared<Sink>(l_algorithm->getNumberOfAgent(), l_pos/*l_agentDriver[i].position*/);
@@ -693,21 +702,24 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 			continue;
 
 		++l_id;
-		
-		AgentPosition l_pos( 
-			l_agentDriver[i].position 
-			/*l_space->randomPosition()*/, 
-			CameraPosition( double(l_space->getXStep() + l_space->getYStep())/2. *1.5) );
+		// viene settata la posizione e la CameraPosition dell'agente di tipo guardia
+		// AgentPosition
+			int num_level = 60.0;
+			double R_m = ( l_space->getXStep() + l_space->getYStep() ) / 2;
+			//double R = (R_m/num_level);
 
-		Point2D l_point;
-		if( l_space->getRandomPosition(l_point) && 0)
-		{
-			l_pos = AgentPosition ( l_point, CameraPosition( double(l_space->getXStep() + l_space->getYStep())/2. *1.5) );
-			Sleep(50);
-		}
-		
-		std::shared_ptr<Agent> l_agent = std::make_shared<Guard>(1, l_id, l_pos, _periodIndex, _type == 2? 1 : 2);
-		l_agents.insert(l_agent);
+			AgentPosition l_pos(l_agentDriver[i].position, CameraPosition( double(l_space->getXStep() + l_space->getYStep()) / 2. *4.5) ); //*1.5) ); prendo m_farRadius = 5 quadratini (2.32061*5)
+
+		// point
+			Point2D l_point;
+			if (l_space->getRandomPosition(l_point) && 0)
+			{
+				l_pos = AgentPosition(l_point, CameraPosition(double(l_space->getXStep() + l_space->getYStep()) / 2. *4.5));  //double(l_space->getXStep() + l_space->getYStep()) / 2. *1.5));
+				Sleep(50);
+			}
+
+			std::shared_ptr<Agent> l_agent = std::make_shared<Guard>(1, l_id, l_pos, _periodIndex, _type == 2 ? 1 : 2);
+			l_agents.insert(l_agent);
 	}
 #ifdef _PRINT
 	cout << "Placed guards"<<endl;

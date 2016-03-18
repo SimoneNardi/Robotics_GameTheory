@@ -65,7 +65,7 @@ SquarePtr DiscretizedArea::getSquare(int row, int col) const
 		col >= m_numCol || col < 0 )
 		return nullptr;
 
-	return m_lattice.at(row * m_numCol + col);
+	return m_lattice.at(row * m_numCol + col);//accede all'elemento del vettore con (row, col) se esiste
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -177,7 +177,7 @@ void DiscretizedArea::addEdges()
 	}
 }
 
-//////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////// da FILE
 DiscretizedArea::DiscretizedArea(std::string const& _filename) 
 	: m_graph(nullptr)
 	, m_listGraph(nullptr)
@@ -445,7 +445,7 @@ DiscretizedArea::DiscretizedArea(IDS::BaseGeometry::Shape2D const& _external, st
 	double l_xdist = l_bottomLeft.distance(l_bottomRight);
 	double l_ydist = l_bottomLeft.distance(l_topLeft);
 
-	m_xStep = l_xdist / double(DISCRETIZATION_COL);
+	m_xStep = l_xdist / double(DISCRETIZATION_COL); //aggiunto int
 	m_yStep = l_ydist / double(DISCRETIZATION_ROW);
 
 	m_listGraph = std::make_shared<lemon::ListGraph>();
@@ -740,7 +740,7 @@ void DiscretizedArea::setSinkPosition(AgentPosition const& _pos)
 }
 
 //////////////////////////////////////////////////////////////////////////
-int DiscretizedArea::numberOfSquaresCoveredByGuards() const
+int DiscretizedArea::numberOfSquaresCoveredByGuards() const //calcola il numero di quadrati occupati
 {
 	int l_total = 0;
 	for(size_t i = 0; i < m_lattice.size(); ++i)

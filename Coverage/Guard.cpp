@@ -256,7 +256,7 @@ AgentPosition Guard::selectNextFeasiblePositionWithoutConstraint(std::shared_ptr
 			continue;
 		}
 
-		l_notControlledFeasibleActions.push_back( std::make_pair<AgentPosition, int>(l_feasible[i], i) );
+		l_notControlledFeasibleActions.push_back( std::make_pair<>(l_feasible[i], i) );//AgentPosition, int
 	}
 
 	if(l_notControlledFeasibleActions.empty())

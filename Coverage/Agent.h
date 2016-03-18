@@ -71,11 +71,13 @@ namespace Robotics
 			CameraPosition m_camera;
 
 		public:
-			AgentPosition() {};
+			AgentPosition() {}; //costruttore
 		
 			AgentPosition(IDS::BaseGeometry::Point2D const& point) : m_point(point), m_camera() {}
 
 			AgentPosition(IDS::BaseGeometry::Point2D const& point, CameraPosition _camera) : m_point(point), m_camera(_camera) {}
+
+			//auto ProbabilityOfDetection(std::shared_ptr<DiscretizedArea> area, AreaCoordinate p_r, AreaCoordinate p_t);
 
 			/// Update the counter of the lattice visible from that position
 			void updateCounter(std::shared_ptr<DiscretizedArea> area);
@@ -130,15 +132,13 @@ namespace Robotics
 				: m_id(_id)
 				, m_currentPosition(_position)
 				, m_nextPosition()
-				, m_status(ACTIVE)
+					, m_status(ACTIVE)
 			{}
 
 			~Agent() {}
 
 			/// Get the position of the agent.
 			inline AgentPosition getCurrentPosition() const {return m_currentPosition;}
-
-			
 
 			/// Set Current Position
 			void setCurrentPosition(AgentPosition const& _pos);

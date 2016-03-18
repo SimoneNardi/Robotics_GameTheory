@@ -124,7 +124,7 @@ IDS::BaseGeometry::Box2D StructuredArea::getBoundingBox() const
 }
 
 //////////////////////////////////////////////////////////////////////////
-double StructuredArea::getDistance() const
+double StructuredArea::getDistance() const //prende la max tra base e altezza dell'area
 {
 	return m_external.getBoundingBox().minCoord().distance(m_external.getBoundingBox().maxCoord());
 }

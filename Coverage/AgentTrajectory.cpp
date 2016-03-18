@@ -2,15 +2,30 @@
 #include "Guard.h"
 #include "DiscretizedArea.h"
 
+
 #include "BaseGeometry/Shape2D.h"
 #include "BaseGeometry/Arc2D.h"
 #include "BaseGeometry/Point2D.h"
+
+//aggiunta
+#include "World.h"
+#include "CoverageExport.h"
+#include "Agent.h"
+#include "CoverageAlgorithm.h"
+#include "LearningAlgorithm.h"
+
+
 
 using namespace std;
 using namespace Robotics;
 using namespace Robotics::GameTheory;
 using namespace IDS;
 using namespace IDS::BaseGeometry;
+
+// da me
+typedef std::shared_ptr<Thief> ThiefPtr;
+std::shared_ptr<World> m_world;
+
 
 //////////////////////////////////////////////////////////////////////////
 // MemoryGuardTrajectories
@@ -114,6 +129,8 @@ bool AgentPosition::operator!=(AgentPosition const& other) const
 	return !(*this == other);
 }
 
+
+
 //////////////////////////////////////////////////////////////////////////
 void AgentPosition::updateCounter(std::shared_ptr<DiscretizedArea> area)
 {
@@ -192,45 +209,84 @@ bool CameraPosition::operator!=(CameraPosition const& other) const
 	return !(*this==other);
 }
 
+void printArray(std::vector<AreaCoordinate> v) {
+	for (int i = 0; i < v.size(); ++i) {
+		std::cout << "row: " << v.at(i).row << " \t col: " << v.at(i).col << "\t prob: " << v.at(i).p << std::endl;
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////
+/*auto AgentPosition::ProbabilityOfDetection(std::shared_ptr<DiscretizedArea> area, AreaCoordinate p_r, AreaCoordinate p_t)
+{
+	int d;
+	return  d = area->getDistance(p_r, p_t);
+}*/
+
+
 std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, std::shared_ptr<DiscretizedArea> _area) const
 {
 	Point2D l_pt = _area->getPosition(_center);
 	Shape2D l_sensorArea = this->getVisibleArea(l_pt);
-	if(!l_sensorArea.isValid())
+
+	if (!l_sensorArea.isValid())
 		return std::vector<AreaCoordinate>();
 
-	int l_rowDelta = int(floor(m_farRadius / _area->getYStep())) + 1;
-	int l_colDelta = int(floor(m_farRadius / _area->getXStep())) + 1;
+	int l_rowDelta =int(floor(m_farRadius / _area->getYStep())) + 1;
+	int l_colDelta =int(floor(m_farRadius / _area->getXStep())) + 1;
+
 
 	std::vector<AreaCoordinate> result;
 	AreaCoordinate l_elem;
-	for(int i = - l_rowDelta; i <= l_rowDelta; ++i)
+	for (int i = -l_rowDelta; i <= l_rowDelta; ++i)
 	{
 		int row = _center.row + i;
-		if( row < 0 || row > _area->getNumRow() )
+		if (row < 0 || row > _area->getNumRow()) //check sui margini
 			continue;
-		for(int j = - l_colDelta; j <= l_colDelta; ++j)
+		for (int j = -l_colDelta; j <= l_colDelta; ++j)
 		{
 			int col = _center.col + j;
-			if( col < 0 || col > _area->getNumRow() )
+			if (col < 0 || col > _area->getNumCol())
 				continue;
 
-			SquarePtr l_square = _area->getSquare(row, col);
-			if(!l_square)
-				continue;
+			SquarePtr l_square = _area->getSquare(row, col); //return m_lattice
 
+			//std::cout << "Questi sono nella riga row: " << row << " col:" << col << std::endl;
+			if (!l_square)
+				continue;
+			
 			Point2D l_center = l_square->getBoundingBox().center();
-			if( l_sensorArea.contains(l_center) )
+			// assegno solo i punti che sono interni all'area del sensore
+			if (l_sensorArea.contains(l_center))
+				//funzione che assegna la probabilita
 			{
 				l_elem.row = row;
 				l_elem.col = col;
+				l_elem.p = 1;
 				result.push_back(l_elem);
+
 			}
 		}
 	}
+
+	//auto p = AgentPosition::ProbabilityOfDetection(_area, _center, c);
+
+	std::cout << " m_farRadius: " << m_farRadius << std::endl;
+	std::cout << " l_rowDelta: " << l_rowDelta << std::endl;
+	std::cout << " l_colDelta: " << l_colDelta << std::endl;
+	std::cout << " getXSquare: " << _area->getXStep() << std::endl;
+	std::cout << " getYSquare: " << _area->getYStep() << std::endl;
+	//std::cout << " getSquare: " << _area->getSquare(1, 1) << std::endl;
+	std::cout << " getNumCol: " << _area->getNumCol() << std::endl;
+	std::cout << " getNumRow: " << _area->getNumRow() << std::endl;
+	std::cout << " size of Lattice: " << _area->getLattice().size() << endl;
+	std::cout << " centro ROW: " << _center.row << " COL: " << _center.col << std::endl;
+	std::cout << "dimensione di result: " << result.size() << std::endl;
+	printArray(result);
+
 	return result;
 }
+
+
 
 //////////////////////////////////////////////////////////////////////////
 BaseGeometry::Shape2D CameraPosition::getVisibleArea(BaseGeometry::Point2D const& point) const

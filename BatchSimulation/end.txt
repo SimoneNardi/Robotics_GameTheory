@@ -1,5 +1,0 @@
-******************************************
-Agent File: Scenario_5G_1T_multiAgent
--.-.-.-.-.-
-Area File: External
-Monitor Update 1

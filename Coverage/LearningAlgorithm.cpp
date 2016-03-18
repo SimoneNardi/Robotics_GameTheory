@@ -225,6 +225,8 @@ void LearningAlgorithm::monitoringThieves(std::set< ThiefPtr > const& _agents)
 	}
 }
 
+
+
 //////////////////////////////////////////////////////////////////////////
 void LearningAlgorithm::monitoringSinks(std::set< SinkPtr > const& _agents)
 {

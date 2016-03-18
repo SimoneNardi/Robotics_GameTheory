@@ -15,6 +15,7 @@
 #include <memory>
 #include <set>
 
+
 //const int N_MAX = 100000000;
 const int N_MAX = 100000;
 //const int N_MAX = 500;
@@ -92,6 +93,7 @@ namespace Robotics
 
 			virtual void updateCounterOfVisibleSquare( );
 			virtual void updateCounterOfVisibleSquare( std::shared_ptr<Guard> _agent );
+
 		};
 
 		typedef std::shared_ptr<LearningAlgorithm> LearningAlgorithmPtr;

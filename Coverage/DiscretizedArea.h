@@ -43,8 +43,9 @@ namespace Robotics
 		{
 			int row;
 			int col;
+			double p;//aggiunta la probabilita
 
-			AreaCoordinate(int _col = -1, int _row = -1) : row(_row), col(_col) {}
+			AreaCoordinate(int _col = -1, int _row = -1, double _p=-1) : row(_row), col(_col), p(_p) {}
 		};
 
 		inline bool operator< (AreaCoordinate const& a, AreaCoordinate const& b)
@@ -169,7 +170,7 @@ namespace Robotics
 			IDS::BaseGeometry::Point2D getPosition(AreaCoordinate const& _coord) const;
 
 			int getDistance(
-				SquarePtr source, 
+				SquarePtr source,
 				SquarePtr target);
 
 			int getDistance(

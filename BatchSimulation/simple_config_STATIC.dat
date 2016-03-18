@@ -1,6 +1,0 @@
-Monitor	4	5
-Jump	1	2
-Print	1	10	20
-Period	4
-TestCase	3
-StopRate	.5	.35

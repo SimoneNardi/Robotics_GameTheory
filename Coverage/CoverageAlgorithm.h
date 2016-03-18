@@ -130,6 +130,7 @@ namespace Robotics
 			void setPositionOfThief(AgentPosition const& pos, std::shared_ptr<Thief> _agent/* = nullptr*/);
 			void getThievesPosition(std::vector<AgentPosition> & _pos);
 
+
 #pragma region Test
 		
 		public:

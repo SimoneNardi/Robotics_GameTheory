@@ -210,7 +210,7 @@ void readSimulationConfigFile(Log & _log, std::string const& _filename)
 std::vector<std::string> getAgentNames(std::string const& _folname)
 {
 	std::vector<std::string> l_result;
-
+/*
 #ifdef _SINK
 
 	l_result.push_back("Scenario_5G_1T_1S.dat");
@@ -222,14 +222,15 @@ std::vector<std::string> getAgentNames(std::string const& _folname)
 #endif
 
 #else
-	l_result.push_back("Scenario_5G_1T_multiAgent.dat");
+//	l_result.push_back("Scenario_5G_1T_multiAgent.dat");
 
 #ifndef _TEST
-	l_result.push_back("Scenario_10G_1T_multiAgent.dat");
-	l_result.push_back("Scenario_15G_1T_multiAgent.dat");
-	l_result.push_back("Scenario_20G_1T_multiAgent.dat");
-#endif
-#endif
+//	l_result.push_back("Scenario_10G_1T_multiAgent.dat");
+//	l_result.push_back("Scenario_15G_1T_multiAgent.dat");
+//	l_result.push_back("Scenario_20G_1T_multiAgent.dat");*/
+	l_result.push_back("Scenario_5G_1T_sonar.dat");
+//#endif
+//#endif
 	return l_result;
 }
 
@@ -238,12 +239,13 @@ std::vector<std::string> getAreaNames(std::string const& _folname)
 {
 	std::vector<std::string> l_result;
 	/// più scenari
-	l_result.push_back("External.txt");
+//	l_result.push_back("External.txt"); //era 20x20
+	l_result.push_back("External_sonar.txt");//40x40 punti e griglia
 
 #ifndef _TEST
-	l_result.push_back("External_trig.txt");
-	l_result.push_back("External_road.txt");
-	l_result.push_back("External_room.txt");
+//	l_result.push_back("External_trig.txt");
+//	l_result.push_back("External_road.txt");
+//	l_result.push_back("External_room.txt");
 #endif
 	return l_result;
 }
@@ -259,11 +261,12 @@ int main(int argc, char* argv[])
 
 	if(argc < 1)
 		return -1;
-	else if(argc >= 2)
+	else if (argc >= 2) {
 		l_folname = argv[1];
 
-	std::vector<std::string> l_AgentFilenames = getAgentNames(l_folname);
-	std::vector<std::string> l_AreaFilenames = getAreaNames(l_folname);
+	}
+	std::vector<std::string> l_AgentFilenames = getAgentNames(l_folname); //prende solo il nome (stringa) del .txt dell'area
+	std::vector<std::string> l_AreaFilenames = getAreaNames(l_folname); // prende il nome del .txt relativo allo scenario
 
 
 #ifdef _EPSILON
@@ -289,7 +292,7 @@ int main(int argc, char* argv[])
 #ifdef _TALGORITHM
 
 #ifndef _TEST
-	std::string l_file("config_T.dat");
+	std::string l_file("config_T_sonar.dat");
 #else 
 	std::string l_file("simple_config_T.dat");
 #endif
@@ -308,7 +311,7 @@ int main(int argc, char* argv[])
 
 #endif
 
-	readSimulationConfigFile(l_log, l_file);
+	readSimulationConfigFile(l_log, l_file);// parametri della prova: PERIOD, MONITOR UPDATE, THIEF JUMP, EPSILON
 
 	for(size_t o = 0; o < l_AgentFilenames.size(); ++o )
 	{
