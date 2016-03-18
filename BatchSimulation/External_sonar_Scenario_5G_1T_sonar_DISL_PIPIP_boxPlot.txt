@@ -1,0 +1,7 @@
+Index	Monitor	Thief Jump	Epsilon	Period	End Time
+Benefit Index	-1	1	0.1	1	1
+1;
+Coverage Index	-1	1	0.1	1	1
+0;
+Potential Index	-1	1	0.1	1	1
+0;
