@@ -704,7 +704,7 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 		++l_id;
 		// viene settata la posizione e la CameraPosition dell'agente di tipo guardia
 		// AgentPosition
-			int num_level = 60.0;
+			//int num_level = 60.0;
 			double R_m = ( l_space->getXStep() + l_space->getYStep() ) / 2;
 			//double R = (R_m/num_level);
 
@@ -855,7 +855,7 @@ double CoverageAlgorithm::getTrajectoryPotentialIndex()
 {
 	double l_potValue = m_learning->getPotentialValue();
 	double l_nonCooperativeSteadyValue = this->getSteadyNonCoopertativeBenefitValue();
-	
+	std::cout << "l_potvalue" << l_potValue << std::endl;
 	return l_potValue/l_nonCooperativeSteadyValue;
 }
 

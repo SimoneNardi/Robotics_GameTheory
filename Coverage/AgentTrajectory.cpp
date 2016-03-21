@@ -209,9 +209,12 @@ bool CameraPosition::operator!=(CameraPosition const& other) const
 	return !(*this==other);
 }
 
-void printArray(std::vector<AreaCoordinate> v) {
+void printArray(std::vector<AreaCoordinate> v, int c_row, int c_col) {
 	for (int i = 0; i < v.size(); ++i) {
-		std::cout << "row: " << v.at(i).row << " \t col: " << v.at(i).col << "\t prob: " << v.at(i).p << std::endl;
+		double x = v.at(i).row;
+		double y = v.at(i).col;
+		double dist = sqrt(pow((x - c_row), 2) + pow((y - c_col), 2));
+		std::cout << "row: " << v.at(i).row << " \t col: " << v.at(i).col << "\t prob: " << v.at(i).p << std::endl;//<< "\n d : " << dist << std::endl;
 	}
 }
 
@@ -222,6 +225,16 @@ void printArray(std::vector<AreaCoordinate> v) {
 	return  d = area->getDistance(p_r, p_t);
 }*/
 
+
+double ProbabilityOfDetection(AreaCoordinate _center, int _row, int _col) {
+	double x_c = _center.row;
+	double y_c = _center.col;
+	double distance = sqrt( pow((x_c - _row), 2) + pow((y_c - _col), 2) );
+	double probability;
+
+	probability = exp(-(pow(distance, 2))/9);
+	return probability;
+}
 
 std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, std::shared_ptr<DiscretizedArea> _area) const
 {
@@ -261,7 +274,7 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 			{
 				l_elem.row = row;
 				l_elem.col = col;
-				l_elem.p = 1;
+				l_elem.p = ProbabilityOfDetection(_center, row, col);
 				result.push_back(l_elem);
 
 			}
@@ -269,19 +282,20 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 	}
 
 	//auto p = AgentPosition::ProbabilityOfDetection(_area, _center, c);
-
+	
 	std::cout << " m_farRadius: " << m_farRadius << std::endl;
 	std::cout << " l_rowDelta: " << l_rowDelta << std::endl;
 	std::cout << " l_colDelta: " << l_colDelta << std::endl;
-	std::cout << " getXSquare: " << _area->getXStep() << std::endl;
-	std::cout << " getYSquare: " << _area->getYStep() << std::endl;
+	//std::cout << " getXSquare: " << _area->getXStep() << std::endl;
+	//std::cout << " getYSquare: " << _area->getYStep() << std::endl;
 	//std::cout << " getSquare: " << _area->getSquare(1, 1) << std::endl;
-	std::cout << " getNumCol: " << _area->getNumCol() << std::endl;
-	std::cout << " getNumRow: " << _area->getNumRow() << std::endl;
-	std::cout << " size of Lattice: " << _area->getLattice().size() << endl;
+	//std::cout << " getNumCol: " << _area->getNumCol() << std::endl;
+	//std::cout << " getNumRow: " << _area->getNumRow() << std::endl;
+	//std::cout << " size of Lattice: " << _area->getLattice().size() << endl;
 	std::cout << " centro ROW: " << _center.row << " COL: " << _center.col << std::endl;
-	std::cout << "dimensione di result: " << result.size() << std::endl;
-	printArray(result);
+	//std::cout << "dimensione di result: " << result.size() << std::endl;
+	
+	printArray(result, _center.row, _center.col);
 
 	return result;
 }

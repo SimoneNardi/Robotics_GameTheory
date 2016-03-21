@@ -228,6 +228,7 @@ std::set<std::shared_ptr<Square> > Guard::getVisibleSquares( std::shared_ptr<Dis
 	for(size_t i = 0; i < l_coord.size(); ++i)
 	{
 		result.insert(_space->getSquare(l_coord[i]));
+
 	}
 	collectVisitedSquare(result);
 	return result;

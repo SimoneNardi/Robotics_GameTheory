@@ -18,6 +18,7 @@ using namespace Robotics::GameTheory;
 using namespace IDS::BaseGeometry;
 
 //////////////////////////////////////////////////////////////////////////
+// epsilon nell'articolo
 double LearningAlgorithm::computeExplorationRate(std::shared_ptr<Guard> _agent)
 {
 	if( fabs(m_experimentalRate) > IDSMath::TOLERANCE )
@@ -27,7 +28,7 @@ double LearningAlgorithm::computeExplorationRate(std::shared_ptr<Guard> _agent)
 		_agent = *m_guards.begin();
 
 	double rate = max(double(Robotics::GameTheory::DISCRETIZATION_COL), double(Robotics::GameTheory::DISCRETIZATION_ROW)) + 1.;
-	return pow(double(m_time)/double(_agent->getTrajectoryLength()) , -double(m_guards.size())/rate); 
+	return pow(double(m_time)/double(_agent->getTrajectoryLength()) , -double(m_guards.size())/rate);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -110,8 +111,8 @@ void LearningAlgorithm::compute(std::shared_ptr<Guard> _agent)
 		SquarePtr l_square = *it;
 		if(!l_square->isValid())
 			continue;
-		int l_nq = l_square->getTheNumberOfAgent();
-		double l_value = l_square->getThiefValue();
+		int l_nq = l_square->getTheNumberOfAgent(); // numero di agenti che monitorano quel quadrato l
+		double l_value = l_square->getThiefValue(); // valore di probabilita della mappatura del thief W(q)
 		l_benefit += l_value / double(l_nq);
 	}
 	l_benefit -= _agent->computeCurrentCosts();
@@ -318,7 +319,7 @@ double LearningAlgorithm::getPotentialValue()
 	for(size_t i = 0;  i < m_space->m_lattice.size(); ++i)
 	{
 		double l_partialTotal = 0.;
-		double l_Wq = m_space->m_lattice[i]->getThiefValue();
+		double l_Wq = m_space->m_lattice[i]->getThiefValue(); // W(q)
 		for(int j = 1; j <= m_space->m_lattice[i]->getTheNumberOfAgent(); ++j)
 		{
 			l_partialTotal += l_Wq / j;
