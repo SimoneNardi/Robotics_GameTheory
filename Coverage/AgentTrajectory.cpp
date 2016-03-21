@@ -283,20 +283,23 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 
 	//auto p = AgentPosition::ProbabilityOfDetection(_area, _center, c);
 	
+	/*
+	// Debug screen output
 	std::cout << " m_farRadius: " << m_farRadius << std::endl;
 	std::cout << " l_rowDelta: " << l_rowDelta << std::endl;
 	std::cout << " l_colDelta: " << l_colDelta << std::endl;
-	//std::cout << " getXSquare: " << _area->getXStep() << std::endl;
-	//std::cout << " getYSquare: " << _area->getYStep() << std::endl;
-	//std::cout << " getSquare: " << _area->getSquare(1, 1) << std::endl;
-	//std::cout << " getNumCol: " << _area->getNumCol() << std::endl;
-	//std::cout << " getNumRow: " << _area->getNumRow() << std::endl;
-	//std::cout << " size of Lattice: " << _area->getLattice().size() << endl;
+	std::cout << " getXSquare: " << _area->getXStep() << std::endl;
+	std::cout << " getYSquare: " << _area->getYStep() << std::endl;
+	std::cout << " getSquare: " << _area->getSquare(1, 1) << std::endl;
+	std::cout << " getNumCol: " << _area->getNumCol() << std::endl;
+	std::cout << " getNumRow: " << _area->getNumRow() << std::endl;
+	std::cout << " size of Lattice: " << _area->getLattice().size() << endl;
 	std::cout << " centro ROW: " << _center.row << " COL: " << _center.col << std::endl;
-	//std::cout << "dimensione di result: " << result.size() << std::endl;
-	
+	std::cout << "dimensione di result: " << result.size() << std::endl;
 	printArray(result, _center.row, _center.col);
-
+	std::cout << "dimensione di result: " << result.size() << std::endl;
+	printArray(result);
+	*/
 	return result;
 }
 
