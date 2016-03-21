@@ -99,22 +99,41 @@ void LearningAlgorithm::communicate(std::shared_ptr<Guard> _agent)
 
 	return;
 }
+double ProbabilityOfDetection(AreaCoordinate _center, int _row, int _col);
+
+double ProbabilityOfDetection(AreaCoordinate _center, int _row, int _col) {
+	double x_c = _center.row;
+	double y_c = _center.col;
+	double distance = sqrt(pow((x_c - _row), 2) + pow((y_c - _col), 2));
+	double probability;
+
+	probability = exp(-(pow(distance, 2)) / 9);
+	return probability;
+}
 
 //////////////////////////////////////////////////////////////////////////
 void LearningAlgorithm::compute(std::shared_ptr<Guard> _agent)
 {
 	//	ogni agente guardia identifica la propria utilità:
 	double l_benefit = 0;
+	AgentPosition p = _agent->getCurrentPosition();
+	AreaCoordinate p_center = m_space->getCoordinate(p.getPoint2D());
+	
+	std::vector <AreaCoordinate> l_coord = p.getCoverage(m_space);
 	std::set<std::shared_ptr<Square> > l_squares = _agent->getVisibleSquares(m_space);
-	for(std::set<std::shared_ptr<Square> >::iterator it = l_squares.begin(); it != l_squares.end(); ++it)
-	{
-		SquarePtr l_square = *it;
-		if(!l_square->isValid())
+	std::shared_ptr<Square> temp_square;
+	
+	for (int i = 0; i < l_coord.size(); ++i) {
+		temp_square = m_space->getSquare(l_coord[i]);
+		if (!temp_square->isValid())
 			continue;
-		int l_nq = l_square->getTheNumberOfAgent(); // numero di agenti che monitorano quel quadrato l
-		double l_value = l_square->getThiefValue(); // valore di probabilita della mappatura del thief W(q)
+		int l_nq = temp_square->getTheNumberOfAgent();
+		double l_value = temp_square->getThiefValue();
+		l_value = l_value * ProbabilityOfDetection(p_center, l_coord[i].row, l_coord[i].col);		
 		l_benefit += l_value / double(l_nq);
 	}
+
+	
 	l_benefit -= _agent->computeCurrentCosts();
 
 	//l_benefit -= _agent->computeBatteryCosts(m_space);

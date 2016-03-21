@@ -226,16 +226,6 @@ void printArray(std::vector<AreaCoordinate> v, int c_row, int c_col) {
 }*/
 
 
-double ProbabilityOfDetection(AreaCoordinate _center, int _row, int _col) {
-	double x_c = _center.row;
-	double y_c = _center.col;
-	double distance = sqrt( pow((x_c - _row), 2) + pow((y_c - _col), 2) );
-	double probability;
-
-	probability = exp(-(pow(distance, 2))/9);
-	return probability;
-}
-
 std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, std::shared_ptr<DiscretizedArea> _area) const
 {
 	Point2D l_pt = _area->getPosition(_center);
@@ -274,7 +264,7 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 			{
 				l_elem.row = row;
 				l_elem.col = col;
-				l_elem.p = ProbabilityOfDetection(_center, row, col);
+				//l_elem.p = ProbabilityOfDetection(_center, row, col);
 				result.push_back(l_elem);
 
 			}
