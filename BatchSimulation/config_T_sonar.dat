@@ -1,7 +1,0 @@
-Monitor -1
-Jump 1
-Epsilon 0.1
-Print 20
-Period 1
-TestCase 20
-StopRate 1.e-5

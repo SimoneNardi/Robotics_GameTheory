@@ -74,16 +74,16 @@ namespace Robotics
 			double _explorationRate,
 			double _batteryValue)
 		{
-			m_times.push_back(time);
-			m_squares.push_back(square);
-			m_potValues.push_back(potValue);
-			m_benefitValues.push_back(benefitValue);
-			m_maxBenefitValue.push_back(maxBenefitValue);
-			m_NonCooperativeSteadyValue.push_back(NonCooperativeSteadyValue);
-			m_potentialIndex.push_back(potValue/NonCooperativeSteadyValue);
-			m_benefitIndex.push_back( ( maxBenefitValue-benefitValue ) / maxBenefitValue );
-			m_explorationRate.push_back(_explorationRate);
-			m_batteryValue.push_back(_batteryValue);
+			m_times.push_back(time);//tempo
+			m_squares.push_back(square);//numero di quadrati coperti dalle guardie
+			m_potValues.push_back(potValue);// potential value nel caso di cooperazione tra robot
+			m_benefitValues.push_back(benefitValue);// somma dei benefit
+			m_maxBenefitValue.push_back(maxBenefitValue);// massimo valore di potenziale
+			m_NonCooperativeSteadyValue.push_back(NonCooperativeSteadyValue);// guadagno se ognuno gioca da solo (senza cooperazione)
+			m_potentialIndex.push_back(potValue/NonCooperativeSteadyValue); // rapporto tra coop e non coop calore di potenziale
+			m_benefitIndex.push_back( ( maxBenefitValue-benefitValue ) / maxBenefitValue );// mean error
+			m_explorationRate.push_back(_explorationRate);// tasso di esplorazione dei robot
+			m_batteryValue.push_back(_batteryValue);// valore della batteria
 		}
 		
 		//////////////////////////////////////////////////////////////////////////

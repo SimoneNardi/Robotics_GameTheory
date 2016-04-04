@@ -708,7 +708,7 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 			double R_m = ( l_space->getXStep() + l_space->getYStep() ) / 2;
 			//double R = (R_m/num_level);
 
-			AgentPosition l_pos(l_agentDriver[i].position, CameraPosition( double(l_space->getXStep() + l_space->getYStep()) / 2. *4.5) ); //*1.5) ); prendo m_farRadius = 5 quadratini (2.32061*5)
+			AgentPosition l_pos(l_agentDriver[i].position, CameraPosition( double(l_space->getXStep() + l_space->getYStep()) / 2. *5.1) ); //*1.5) ); prendo m_farRadius = 5 quadratini (2.32061*5)
 
 		// point
 			Point2D l_point;
