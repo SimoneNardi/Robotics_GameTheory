@@ -86,6 +86,7 @@ namespace Robotics
 			m_batteryValue.push_back(_batteryValue);// valore della batteria
 		}
 		
+
 		//////////////////////////////////////////////////////////////////////////
 		//	Benefit Value
 		double Statistics::getBenefitIndexMediumValue()

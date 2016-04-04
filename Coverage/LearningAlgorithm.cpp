@@ -111,6 +111,16 @@ double ProbabilityOfDetection(AreaCoordinate _center, int _row, int _col) {
 	return probability;
 }
 
+/*
+void LearningAlgorithm::monitoringThieves(std::set< ThiefPtr > const& _agents)
+{
+	for (std::set< ThiefPtr >::const_iterator it = _agents.begin(); it != _agents.end(); ++it)
+	{
+		AgentPosition l_thiefPos = (*it)->getCurrentPosition();
+		m_space->setThiefPosition(l_thiefPos);
+	}
+}*/
+
 //////////////////////////////////////////////////////////////////////////
 void LearningAlgorithm::compute(std::shared_ptr<Guard> _agent)
 {

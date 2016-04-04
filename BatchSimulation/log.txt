@@ -5,29 +5,45 @@ Jump
 Epsilon
 0.1	
 EndTime
-10000	
+1000	
 Period
 1	
 TestCase
-1
+5
 ******************************************
 Agent File: Scenario_5G_1T_multiAgent
 -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-
-Area File: External60
+Area File: External30
 ---------Algorithm: DISL
 -------Period: 1
 -----Monitor Update: 1
 ---Thief Jump: 1
 -Epsilon: 0.1
 -Case: 0...
-End Time 10000
-Print BoxPlot Data _External60_Scenario_5G_1T_multiAgent_DISL
+End Time 1000
+-Case: 1...
+End Time 1000
+-Case: 2...
+End Time 1000
+-Case: 3...
+End Time 1000
+-Case: 4...
+End Time 1000
+Print BoxPlot Data _External30_Scenario_5G_1T_multiAgent_DISL
 ---------Algorithm: PIPIP
 -------Period: 1
 -----Monitor Update: 1
 ---Thief Jump: 1
 -Epsilon: 0.1
 -Case: 0...
-End Time 10000
-Print BoxPlot Data _External60_Scenario_5G_1T_multiAgent_DISL_PIPIP
+End Time 1000
+-Case: 1...
+End Time 1000
+-Case: 2...
+End Time 1000
+-Case: 3...
+End Time 1000
+-Case: 4...
+End Time 1000
+Print BoxPlot Data _External30_Scenario_5G_1T_multiAgent_DISL_PIPIP
 Process is ended!

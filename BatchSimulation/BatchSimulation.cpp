@@ -227,7 +227,7 @@ std::vector<std::string> getAgentNames(std::string const& _folname)
 #ifndef _TEST
 	//	l_result.push_back("Scenario_10G_1T_multiAgent.dat");
 	//	l_result.push_back("Scenario_15G_1T_multiAgent.dat");
-	//l_result.push_back("Scenario_20G_1T_multiAgent.dat");
+//	l_result.push_back("Scenario_20G_1T_multiAgent.dat");
 #endif
 #endif
 	return l_result;
@@ -238,7 +238,7 @@ std::vector<std::string> getAreaNames(std::string const& _folname)
 {
 	std::vector<std::string> l_result;
 	/// più scenari
-	l_result.push_back("External60.txt");
+	l_result.push_back("External30.txt");
 
 #ifndef _TEST
 	//	l_result.push_back("External_trig.txt");
