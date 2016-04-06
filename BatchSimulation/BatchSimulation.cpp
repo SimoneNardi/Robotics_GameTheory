@@ -222,11 +222,11 @@ std::vector<std::string> getAgentNames(std::string const& _folname)
 #endif
 
 #else
-		l_result.push_back("Scenario_5G_1T_multiAgent.dat");
+//		l_result.push_back("Scenario_5G_1T_multiAgent.dat");
 
 #ifndef _TEST
 	//	l_result.push_back("Scenario_10G_1T_multiAgent.dat");
-	//	l_result.push_back("Scenario_15G_1T_multiAgent.dat");
+		l_result.push_back("Scenario_15G_1T_multiAgent.dat");
 //	l_result.push_back("Scenario_20G_1T_multiAgent.dat");
 #endif
 #endif
