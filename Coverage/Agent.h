@@ -53,6 +53,8 @@ namespace Robotics
 			double getFarRadius() const {return m_farRadius;}
 
 			IDS::BaseGeometry::Shape2D getVisibleArea(IDS::BaseGeometry::Point2D const& point) const;
+			IDS::BaseGeometry::Shape2D getVisibleNearArea(IDS::BaseGeometry::Point2D const& point) const; //aggiunta
+
 
 			double computeCosts() const {return 0.;}
 

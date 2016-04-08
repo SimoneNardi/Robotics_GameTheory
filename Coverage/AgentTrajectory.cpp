@@ -230,8 +230,11 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 {
 	Point2D l_pt = _area->getPosition(_center);
 	Shape2D l_sensorArea = this->getVisibleArea(l_pt);
+	Shape2D l_sensorAreaNear = this->getVisibleNearArea(l_pt);
 
 	if (!l_sensorArea.isValid())
+		return std::vector<AreaCoordinate>();
+	if (!l_sensorAreaNear.isValid())
 		return std::vector<AreaCoordinate>();
 
 	int l_rowDelta =int(floor(m_farRadius / _area->getYStep())) + 1;
@@ -256,12 +259,12 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 			//std::cout << "Questi sono nella riga row: " << row << " col:" << col << std::endl;
 			if (!l_square)
 				continue;
-			
+
 			Point2D l_center = l_square->getBoundingBox().center();
 			// assegno solo i punti che sono interni all'area del sensore
-			if (l_sensorArea.contains(l_center))
-				//funzione che assegna la probabilita
+			if (l_sensorArea.contains(l_center) && !l_sensorAreaNear.contains(l_center))
 			{
+
 				l_elem.row = row;
 				l_elem.col = col;
 				//l_elem.p = ProbabilityOfDetection(_center, row, col);
@@ -276,7 +279,8 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 	
 	// Debug screen output
 	
-	//std::cout << " m_farRadius: " << m_farRadius << std::endl;
+	std::cout << " m_farRadius: " << m_farRadius << std::endl;
+	std::cout << " m_nearRadius:  " << m_nearRadius << std::endl;
 	//std::cout << " l_rowDelta: " << l_rowDelta << std::endl;
 	//std::cout << " l_colDelta: " << l_colDelta << std::endl;
 	/*std::cout << " getXSquare: " << _area->getXStep() << std::endl;
@@ -292,7 +296,7 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 	*/
 	//std::cout << "dimensione di result: " << result.size() << std::endl;
 	
-	//printArray(result, _center.row, _center.col);
+	printArray(result, _center.row, _center.col);
 	
 	return result;
 }
@@ -303,17 +307,34 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 BaseGeometry::Shape2D CameraPosition::getVisibleArea(BaseGeometry::Point2D const& point) const
 	try
 {
+
 	if(fabs(m_farRadius) < IDSMath::TOLERANCE)
 		return Shape2D();
 
 	Curve2D l_external = makeCircle( point, m_farRadius, false);
-	return Shape2D( std::vector<Curve2D>(1,l_external) );
+
+	return Shape2D(std::vector<Curve2D>(1, l_external));
 }
 catch (...)
 {
 	return Shape2D();
 }
 
+BaseGeometry::Shape2D CameraPosition::getVisibleNearArea(BaseGeometry::Point2D const& point) const
+try
+{
+
+	if (fabs(m_nearRadius) < IDSMath::TOLERANCE)
+		return Shape2D();
+
+	Curve2D l_internal = makeCircle(point, m_nearRadius, false);
+
+	return Shape2D(std::vector<Curve2D>(1, l_internal));
+}
+catch (...)
+{
+	return Shape2D();
+}
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////

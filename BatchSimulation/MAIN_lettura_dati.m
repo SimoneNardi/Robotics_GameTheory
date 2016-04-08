@@ -1,6 +1,6 @@
 %MAIN LETTURA SIMULAZIONI
 
-NumAgenti = 10;
+NumAgenti = 20;
 Scenario= 1;
 
 MeanError(NumAgenti, Scenario)

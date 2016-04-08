@@ -705,10 +705,10 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 		// viene settata la posizione e la CameraPosition dell'agente di tipo guardia
 		// AgentPosition
 			//int num_level = 60.0;
-			double R_m = ( l_space->getXStep() + l_space->getYStep() ) / 2;
-			//double R = (R_m/num_level);
+			double R = double((l_space->getXStep() + l_space->getYStep()) / 2. * 7.5);
+			double r = double(l_space->getXStep() + l_space->getYStep() / 2. );
 
-			AgentPosition l_pos(l_agentDriver[i].position, CameraPosition( double(l_space->getXStep() + l_space->getYStep()) / 2. *5.5) ); //*1.5) ); prendo m_farRadius = 5 quadratini (2.32061*5)
+			AgentPosition l_pos(l_agentDriver[i].position, CameraPosition(R, r)); // prende 5 quadratini x 6 quadratini
 
 		// point
 			Point2D l_point;
