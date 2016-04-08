@@ -437,7 +437,7 @@ double MemoryGuardTrajectories::getDeltaMemoryBenefit()
 
 	//computeBestWorstTrajectories();
 
-	return (m_best > m_worst ? -1. : 1.) * (m_elems[m_best].m_payoff - m_elems[m_worst].m_payoff);
+	return (m_best > m_worst ? -1. : 1.) * (m_elems[m_best].m_payoff - m_elems[m_worst].m_payoff); // calcola il delta del PIPIP
 }
 
 //////////////////////////////////////////////////////////////////////////

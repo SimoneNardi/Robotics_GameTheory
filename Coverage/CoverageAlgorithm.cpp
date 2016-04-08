@@ -707,6 +707,7 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 			//int num_level = 60.0;
 			double R = double((l_space->getXStep() + l_space->getYStep()) / 2. * 7.5);
 			double r = double(l_space->getXStep() + l_space->getYStep() / 2. );
+			//double v = double(IDSMath::TwoPi / 4);
 
 			AgentPosition l_pos(l_agentDriver[i].position, CameraPosition(R, r)); // prende 5 quadratini x 6 quadratini
 

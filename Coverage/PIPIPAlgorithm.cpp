@@ -46,8 +46,8 @@ void PIPIPAlgorithm::update(std::shared_ptr<Guard> _agent)
 		bool l_agentHasToExplore = agentHasToExperiments(l_explorationRate);
 
 		double l_delta = this->computeDeltaMemoryBenefit(_agent);
-		if(l_delta < 0)
-			// irrational:
+		if(l_delta < 0) // cioè se u_i - u_i+1 < 0
+			// irrational decision:
 		{
 			if(l_agentHasToExplore)
 			{
@@ -56,8 +56,8 @@ void PIPIPAlgorithm::update(std::shared_ptr<Guard> _agent)
 			else
 			{
 				//	ogni agente guardia sceglie il proprio tasso di esplorazione:
-				double l_irrationalFactor = this->computeIrrationalRate();
-				double l_irrationalRate = (1.-l_explorationRate) * l_irrationalFactor * pow(l_explorationRate, l_delta);
+				double l_irrationalFactor = this->computeIrrationalRate(); // sarebbe il k del PIPIP
+				double l_irrationalRate = (1.-l_explorationRate) * l_irrationalFactor * pow(l_explorationRate, l_delta); // con probabilita (1-epsilon)*k*epsilon
 
 				//	ogni agente guardia estrae se sperimentare nuove azioni o no
 				bool l_agentHasToBeIrrational = agentHasToExperiments( l_irrationalRate );
