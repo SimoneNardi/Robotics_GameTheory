@@ -88,30 +88,30 @@ void Agent::setStatus(Status stat)
 //////////////////////////////////////////////////////////////////////////
 std::vector<AgentPosition> Agent::getFeasibleActions( std::shared_ptr<DiscretizedArea> _space ) const
 {
-	AreaCoordinate l_currCoord = _space->getCoordinate( m_currentPosition.getPoint2D() );
+	AreaCoordinate l_currCoord = _space->getCoordinate( m_currentPosition.getPoint2D() ); 
 
-	std::vector<AreaCoordinate> l_squares = _space->getStandardApproachableValidSquares(l_currCoord);
+	std::vector<AreaCoordinate> l_squares = _space->getStandardApproachableValidSquares(l_currCoord); // prende i 4 punti vicini e li mette in l_aquare
 
 	std::vector<AgentPosition> l_result;
-	for( size_t i = 0; i < l_squares.size(); ++i )
+	for( size_t i = 0; i < l_squares.size(); ++i ) // esplora i 4 punti
 	{
 		l_result.push_back( AgentPosition(_space->getPosition(l_squares[i]), m_currentPosition.m_camera) );
 	}
 
-	return l_result;
+	return l_result; //restituisce i punti raggiungibili
 }
 
 //////////////////////////////////////////////////////////////////////////
 AgentPosition Agent::selectRandomFeasibleAction(std::shared_ptr<DiscretizedArea> _space)
 {
-	std::vector<AgentPosition> l_feasible = this->getFeasibleActions(_space);
+	std::vector<AgentPosition> l_feasible = this->getFeasibleActions(_space); // tutte le posizioni possibili in base a dove mi trovo
 	if(l_feasible.empty())
 		return m_currentPosition;
 	else
 	{
 		//this->removeBestTrajectoryFromFeasible(l_feasible);
 
-		int l_value = getRandomValue( int( l_feasible.size() ) );
+		int l_value = getRandomValue( int( l_feasible.size() ) ); // ne prende una a caso
 		return l_feasible[l_value];
 	}
 }

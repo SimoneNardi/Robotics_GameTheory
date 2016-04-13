@@ -502,10 +502,16 @@ AreaCoordinate DiscretizedArea::getCoordinate(Point2D const& point) const
 	Point2D l_bottomRight = m_lattice[0]->getBoundingBox().corner(1);
 	Point2D l_topLeft = m_lattice[0]->getBoundingBox().corner(2);
 
-	Line2D l_xLine = l_bottomLeft.lineTo(l_bottomRight);
+	/*Get the angle between this line and a target line.
+		*
+		*	The angle is positive if the source line(this) must rotate
+		*	in clockwise direction to reach the target line,
+		*negative otherwise.*/
+
+	Line2D l_xLine = l_bottomLeft.lineTo(l_bottomRight); // restituisce le coordinate dei punti
 	Line2D l_yLine = l_bottomLeft.lineTo(l_topLeft);
 
-	Point2D l_prjVertical = l_yLine.projectPoint(point);
+	Point2D l_prjVertical = l_yLine.projectPoint(point); // restituisce angolo tra l_yLine e 
 	Point2D l_prjOrizontal = l_xLine.projectPoint(point);
 
 	double l_ydist = l_yLine.parameterAt(l_prjVertical);
@@ -554,14 +560,15 @@ void DiscretizedArea::setRandomSquareValue()
 //////////////////////////////////////////////////////////////////////////
 std::vector<AreaCoordinate> DiscretizedArea::getStandardApproachableValidSquares(AreaCoordinate const& _current) const
 {
+	// in this function all adiacent square are selected
 	std::vector<AreaCoordinate> result;
-	if(_current.col != 0)
+	if(_current.col != 0) // check for lower limit
 	{
 		AreaCoordinate pos( _current.col-1, _current.row );
-		if(this->getSquare(pos) && this->getSquare(pos)->isValid())
+		if(this->getSquare(pos) && this->getSquare(pos)->isValid()) // se esiste ed è valida
 			result.push_back(pos);
 	}
-	if(_current.col != DISCRETIZATION_COL)
+	if(_current.col != DISCRETIZATION_COL) // check for upper limit
 	{
 		AreaCoordinate pos(_current.col+1, _current.row);
 		if(this->getSquare(pos) && this->getSquare(pos)->isValid())
@@ -579,7 +586,7 @@ std::vector<AreaCoordinate> DiscretizedArea::getStandardApproachableValidSquares
 		if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 			result.push_back(pos);
 	}
-	return result;
+	return result; // restituisce la posizione successiva
 }
 
 //////////////////////////////////////////////////////////////////////////

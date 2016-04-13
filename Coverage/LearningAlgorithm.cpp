@@ -18,7 +18,7 @@ using namespace Robotics::GameTheory;
 using namespace IDS::BaseGeometry;
 
 //////////////////////////////////////////////////////////////////////////
-// epsilon nell'articolo
+// calcolo della epsilon nell'articolo
 double LearningAlgorithm::computeExplorationRate(std::shared_ptr<Guard> _agent)
 {
 	if( fabs(m_experimentalRate) > IDSMath::TOLERANCE )
@@ -58,7 +58,7 @@ void LearningAlgorithm::initialize()
 		this->compute(*it);
 
 		//	ogni agente guardia compie un'azione random:
-		AgentPosition pos = (*it)->selectRandomFeasibleAction(m_space);
+		AgentPosition pos = (*it)->selectRandomFeasibleAction(m_space); // qui bisognerà tenere conto dell'heading
 	}
 
 	return;
@@ -111,15 +111,6 @@ double ProbabilityOfDetection(AreaCoordinate _center, int _row, int _col) {
 	return probability;
 }
 
-/*
-void LearningAlgorithm::monitoringThieves(std::set< ThiefPtr > const& _agents)
-{
-	for (std::set< ThiefPtr >::const_iterator it = _agents.begin(); it != _agents.end(); ++it)
-	{
-		AgentPosition l_thiefPos = (*it)->getCurrentPosition();
-		m_space->setThiefPosition(l_thiefPos);
-	}
-}*/
 
 //////////////////////////////////////////////////////////////////////////
 void LearningAlgorithm::compute(std::shared_ptr<Guard> _agent)
@@ -164,7 +155,7 @@ void LearningAlgorithm::compute(std::shared_ptr<Guard> _agent)
 //////////////////////////////////////////////////////////////////////////
 void LearningAlgorithm::updateCounterOfVisibleSquare( std::shared_ptr<Guard> _agent )
 {
-	std::set<SquarePtr> l_visible = _agent->getVisibleSquares(m_space);
+	std::set<SquarePtr> l_visible = _agent->getVisibleSquares(m_space); // dipende anch'essa da getCoverage opportunamente modificata
 	for(std::set<SquarePtr>::iterator it = l_visible.begin(); it != l_visible.end(); ++it)
 	{
 		(*it)->increaseCounter();
@@ -183,7 +174,7 @@ void LearningAlgorithm::updateCounterOfVisibleSquare()
 ///
 bool LearningAlgorithm::forwardOneStep()
 {
-	double l_rate = this->computeExplorationRate();
+	double l_rate = this->computeExplorationRate(); // calcolo epsilon
 	if(l_rate < 1.e-5)
 		return false;
 

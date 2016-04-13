@@ -36,7 +36,7 @@ void DISLAlgorithm::update(std::shared_ptr<Guard> _agent)
 
 		if(l_agentHasToExperiments)
 		{
-			_agent->startExperiment(l_explorationRate);
+			_agent->startExperiment(l_explorationRate); // resetta epsilon
 		}
 		else
 		{
@@ -47,7 +47,7 @@ void DISLAlgorithm::update(std::shared_ptr<Guard> _agent)
 	_agent->selectNextAction(m_space);
 
 	//	ogni agente guardia muove verso la nuova posizione
-	_agent->moveToNextPosition();
+	_agent->moveToNextPosition(); // m_currentposition = m_nextposition
 
 	return;
 }

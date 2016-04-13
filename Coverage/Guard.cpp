@@ -34,6 +34,7 @@ std::vector<AgentPosition> Guard::getFeasibleActions( std::shared_ptr<Discretize
 {
 	AreaCoordinate l_currCoord = _space->getCoordinate( m_currentPosition.getPoint2D() );
 
+	// Agent position contiene m_point e m_camera
 	std::vector<AreaCoordinate> l_squares = _space->getStandardApproachableValidSquares(l_currCoord);
 	_space->addSpecialApproachableValidSquares(l_currCoord, l_squares);
 
@@ -244,12 +245,12 @@ AgentPosition Guard::selectNextFeasiblePositionWithoutConstraint(std::shared_ptr
 //////////////////////////////////////////////////////////////////////////
 AgentPosition Guard::selectNextFeasiblePositionWithoutConstraint(std::shared_ptr<DiscretizedArea> _space, std::set<int> &_alreadyTested)
 {
-	std::vector<AgentPosition> l_feasible = this->getFeasibleActions(_space);
+	std::vector<AgentPosition> l_feasible = this->getFeasibleActions(_space); // usa getstandardapproachableValidSquare 
 
 	std::vector< std::pair<AgentPosition, int> > l_notControlledFeasibleActions;
-	for(size_t i = 0; i < l_feasible.size(); ++i)
+	for(size_t i = 0; i < l_feasible.size(); ++i) // scorre su tutte le azioni fattibili
 	{
-		if( _alreadyTested.find(i) != _alreadyTested.end() )
+		if( _alreadyTested.find(i) != _alreadyTested.end() )  // se trova un already tested uguale all'ultimo elemento(azione)
 			continue;
 
 		if( m_currentTrajectory.contains(l_feasible[i]) )
@@ -257,7 +258,7 @@ AgentPosition Guard::selectNextFeasiblePositionWithoutConstraint(std::shared_ptr
 			//std::cout << "An action already chosen has been selected!" << std::endl;
 			continue;
 		}
-
+		// se nessuno dei due casi
 		l_notControlledFeasibleActions.push_back( std::make_pair<>(l_feasible[i], i) );//AgentPosition, int
 	}
 
@@ -297,9 +298,10 @@ AgentPosition Guard::selectNextFeasiblePosition(std::shared_ptr<DiscretizedArea>
 {
 	// Feasible action è un azione di una traiettoria ancora da definire ma che deve rispettare i vincoli degli algoritmi dinamici.
 	// Pesco il riquadro finchè non trovo un elemento accettabile!
-	if(!this->isRunning())
+
+	if(!this->isRunning()) // la sua traiettoria non ha più di un passo o è al massimo consentito
 	{
-		AgentPosition l_selectedPosition = this->selectNextFeasiblePositionWithoutConstraint(_space);
+		AgentPosition l_selectedPosition = this->selectNextFeasiblePositionWithoutConstraint(_space); // seleziona random(da modificare)
 		return l_selectedPosition;
 	}
 
@@ -311,14 +313,14 @@ AgentPosition Guard::selectNextFeasiblePosition(std::shared_ptr<DiscretizedArea>
 	std::set<int> l_alreadyTested;
 	do
 	{
-		l_selectedPosition = this->selectNextFeasiblePositionWithoutConstraint(_space, l_alreadyTested);
+		l_selectedPosition = this->selectNextFeasiblePositionWithoutConstraint(_space, l_alreadyTested); // AgentPosition
 		
 		//if( (k < 8) && (m_currentTrajectory.contains(l_selectedPosition)) )
 		//	continue;
 		
 		SquarePtr l_selected = _space->getSquare( l_selectedPosition.getPoint2D() );
 
-		l_nodeDistance = _space->getDistance(l_source, l_selected);
+		l_nodeDistance = _space->getDistance(l_source, l_selected); // distanza percorsa dall' agente
 		k++;
 	} 
 	while(m_maxTrajectoryLength - m_currentTrajectory.size() < l_nodeDistance && k < 9);
