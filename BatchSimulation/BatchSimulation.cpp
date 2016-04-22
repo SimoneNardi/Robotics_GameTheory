@@ -222,11 +222,11 @@ std::vector<std::string> getAgentNames(std::string const& _folname)
 #endif
 
 #else
-//		l_result.push_back("Scenario_5G_1T_multiAgent.dat");
+	l_result.push_back("Scenario_5G_1T_multiAgent.dat");
 
 #ifndef _TEST
-	//	l_result.push_back("Scenario_10G_1T_multiAgent.dat");
-	//	l_result.push_back("Scenario_15G_1T_multiAgent.dat");
+	l_result.push_back("Scenario_10G_1T_multiAgent.dat");
+	l_result.push_back("Scenario_15G_1T_multiAgent.dat");
 	l_result.push_back("Scenario_20G_1T_multiAgent.dat");
 #endif
 #endif
@@ -238,7 +238,9 @@ std::vector<std::string> getAreaNames(std::string const& _folname)
 {
 	std::vector<std::string> l_result;
 	/// più scenari
-	l_result.push_back("External30.txt");
+	l_result.push_back("External40.txt");
+	l_result.push_back("External50.txt");
+
 
 #ifndef _TEST
 	//	l_result.push_back("External_trig.txt");
@@ -264,7 +266,7 @@ int main(int argc, char* argv[])
 		return -1;
 	else if (argc >= 2)
 		l_folname = argv[1];
-
+	// richiamo le funzioni sopra definite sopra
 	std::vector<std::string> l_AgentFilenames = getAgentNames(l_folname);
 	std::vector<std::string> l_AreaFilenames = getAreaNames(l_folname);
 

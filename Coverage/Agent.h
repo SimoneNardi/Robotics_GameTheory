@@ -13,7 +13,7 @@
 // GeometricKernel
 #include "BaseGeometry/Point2D.h"
 #include "BaseGeometry/Shape2D.h"
-
+#include "BaseGeometry/Line2D.h"
 //	IDSBaseMath
 #include "IDSMath.h"
 
@@ -51,10 +51,14 @@ namespace Robotics
 			std::vector<AreaCoordinate> getCoverage(AreaCoordinate _center, std::shared_ptr<DiscretizedArea> _area) const;
 
 			double getFarRadius() const {return m_farRadius;}
+			//aggiunti
+			double getNearRadius() const { return m_nearRadius;}
+			double getOrientation() const { return m_orientation;}
+			double getAngle() const { return m_angle;}
 
 			IDS::BaseGeometry::Shape2D getVisibleArea(IDS::BaseGeometry::Point2D const& point) const;
 			IDS::BaseGeometry::Shape2D getVisibleNearArea(IDS::BaseGeometry::Point2D const& point) const; //aggiunta
-
+			//IDS::BaseGeometry::Shape2D getHeading(BaseGeometry::Point2D const & point, std::shared_ptr<DiscretizedArea> _area) const;
 
 			double computeCosts() const {return 0.;}
 
@@ -71,6 +75,7 @@ namespace Robotics
 
 			/// The camera orientation.
 			CameraPosition m_camera;
+		
 
 		public:
 			AgentPosition() {}; //costruttore
@@ -139,14 +144,19 @@ namespace Robotics
 
 			~Agent() {}
 
+			//aggiunta
+
 			/// Get the position of the agent.
 			inline AgentPosition getCurrentPosition() const {return m_currentPosition;}
-
 			/// Set Current Position
 			void setCurrentPosition(AgentPosition const& _pos);
 
 			/// Set Current Position
 			void setNextPosition(AgentPosition const& _pos);
+
+			// ultime due posizioni (aggiunta)
+			double getHeadingRobot(IDS::BaseGeometry::Point2D _point);
+
 
 			/// True if the Agent is active, false otherwise.
 			bool isActive();
@@ -189,6 +199,8 @@ namespace Robotics
 		protected:
 			Status getStatus() const;
 			void setStatus(Status stat);
+
+			std::vector<AgentPosition> getCurrentPos();
 		};
 
 		typedef std::shared_ptr<Agent> AgentPtr;

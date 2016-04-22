@@ -74,7 +74,7 @@ namespace Robotics
 			*
 			*/
 			/************************************************************************/
-			void Initialize();
+			void Initialize(); // inizializza posizioni e i calcoli sulle utility
 
 			/// Reset Data of algorithm
 			void Reset();

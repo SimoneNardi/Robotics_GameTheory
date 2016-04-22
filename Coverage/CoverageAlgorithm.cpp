@@ -7,6 +7,8 @@
 #include "CoarseCorrelatedAlgorithm.h"
 #include "Probability.h"
 #include "DiscretizedArea.h"
+//aggiunta
+#include "Area.h"
 #include "StructuredArea.h"
 #include "Agent.h"
 #include "Guard.h"
@@ -640,10 +642,10 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 	{
 		if(l_agentDriver[i].type != AgentDriver::THIEF)
 			continue;
-
-		AgentPosition l_pos(l_space->randomPosition(), CameraPosition(l_space->getDistance() /15. ) );
+		// aggiunto random angle
+		AgentPosition l_pos(l_space->randomPosition(), CameraPosition(l_space->getDistance() / 15., 0, IDSMath::Pi, IDSMath::Pi*(110/180) ) );
 		Sleep(100);
-
+		
 		ThiefPtr l_agent = std::make_shared<Thief>(l_algorithm->getNumberOfAgent(), l_pos/*l_agentDriver[i].position*/);
 		l_algorithm->setPositionOfThief(l_pos, l_agent);
 	}
@@ -707,9 +709,10 @@ std::shared_ptr<CoverageAlgorithm> Robotics::GameTheory::CoverageAlgorithm::crea
 			//int num_level = 60.0;
 			double R = double((l_space->getXStep() + l_space->getYStep()) / 2. * 7.5);
 			double r = double(l_space->getXStep() + l_space->getYStep() / 2. );
-			//double v = double(IDSMath::TwoPi / 4);
+			double o = double( (90/180) * IDSMath::Pi);
+			double v = double(IDSMath::TwoPi * (110/180));
 
-			AgentPosition l_pos(l_agentDriver[i].position, CameraPosition(R, r)); // prende 5 quadratini x 6 quadratini
+			AgentPosition l_pos(l_agentDriver[i].position, CameraPosition(R, r, o, v)); // prende 5 quadratini x 6 quadratini
 
 		// point
 			Point2D l_point;

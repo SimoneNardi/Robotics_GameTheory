@@ -34,6 +34,9 @@ namespace Robotics
 			virtual bool isInside( IDS::BaseGeometry::Box2D const& _box) const = 0;
 
 			virtual double getDistance() const = 0;
+			// agguiunta
+			virtual double randomAngle() const;
+
 		};
 
 		typedef std::shared_ptr<Area> AreaPtr;

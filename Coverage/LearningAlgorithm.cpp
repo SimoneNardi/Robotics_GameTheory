@@ -100,7 +100,7 @@ void LearningAlgorithm::communicate(std::shared_ptr<Guard> _agent)
 	return;
 }
 //double ProbabilityOfDetection(AreaCoordinate _center, int _row, int _col);
-
+//This function takes into account the influence of sonar performances change with the distance from CameraPosition point
 double ProbabilityOfDetection(AreaCoordinate _center, int _row, int _col) {
 	double x_c = _center.row;
 	double y_c = _center.col;

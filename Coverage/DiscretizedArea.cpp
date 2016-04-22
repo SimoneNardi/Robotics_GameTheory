@@ -511,13 +511,13 @@ AreaCoordinate DiscretizedArea::getCoordinate(Point2D const& point) const
 	Line2D l_xLine = l_bottomLeft.lineTo(l_bottomRight); // restituisce le coordinate dei punti
 	Line2D l_yLine = l_bottomLeft.lineTo(l_topLeft);
 
-	Point2D l_prjVertical = l_yLine.projectPoint(point); // restituisce angolo tra l_yLine e 
-	Point2D l_prjOrizontal = l_xLine.projectPoint(point);
+	Point2D l_prjVertical = l_yLine.projectPoint(point); // restituisce punto proiettato sull'asse y 
+	Point2D l_prjOrizontal = l_xLine.projectPoint(point);// restituisce punto proiettato sull'asse x
 
 	double l_ydist = l_yLine.parameterAt(l_prjVertical);
 	double l_xdist = l_xLine.parameterAt(l_prjOrizontal);
 
-	AreaCoordinate l_coord(int( floor(l_xdist / m_xStep) ), int( floor(l_ydist / m_yStep) ));
+	AreaCoordinate l_coord(int( floor(l_xdist / m_xStep) ), int( floor(l_ydist / m_yStep) ));// rispettive coord in AreaCoordinate (row, col)
 	return l_coord;
 }
 
@@ -560,15 +560,15 @@ void DiscretizedArea::setRandomSquareValue()
 //////////////////////////////////////////////////////////////////////////
 std::vector<AreaCoordinate> DiscretizedArea::getStandardApproachableValidSquares(AreaCoordinate const& _current) const
 {
-	// in this function all adiacent square are selected
+	// in this function all adiacent square are selected and pushed in result
 	std::vector<AreaCoordinate> result;
-	if(_current.col != 0) // check for lower limit
+	if(_current.col != 0) // check for lower limit of col becouse col is gonna be incremented
 	{
 		AreaCoordinate pos( _current.col-1, _current.row );
 		if(this->getSquare(pos) && this->getSquare(pos)->isValid()) // se esiste ed è valida
 			result.push_back(pos);
 	}
-	if(_current.col != DISCRETIZATION_COL) // check for upper limit
+	if(_current.col != DISCRETIZATION_COL) // check for upper limit for col becouse it is gonna be changed
 	{
 		AreaCoordinate pos(_current.col+1, _current.row);
 		if(this->getSquare(pos) && this->getSquare(pos)->isValid())
@@ -586,7 +586,34 @@ std::vector<AreaCoordinate> DiscretizedArea::getStandardApproachableValidSquares
 		if(this->getSquare(pos) && this->getSquare(pos)->isValid())
 			result.push_back(pos);
 	}
-	return result; // restituisce la posizione successiva
+	// diagonal directions added to feasible actions set:
+	
+/*	if (_current.row != DISCRETIZATION_COL && _current.col != DISCRETIZATION_COL) 
+	{
+		AreaCoordinate pos(_current.col + 1, _current.row + 1);
+		if (this->getSquare(pos), this->getSquare(pos)->isValid())
+			result.push_back(pos);
+	}
+	if (_current.row != DISCRETIZATION_COL && _current.col != 0)
+	{
+		AreaCoordinate pos(_current.col + 1, _current.row - 1);
+		if (this->getSquare(pos), this->getSquare(pos)->isValid())
+			result.push_back(pos);
+	}
+	if (_current.row != 0 && _current.col != DISCRETIZATION_COL)
+	{
+		AreaCoordinate pos(_current.col + 1, _current.row - 1);
+		if (this->getSquare(pos), this->getSquare(pos)->isValid())
+			result.push_back(pos);
+	}
+	if (_current.row != 0 && _current.col != 0)
+	{
+		AreaCoordinate pos(_current.col - 1, _current.row - 1);
+		if (this->getSquare(pos), this->getSquare(pos)->isValid())
+			result.push_back(pos);
+	}
+	*/
+	return result;
 }
 
 //////////////////////////////////////////////////////////////////////////

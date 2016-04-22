@@ -28,7 +28,7 @@ std::shared_ptr<DiscretizedArea> StructuredArea::discretize()
 {
 	std::shared_ptr<Area> l_area = this->shared_from_this();
 	std::shared_ptr<StructuredArea> l_struct = dynamic_pointer_cast<StructuredArea>(l_area);
-	return std::make_shared<DiscretizedArea>( l_struct );	
+	return std::make_shared<DiscretizedArea>(l_struct);
 }
 
 const int N_MAX = 15;
@@ -60,7 +60,7 @@ IDS::BaseGeometry::Point2D StructuredArea::randomPosition() const
 
 		Line2D l_xlineBottom = l_bottomLeft.lineTo(l_bottomRight);
 		Line2D l_xlineTop = l_topLeft.lineTo(l_topRight);
-
+		
 		Point2D l_bottom = l_xlineBottom.pointFromOrigin( l_xstep * double(xSecret) );
 		Point2D l_top = l_xlineTop.pointFromOrigin( l_xstep * double(xSecret) );
 
@@ -71,6 +71,15 @@ IDS::BaseGeometry::Point2D StructuredArea::randomPosition() const
 	while (!this->m_external.contains(l_point) && k < N_MAX);
 
 	return l_point;
+}
+
+double Area::randomAngle() const
+{
+	//calcolo l'orientazione iniziale della camera
+	srand((unsigned int)time(NULL));
+
+	double angle = (rand() % 360)*(3.14/180);
+	return angle;
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -6,11 +6,12 @@
 #include "BaseGeometry/Shape2D.h"
 #include "BaseGeometry/Arc2D.h"
 #include "BaseGeometry/Point2D.h"
+#include "BaseGeometry/Line2D.h"
+
 
 //aggiunta
 #include "World.h"
 #include "CoverageExport.h"
-#include "Agent.h"
 #include "CoverageAlgorithm.h"
 #include "LearningAlgorithm.h"
 
@@ -22,9 +23,6 @@ using namespace Robotics::GameTheory;
 using namespace IDS;
 using namespace IDS::BaseGeometry;
 
-// da me
-typedef std::shared_ptr<Thief> ThiefPtr;
-std::shared_ptr<World> m_world;
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -135,7 +133,6 @@ bool AgentPosition::operator!=(AgentPosition const& other) const
 void AgentPosition::updateCounter(std::shared_ptr<DiscretizedArea> area)
 {
 	AreaCoordinate l_coord = area->getCoordinate(m_point);
-
 	area->getSquare( l_coord.row, l_coord.col )->increaseCounter();
 
 	// Calcolo la copertura in base alla camera:
@@ -172,11 +169,38 @@ double AgentPosition::computeCosts() const
 	return m_camera.computeCosts();
 }
 
+
+void printArray(std::vector<AreaCoordinate> v, int c_row, int c_col) {
+	for (int i = 0; i < v.size(); ++i) {
+		double x = v.at(i).row;
+		double y = v.at(i).col;
+		double dist = sqrt(pow((x - c_row), 2) + pow((y - c_col), 2));
+		std::cout << "row: " << v.at(i).row << " \t col: " << v.at(i).col << "\t prob: " << v.at(i).p << std::endl;//<< "\n d : " << dist << std::endl;
+	}
+}
+
+
+
+double Agent::getHeadingRobot(IDS::BaseGeometry::Point2D _point) {
+	
+	AgentPosition current_pos = this->m_currentPosition;
+	AgentPosition next_pos = this->m_nextPosition;
+	std::vector<AgentPosition> result;
+	
+
+	Line2D orientationLine = current_pos.m_point.lineTo(next_pos.m_point);
+	return orientationLine.azimuth();
+	}
+
+
+
 //////////////////////////////////////////////////////////////////////////
 std::vector<AreaCoordinate> AgentPosition::getCoverage(std::shared_ptr<DiscretizedArea> _space ) const
 {
 	AreaCoordinate l_center = _space->getCoordinate(m_point);
-	return m_camera.getCoverage(l_center, _space);
+	std::vector<AreaCoordinate> AreaSensore = m_camera.getCoverage(l_center, _space); //area attuale
+	
+	return AreaSensore;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -209,21 +233,6 @@ bool CameraPosition::operator!=(CameraPosition const& other) const
 	return !(*this==other);
 }
 
-void printArray(std::vector<AreaCoordinate> v, int c_row, int c_col) {
-	for (int i = 0; i < v.size(); ++i) {
-		double x = v.at(i).row;
-		double y = v.at(i).col;
-		double dist = sqrt(pow((x - c_row), 2) + pow((y - c_col), 2));
-		std::cout << "row: " << v.at(i).row << " \t col: " << v.at(i).col << "\t prob: " << v.at(i).p << std::endl;//<< "\n d : " << dist << std::endl;
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////
-/*auto AgentPosition::ProbabilityOfDetection(std::shared_ptr<DiscretizedArea> area, AreaCoordinate p_r, AreaCoordinate p_t)
-{
-	int d;
-	return  d = area->getDistance(p_r, p_t);
-}*/
 
 
 std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, std::shared_ptr<DiscretizedArea> _area) const
@@ -231,6 +240,7 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 	Point2D l_pt = _area->getPosition(_center);
 	Shape2D l_sensorArea = this->getVisibleArea(l_pt);
 	Shape2D l_sensorAreaNear = this->getVisibleNearArea(l_pt);
+	
 
 	if (!l_sensorArea.isValid())
 		return std::vector<AreaCoordinate>();
@@ -262,7 +272,7 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 
 			Point2D l_center = l_square->getBoundingBox().center();
 			// assegno solo i punti che sono interni all'area del sensore
-			if (l_sensorArea.contains(l_center) && !l_sensorAreaNear.contains(l_center))
+			if (l_sensorArea.contains(l_center) ) //  && !l_sensorAreaNear.contains(l_center))
 			{
 
 				l_elem.row = row;
@@ -275,7 +285,6 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 	}
 
 	//auto p = AgentPosition::ProbabilityOfDetection(_area, _center, c);
-	
 	
 	// Debug screen output
 	
@@ -294,14 +303,21 @@ std::vector<AreaCoordinate> CameraPosition::getCoverage(AreaCoordinate _center, 
 	std::cout << "dimensione di result: " << result.size() << std::endl;
 	printArray(result, _center.row, _center.col);
 	*/
-	//std::cout << "dimensione di result: " << result.size() << std::endl;
-	
-	printArray(result, _center.row, _center.col);
-	
+//	std::cout << "dimensione di result " << result.size() << std::endl;	
+	//printArray(result, _center.row, _center.col);
+
 	return result;
 }
 
+/*
+BaseGeometry::Shape2D CameraPosition::getHeading(BaseGeometry::Point2D const& point, std::shared_ptr<DiscretizedArea> _area) const
+{
+	AreaCoordinate punto = _area->getCoordinate(point);
+	AreaCoordinate 
+	
+	Arc2D arco = makeArc( );
 
+}*/
 
 //////////////////////////////////////////////////////////////////////////
 BaseGeometry::Shape2D CameraPosition::getVisibleArea(BaseGeometry::Point2D const& point) const
