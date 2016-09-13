@@ -213,7 +213,7 @@ std::vector<std::string> getAgentNames(std::string const& _folname)
 
 #ifdef _SINK
 
-	l_result.push_back("Scenario_5G_1T_1S.dat");
+	//l_result.push_back("Scenario_5G_1T_1S.dat");
 
 #ifndef _TEST
 	l_result.push_back("Scenario_10G_1T_1S.dat");

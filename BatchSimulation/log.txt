@@ -20,4 +20,3 @@ Area File: External40
 ---Thief Jump: 1
 -Epsilon: 0.1
 -Case: 0...
-End Time 5000
